@@ -1,45 +1,122 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Feather } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { Image, Text, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function TabsLayout() {
+  // This would typically come from your auth or user context
+  const username = "John"; // Replace with actual username logic
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+    <SafeAreaProvider>
+      <SafeAreaView className="">
+        {/* Custom Header */}
+        <View className="flex-row justify-between items-center px-4 py-3">
+          <Text className="text-lg font-bold">Hello {username}</Text>
+          <View className="flex-row items-center gap-2.5">
+            <Feather name="bell" size={20} color="#333" />
+            <View className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
+              <Image
+                source={{ uri: "https://via.placeholder.com/150" }}
+                className="w-full h-full"
+              />
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+
+      <Tabs
+        screenOptions={({ route }) => ({
+          headerShown: false, // Hide the default header
+          tabBarActiveTintColor: "#2DC0FF",
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            height: 110,
+            borderTopWidth: 0,
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            position: "relative",
+            justifyContent: "center",
+            alignItems: "center",
           },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+          tabBarItemStyle: {
+            height: "100%",
+            justifyContent: "center",
+          },
+          tabBarIconStyle: {
+            margin: "auto",
+          },
+          tabBarPressColor: "#D9F1FC",
+          pressColor: "#D9F1FC",
+          tabBarIcon: ({ color, size, focused }) => {
+            let iconName: React.ComponentProps<typeof Feather>["name"] =
+              "help-circle";
+
+            if (route.name === "home") {
+              iconName = "home";
+            } else if (route.name === "chat") {
+              iconName = "message-circle";
+            } else if (route.name === "scan") {
+              return (
+                <View className="absolute w-20 h-20 rounded-full bg-[#02AAEB] flex items-center justify-center">
+                  <Feather name="camera" size={44} color="#ffffff" />
+                </View>
+              );
+            } else if (route.name === "progress") {
+              iconName = "bar-chart";
+            } else if (route.name === "product") {
+              iconName = "shopping-cart";
+            }
+
+            if (route.name !== "scan") {
+              return (
+                <View
+                  className={
+                    focused
+                      ? "bg-[#D9F1FC] p-3 flex items-center justify-center h-14 w-14 rounded-xl"
+                      : ""
+                  }
+                >
+                  <Feather name={iconName} size={25} color={color} />
+                </View>
+              );
+            }
+
+            return null;
+          },
+        })}
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: "Home",
+          }}
+        />
+        <Tabs.Screen
+          name="chat"
+          options={{
+            title: "Chat",
+          }}
+        />
+        <Tabs.Screen
+          name="scan"
+          options={{
+            title: "Scan",
+          }}
+        />
+        <Tabs.Screen
+          name="progress"
+          options={{
+            title: "Progress",
+          }}
+        />
+        <Tabs.Screen
+          name="product"
+          options={{
+            title: "Product",
+          }}
+        />
+      </Tabs>
+    </SafeAreaProvider>
   );
 }

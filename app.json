@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "BroGlow-app",
-    "slug": "BroGlow-app",
+    "name": "BroGlow",
+    "slug": "BroGlow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -32,6 +32,18 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/open-sans/OpenSans-Regular.ttf",
+            "node_modules/@expo-google-fonts/open-sans/OpenSans-Bold.ttf",
+            "node_modules/@expo-google-fonts/open-sans/OpenSans-SemiBold.ttf",
+            "node_modules/@expo-google-fonts/open-sans/OpenSans-Medium.ttf",
+            "node_modules/@expo-google-fonts/open-sans/OpenSans-Light.ttf"
+          ]
         }
       ]
     ],
