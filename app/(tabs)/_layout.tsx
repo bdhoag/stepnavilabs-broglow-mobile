@@ -1,29 +1,32 @@
 import { Feather } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { Image, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   // This would typically come from your auth or user context
-  const username = "John"; // Replace with actual username logic
+  const username = "Joe"; // Replace with actual username logic
+  const pathname = usePathname();
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="">
-        {/* Custom Header */}
-        <View className="flex-row justify-between items-center px-4 py-3">
-          <Text className="text-lg font-bold">Hello {username}</Text>
-          <View className="flex-row items-center gap-2.5">
-            <Feather name="bell" size={20} color="#333" />
-            <View className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
-              <Image
-                source={{ uri: "https://via.placeholder.com/150" }}
-                className="w-full h-full"
-              />
+      {!(pathname && pathname.includes("/chat")) && (
+        <SafeAreaView className="">
+          {/* Custom Header - Ẩn khi ở tab chat */}
+          <View className="flex-row justify-between items-center px-4 py-3">
+            <Text className="text-lg font-bold">Hello {username}</Text>
+            <View className="flex-row items-center gap-2.5">
+              <Feather name="bell" size={20} color="#333" />
+              <View className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
+                <Image
+                  source={{ uri: "https://via.placeholder.com/150" }}
+                  className="w-full h-full"
+                />
+              </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      )}
 
       <Tabs
         screenOptions={({ route }) => ({

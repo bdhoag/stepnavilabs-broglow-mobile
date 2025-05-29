@@ -14,25 +14,25 @@ export default function HomeLayout() {
     >
       <Stack.Screen name="index" options={{}} />
       <Stack.Screen
-        name="skin-profile"
+        name="skin-profile/index"
         options={{
           title: "Xác định hồ sơ da",
         }}
       />
       <Stack.Screen
-        name="skin-care-routine"
+        name="skincare-routine/index"
         options={{
           title: "Gợi ý chu trình chăm sóc da",
         }}
       />
       <Stack.Screen
-        name="explore"
+        name="explore/index"
         options={{
           title: "Khám phá",
         }}
       />
       <Stack.Screen
-        name="subscription"
+        name="subscription/index"
         options={{
           title: "Gói đăng ký",
         }}

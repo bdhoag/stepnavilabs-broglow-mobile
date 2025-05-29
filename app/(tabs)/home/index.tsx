@@ -3,7 +3,7 @@ import { Image, Pressable, ScrollView, Text, View } from "react-native";
 
 type Route =
   | "/home/skin-profile"
-  | "/home/skin-care-routine"
+  | "/home/skincare-routine"
   | "/home/explore"
   | "/home/subscription";
 
@@ -16,10 +16,10 @@ export default function TabsIndex() {
       route: "/home/skin-profile" as Route,
     },
     {
-      title: "Gợi ý chu trình chăm sóc da",
-      image: require("../../../assets/images/home/skin-care-routine-suggestion.png"),
+      title: "Gợi ý chu trình chăm sóc",
+      image: require("../../../assets/images/home/skincare-routine-suggestion.png"),
       bgColor: "#FEF9C3",
-      route: "/home/skin-care-routine" as Route,
+      route: "/home/skincare-routine" as Route,
     },
     {
       title: "Khám phá",
@@ -43,9 +43,9 @@ export default function TabsIndex() {
 
   return (
     <ScrollView className="flex-1">
-      <View className="flex-1 px-5">
+      <View className="flex-1 px-3 pt-4 pb-6">
         {optionPairs.map((pair, pairIndex) => (
-          <View key={pairIndex} className="flex-row gap-3 mb-3 shadow">
+          <View key={pairIndex} className="flex-row gap-2 mb-4">
             {pair.map((option, index) => (
               <View key={index} className="flex-1">
                 <Pressable
@@ -53,15 +53,15 @@ export default function TabsIndex() {
                   style={{ backgroundColor: option.bgColor }}
                   onPress={() => router.push(option.route)}
                 >
-                  <View className="p-3 items-center">
+                  <View className="p-4 items-center">
                     <Image
                       source={option.image}
-                      className="w-20 h-16 mb-3"
+                      className="w-28 h-20 mb-2"
                       resizeMode="contain"
                     />
                   </View>
-                  <View className="bg-white p-3">
-                    <Text className="text-center text-xs font-semibold">
+                  <View className="bg-white p-4">
+                    <Text className="text-center text-base font-semibold">
                       {option.title}
                     </Text>
                   </View>
