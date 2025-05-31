@@ -8,11 +8,18 @@ export default function TabsLayout() {
   const username = "Joe"; // Replace with actual username logic
   const pathname = usePathname();
 
+  // Check if we're on scan screen
+  const isOnScanScreen = pathname && pathname.includes("/scan");
+
   return (
     <SafeAreaProvider>
-      {!(pathname && pathname.includes("/chat")) && (
+      {/* Hide header when on chat or scan screen */}
+      {!(
+        pathname &&
+        (pathname.includes("/chat") || pathname.includes("/scan"))
+      ) && (
         <SafeAreaView className="">
-          {/* Custom Header - Ẩn khi ở tab chat */}
+          {/* Custom Header - Ẩn khi ở tab chat hoặc scan */}
           <View className="flex-row justify-between items-center px-4 py-3">
             <Text className="text-lg font-bold">Hello {username}</Text>
             <View className="flex-row items-center gap-2.5">
@@ -33,15 +40,18 @@ export default function TabsLayout() {
           headerShown: false, // Hide the default header
           tabBarActiveTintColor: "#2DC0FF",
           tabBarShowLabel: false,
-          tabBarStyle: {
-            height: 110,
-            borderTopWidth: 0,
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            position: "relative",
-            justifyContent: "center",
-            alignItems: "center",
-          },
+          // Hide tab bar when on scan screen
+          tabBarStyle: isOnScanScreen
+            ? { display: "none" }
+            : {
+                height: 110,
+                borderTopWidth: 0,
+                borderTopLeftRadius: 40,
+                borderTopRightRadius: 40,
+                position: "relative",
+                justifyContent: "center",
+                alignItems: "center",
+              },
           tabBarItemStyle: {
             height: "100%",
             justifyContent: "center",

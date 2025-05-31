@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react-native";
+import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -57,7 +57,7 @@ export default function Subscription() {
                     idx !== paidFeatures.length - 1 ? "mb-5" : ""
                   }`}
                 >
-                  <Check size={18} color="#3DC47E" strokeWidth={3} />
+                  <Feather name="check" size={18} color="#3DC47E" />
                   <Text className="ml-4 text-lg text-[#222]">{f.label}</Text>
                 </View>
               ))
@@ -69,9 +69,9 @@ export default function Subscription() {
                   }`}
                 >
                   {f.included ? (
-                    <Check size={18} color="#3DC47E" strokeWidth={3} />
+                    <Feather name="check" size={18} color="#3DC47E" />
                   ) : (
-                    <X size={18} color="#F75555" strokeWidth={3} />
+                    <Feather name="x" size={18} color="#F75555" />
                   )}
                   <Text
                     className={`ml-4 text-lg ${

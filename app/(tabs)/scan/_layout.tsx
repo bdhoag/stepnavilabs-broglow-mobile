@@ -4,15 +4,20 @@ export default function ScanLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: "#fff",
-        },
-        headerTintColor: "#000",
-        headerShadowVisible: false,
         headerShown: false,
+        statusBarStyle: "light",
+        statusBarBackgroundColor: "transparent",
+        contentStyle: { backgroundColor: "#000" },
       }}
     >
-      <Stack.Screen name="index" options={{}} />
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false,
+          statusBarStyle: "light",
+          statusBarTranslucent: true,
+        }}
+      />
     </Stack>
   );
 }
