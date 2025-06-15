@@ -15,11 +15,13 @@
       }
     },
     "android": {
+      "package": "com.broglow.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -52,6 +54,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6e38429b-6d13-42d1-bd57-96f8a8220966"
+      }
     }
   }
 }
