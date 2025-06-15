@@ -39,18 +39,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "node_modules/@expo-google-fonts/open-sans/OpenSans-Regular.ttf",
-            "node_modules/@expo-google-fonts/open-sans/OpenSans-Bold.ttf",
-            "node_modules/@expo-google-fonts/open-sans/OpenSans-SemiBold.ttf",
-            "node_modules/@expo-google-fonts/open-sans/OpenSans-Medium.ttf",
-            "node_modules/@expo-google-fonts/open-sans/OpenSans-Light.ttf"
-          ]
-        }
-      ]
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
