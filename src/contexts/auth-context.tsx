@@ -5,7 +5,7 @@ import React, {
   useState,
   ReactNode,
 } from "react";
-import { AuthService } from "@/src/services/auth.services";
+import { AuthService } from "@/src/services/auth.service";
 import { User } from "@/src/data/types";
 import { TokenStorage } from "@/src/lib/token-storage";
 

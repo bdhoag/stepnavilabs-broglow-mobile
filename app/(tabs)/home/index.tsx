@@ -16,7 +16,7 @@ export default function TabsIndex() {
       route: "/home/skin-profile" as Route,
     },
     {
-      title: "Gợi ý chu trình chăm sóc",
+      title: "Gợi ý chu trình",
       image: require("../../../assets/images/home/skincare-routine-suggestion.png"),
       bgColor: "#FEF9C3",
       route: "/home/skincare-routine" as Route,

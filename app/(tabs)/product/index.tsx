@@ -1,19 +1,19 @@
+import { Product, productService } from "@/src/services/product.service";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   FlatList,
   Image,
+  Linking,
+  RefreshControl,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-  Linking,
 } from "react-native";
-import { productService, Product } from "@/src/services/product.services";
 
 export default function ProductScreen() {
   // State management

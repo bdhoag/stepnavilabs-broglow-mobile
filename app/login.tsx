@@ -1,4 +1,4 @@
-import { AuthService } from "@/src/services/auth.services";
+import { AuthService } from "@/src/services/auth.service";
 import { Ionicons } from "@expo/vector-icons";
 import * as AuthSession from "expo-auth-session";
 import { Href, useRouter } from "expo-router";

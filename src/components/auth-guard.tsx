@@ -1,5 +1,6 @@
-import React, { ReactNode } from "react";
-import { useAuth } from "../../src/contexts/auth-context";
+import { useRouter } from "expo-router";
+import React, { ReactNode, useEffect } from "react";
+import { useAuth } from "../contexts/auth-context";
 import LoadingScreen from "./loading-screen";
 
 interface AuthGuardProps {
@@ -9,14 +10,20 @@ interface AuthGuardProps {
 
 export default function AuthGuard({ children, fallback }: AuthGuardProps) {
   const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading || (!isAuthenticated && !fallback)) {
     return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {
-    // Return fallback instead of redirecting (let index.tsx handle redirect)
-    return fallback || <LoadingScreen />;
+    return <>{fallback}</>;
   }
 
   return <>{children}</>;

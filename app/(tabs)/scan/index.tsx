@@ -2,12 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const ScanScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("front");
+  const cameraRef = useRef<any>(null);
 
   if (!permission) {
     // Camera permissions are still loading
@@ -60,9 +61,27 @@ const ScanScreen = () => {
     }
   };
 
+  const captureAndNavigate = async () => {
+    try {
+      if (cameraRef.current) {
+        // Using the new CameraView API – takePictureAsync is the current stable method
+        const photo = await cameraRef.current.takePictureAsync();
+        if (photo?.uri) {
+          router.push({
+            pathname: "/(tabs)/chat",
+            params: { imageUri: photo.uri },
+          } as any);
+        }
+      }
+    } catch (error) {
+      console.error("Capture error: ", error);
+      Alert.alert("Lỗi", "Không thể chụp ảnh. Vui lòng thử lại!");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
         <View style={styles.overlay}>
           {/* Back Button */}
           <TouchableOpacity
@@ -89,7 +108,10 @@ const ScanScreen = () => {
               <Ionicons name="images" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.captureButton}>
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={captureAndNavigate}
+            >
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
 
