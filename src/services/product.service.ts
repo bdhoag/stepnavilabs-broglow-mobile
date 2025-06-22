@@ -53,20 +53,28 @@ export class ProductService {
 
   /**
    * Lấy tất cả sản phẩm
+   * Backend hiện trả về { data: Product[]; total: number; page: number; limit: number }
+   * nhưng vẫn giữ khả năng tương thích với response kiểu Product[] thuần.
    */
   async getAllProducts(): Promise<Product[]> {
-    const response = await apiClient.get<Product[]>(this.baseUrl);
-    return response.data;
+    const response = await apiClient.get<any>(this.baseUrl);
+    const resData = response.data;
+    if (Array.isArray(resData)) return resData;
+    if (resData && Array.isArray(resData.data)) return resData.data;
+    return [];
   }
 
   /**
    * Lấy sản phẩm theo thương hiệu
    */
   async getProductsByBrand(brand: string): Promise<Product[]> {
-    const response = await apiClient.get<Product[]>(
+    const response = await apiClient.get<any>(
       `${this.baseUrl}/brand/${encodeURIComponent(brand)}`
     );
-    return response.data;
+    const resData = response.data;
+    if (Array.isArray(resData)) return resData;
+    if (resData && Array.isArray(resData.data)) return resData.data;
+    return [];
   }
 
   /**

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -113,15 +114,11 @@ export default function RegisterScreen() {
 
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <View style={styles.logoIconContainer}>
-              <View style={styles.logoIcon}>
-                <View style={styles.logoCircle1} />
-                <View style={styles.logoCircle2} />
-                <View style={styles.logoCircle3} />
-              </View>
-            </View>
-            <Text style={styles.logoText}>BROGLOW</Text>
-            <Text style={styles.logoSubtext}>Tạo tài khoản mới</Text>
+            <Image
+              source={require("../assets/images/logo-text.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
 
           {/* Form */}
@@ -273,49 +270,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 40,
   },
-  logoIconContainer: {
-    marginBottom: 16,
-  },
-  logoIcon: {
-    width: 80,
-    height: 80,
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoCircle1: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#60A5FA",
-    opacity: 0.3,
-  },
-  logoCircle2: {
-    position: "absolute",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#3B82F6",
-    opacity: 0.6,
-  },
-  logoCircle3: {
-    position: "absolute",
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "#1D4ED8",
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#1F2937",
-    letterSpacing: 1,
-  },
-  logoSubtext: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 4,
+  logoImage: {
+    width: 220,
+    height: 120,
   },
   formContainer: {
     flex: 1,

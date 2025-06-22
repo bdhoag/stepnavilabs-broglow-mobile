@@ -1,30 +1,27 @@
 import { AIService } from "@/src/services/AI.service";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useReducer, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
-  Easing,
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
-  Modal,
+  Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
-  TextStyle,
-  View,
-  ViewStyle,
-  Platform,
   TouchableWithoutFeedback,
-  Keyboard,
+  View,
 } from "react-native";
-import Markdown from "react-native-markdown-display";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import AssistantMessage from "../../../src/components/chat/AssistantMessage";
+import AttachmentMenu from "../../../src/components/chat/AttachmentMenu";
+import TypingIndicator from "../../../src/components/chat/TypingIndicator";
+import UserMessage from "../../../src/components/chat/UserMessage";
 
 interface Thread {
   _id: string;
@@ -41,362 +38,171 @@ interface Message {
   isTyping?: boolean;
 }
 
-const UserMessage = ({ text, images }: { text: string; images?: string[] }) => {
-  return (
-    <View style={styles.messageContainer}>
-      <Text style={styles.senderText}>Bạn</Text>
-      {text.length > 0 && (
-        <View style={styles.messageBubble}>
-          <Text style={styles.messageText}>{text}</Text>
-        </View>
-      )}
-      {images && images.length > 0 && (
-        <View style={[styles.imageGrid, { marginTop: 8 }]}>
-          {images.map((url, index) => (
-            <View key={index} style={styles.imageContainer}>
-              <Image
-                source={{ uri: url }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            </View>
-          ))}
-        </View>
-      )}
-    </View>
-  );
+// State interface
+interface ChatState {
+  selectedTab: "ai" | "expert";
+  showDropdown: boolean;
+  threads: Thread[];
+  selectedThread: Thread | null;
+  isNewConversation: boolean;
+  loading: boolean;
+  messages: Message[];
+  input: string;
+  sending: boolean;
+  showAttachmentMenu: boolean;
+  attachedImages: { uri: string }[];
+}
+
+// Action types
+type ChatAction =
+  | { type: "SET_SELECTED_TAB"; payload: "ai" | "expert" }
+  | { type: "SET_SHOW_DROPDOWN"; payload: boolean }
+  | { type: "SET_THREADS"; payload: Thread[] }
+  | { type: "SET_SELECTED_THREAD"; payload: Thread | null }
+  | { type: "SET_IS_NEW_CONVERSATION"; payload: boolean }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_MESSAGES"; payload: Message[] }
+  | { type: "ADD_MESSAGE"; payload: Message }
+  | { type: "UPDATE_MESSAGE"; payload: { id: string; content: string } }
+  | { type: "REMOVE_MESSAGE"; payload: string }
+  | {
+      type: "UPDATE_OR_ADD_ASSISTANT_MESSAGE";
+      payload: { id: string; content: string };
+    }
+  | { type: "SET_INPUT"; payload: string }
+  | { type: "SET_SENDING"; payload: boolean }
+  | { type: "SET_SHOW_ATTACHMENT_MENU"; payload: boolean }
+  | { type: "SET_ATTACHED_IMAGES"; payload: { uri: string }[] }
+  | { type: "ADD_ATTACHED_IMAGE"; payload: { uri: string } }
+  | { type: "REMOVE_ATTACHED_IMAGE"; payload: number }
+  | { type: "TOGGLE_DROPDOWN" }
+  | { type: "RESET_CONVERSATION" };
+
+// Initial state
+const initialState: ChatState = {
+  selectedTab: "ai",
+  showDropdown: false,
+  threads: [],
+  selectedThread: null,
+  isNewConversation: false,
+  loading: false,
+  messages: [],
+  input: "",
+  sending: false,
+  showAttachmentMenu: false,
+  attachedImages: [],
 };
 
-const AssistantMessage = ({
-  text,
-  images,
-}: {
-  text: string;
-  images?: string[];
-}) => {
-  return (
-    <View style={styles.assistantContainer}>
-      <View style={styles.assistantBubble}>
-        <Markdown style={markdownStyles}>{text}</Markdown>
-        {images && images.length > 0 && (
-          <View style={styles.imageGrid}>
-            {images.map((url, index) => (
-              <View key={index} style={styles.imageContainer}>
-                <Image
-                  source={{ uri: url }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-    </View>
-  );
-};
-
-const TypingIndicator = () => {
-  const [dot1] = useState(new Animated.Value(0));
-  const [dot2] = useState(new Animated.Value(0));
-  const [dot3] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    const animate = (value: Animated.Value, delay: number) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(value, {
-            toValue: 1,
-            duration: 500,
-            easing: Easing.ease,
-            useNativeDriver: true,
-          }),
-          Animated.timing(value, {
-            toValue: 0,
-            duration: 500,
-            easing: Easing.ease,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    };
-
-    animate(dot1, 0);
-    animate(dot2, 200);
-    animate(dot3, 400);
-  }, []);
-
-  return (
-    <View style={styles.typingContainer}>
-      <View style={styles.typingHeader}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../../../assets/images/icon.png")}
-            style={styles.logoIcon}
-            resizeMode="contain"
-          />
-        </View>
-        <Text style={styles.aiText}>BroGlow AI</Text>
-      </View>
-      <View style={styles.typingBubble}>
-        <View style={styles.dotsContainer}>
-          <Animated.View style={[styles.dot, { opacity: dot1 }]} />
-          <Animated.View style={[styles.dot, { opacity: dot2 }]} />
-          <Animated.View style={[styles.dot, { opacity: dot3 }]} />
-        </View>
-      </View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  messageContainer: {
-    marginBottom: 24,
-    alignItems: "flex-end",
-  },
-  senderText: {
-    fontSize: 12,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  messageBubble: {
-    backgroundColor: "#E5E7EB", // bg-orange-light
-    padding: 12,
-    borderRadius: 16,
-    borderTopRightRadius: 16,
-    maxWidth: "90%",
-  },
-  messageText: {
-    fontSize: 14,
-    color: "#000000",
-  },
-  imageGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 8,
-    width: "auto",
-  },
-  imageContainer: {
-    width: 80,
-    height: 80,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 8,
-  },
-  assistantContainer: {
-    marginBottom: 24,
-    width: "100%",
-  },
-  assistantBubble: {
-    padding: 16,
-    width: "100%",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-  },
-  attachmentMenu: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 16,
-  },
-  attachmentOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 8,
-  },
-  attachmentText: {
-    marginLeft: 12,
-    fontSize: 16,
-    color: "#374151",
-  },
-  typingContainer: {
-    marginBottom: 24,
-  },
-  typingHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  logoContainer: {
-    width: 24,
-    height: 24,
-    padding: 6,
-    borderRadius: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-  },
-  logoIcon: {
-    width: "100%",
-    height: "100%",
-  },
-  aiText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  typingBubble: {
-    padding: 12,
-    backgroundColor: "white",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    alignSelf: "flex-start",
-  },
-  dotsContainer: {
-    flexDirection: "row",
-    gap: 4,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#374151",
-    marginHorizontal: 2,
-  },
-});
-
-type MarkdownStyle = {
-  [key: string]: TextStyle | ViewStyle;
-};
-
-const markdownStyles: MarkdownStyle = {
-  body: {
-    color: "#374151",
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  paragraph: {
-    marginVertical: 8,
-  },
-  link: {
-    color: "#02AAEB",
-  },
-  code_inline: {
-    backgroundColor: "#F3F4F6",
-    padding: 4,
-    borderRadius: 4,
-    fontFamily: "monospace",
-  },
-  code_block: {
-    backgroundColor: "#F3F4F6",
-    padding: 12,
-    borderRadius: 8,
-    fontFamily: "monospace",
-    marginVertical: 8,
-  },
-  bullet_list: {
-    marginVertical: 8,
-  },
-  ordered_list: {
-    marginVertical: 8,
-  },
-  bullet_list_icon: {
-    marginRight: 8,
-  },
-  ordered_list_icon: {
-    marginRight: 8,
-  },
-  heading1: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginVertical: 12,
-    color: "#111827",
-  },
-  heading2: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginVertical: 10,
-    color: "#111827",
-  },
-  heading3: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginVertical: 8,
-    color: "#111827",
-  },
-  strong: {
-    fontWeight: "700",
-  },
-  em: {
-    fontStyle: "italic",
-  },
-  blockquote: {
-    borderLeftWidth: 4,
-    borderLeftColor: "#E5E7EB",
-    paddingLeft: 16,
-    marginVertical: 8,
-    fontStyle: "italic",
-  },
-};
-
-const AttachmentMenu = ({
-  visible,
-  onClose,
-  onSelect,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  onSelect: (type: "image" | "voice") => void;
-}) => {
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <View style={styles.attachmentMenu}>
-          <Pressable
-            style={styles.attachmentOption}
-            onPress={() => {
-              onSelect("image");
-              onClose();
-            }}
-          >
-            <MaterialIcons name="image" size={24} color="#374151" />
-            <Text style={styles.attachmentText}>Chọn hình ảnh</Text>
-          </Pressable>
-          <Pressable
-            style={styles.attachmentOption}
-            onPress={() => {
-              onSelect("voice");
-              onClose();
-            }}
-          >
-            <MaterialIcons name="mic" size={24} color="#374151" />
-            <Text style={styles.attachmentText}>Tin nhắn thoại</Text>
-          </Pressable>
-        </View>
-      </Pressable>
-    </Modal>
-  );
-};
+// Reducer function
+function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  switch (action.type) {
+    case "SET_SELECTED_TAB":
+      return { ...state, selectedTab: action.payload };
+    case "SET_SHOW_DROPDOWN":
+      return { ...state, showDropdown: action.payload };
+    case "SET_THREADS":
+      return { ...state, threads: action.payload };
+    case "SET_SELECTED_THREAD":
+      return { ...state, selectedThread: action.payload };
+    case "SET_IS_NEW_CONVERSATION":
+      return { ...state, isNewConversation: action.payload };
+    case "SET_LOADING":
+      return { ...state, loading: action.payload };
+    case "SET_MESSAGES":
+      return { ...state, messages: action.payload };
+    case "ADD_MESSAGE":
+      return { ...state, messages: [action.payload, ...state.messages] };
+    case "UPDATE_MESSAGE":
+      return {
+        ...state,
+        messages: state.messages.map((msg) =>
+          msg.id === action.payload.id
+            ? { ...msg, content: action.payload.content }
+            : msg
+        ),
+      };
+    case "REMOVE_MESSAGE":
+      return {
+        ...state,
+        messages: state.messages.filter((msg) => msg.id !== action.payload),
+      };
+    case "UPDATE_OR_ADD_ASSISTANT_MESSAGE":
+      const filtered = state.messages.filter(
+        (m) => m.id !== "typing-indicator"
+      );
+      const exists = filtered.find((m) => m.id === action.payload.id);
+      if (exists) {
+        return {
+          ...state,
+          messages: filtered.map((m) =>
+            m.id === action.payload.id
+              ? { ...m, content: action.payload.content }
+              : m
+          ),
+        };
+      } else {
+        const newMsg: Message = {
+          id: action.payload.id,
+          content: action.payload.content,
+          role: "assistant",
+        };
+        return {
+          ...state,
+          messages: [newMsg, ...filtered],
+        };
+      }
+    case "SET_INPUT":
+      return { ...state, input: action.payload };
+    case "SET_SENDING":
+      return { ...state, sending: action.payload };
+    case "SET_SHOW_ATTACHMENT_MENU":
+      return { ...state, showAttachmentMenu: action.payload };
+    case "SET_ATTACHED_IMAGES":
+      return { ...state, attachedImages: action.payload };
+    case "ADD_ATTACHED_IMAGE":
+      return {
+        ...state,
+        attachedImages: [...state.attachedImages, action.payload],
+      };
+    case "REMOVE_ATTACHED_IMAGE":
+      return {
+        ...state,
+        attachedImages: state.attachedImages.filter(
+          (_, i) => i !== action.payload
+        ),
+      };
+    case "TOGGLE_DROPDOWN":
+      return { ...state, showDropdown: !state.showDropdown };
+    case "RESET_CONVERSATION":
+      return {
+        ...state,
+        selectedThread: null,
+        messages: [],
+        isNewConversation: true,
+        showDropdown: false,
+      };
+    default:
+      return state;
+  }
+}
 
 export default function ChatScreen() {
-  const [selectedTab, setSelectedTab] = useState<"ai" | "expert">("ai");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
-  const [isNewConversation, setIsNewConversation] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
-  const [attachedImages, setAttachedImages] = useState<{ uri: string }[]>([]);
+  const [state, dispatch] = useReducer(chatReducer, initialState);
+  const flatListRef = useRef<FlatList>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const {
+    selectedTab,
+    showDropdown,
+    threads,
+    selectedThread,
+    isNewConversation,
+    loading,
+    messages,
+    input,
+    sending,
+    showAttachmentMenu,
+    attachedImages,
+  } = state;
 
   // Get params from navigation (e.g., when coming from Scan screen)
   const params = useLocalSearchParams<{ imageUri?: string }>();
@@ -404,32 +210,54 @@ export default function ChatScreen() {
   useEffect(() => {
     const uriParam = params?.imageUri;
     if (uriParam && typeof uriParam === "string") {
-      // If an image URI is provided via navigation, attach it and send immediately
-      setAttachedImages([{ uri: uriParam }]);
+      // Decode in case the URI is percent-encoded
+      const decodedUri = decodeURIComponent(uriParam);
 
-      // Delay send to ensure state is updated
-      setTimeout(() => {
-        handleSend();
-      }, 0);
+      // Attach the captured image (do NOT auto-send)
+      dispatch({ type: "SET_ATTACHED_IMAGES", payload: [{ uri: decodedUri }] });
+
+      // Set up new conversation state if no thread is selected
+      if (!selectedThread) {
+        dispatch({ type: "SET_IS_NEW_CONVERSATION", payload: true });
+      }
     }
   }, [params?.imageUri]);
 
   useEffect(() => {
     const loadThreads = async () => {
-      setLoading(true);
+      dispatch({ type: "SET_LOADING", payload: true });
       try {
         const res = await AIService.listThreadsByUser();
         if (res?.data && Array.isArray(res.data)) {
-          setThreads(res.data);
+          dispatch({ type: "SET_THREADS", payload: res.data });
         }
       } catch (error) {
         console.error("Failed to load threads:", error);
       } finally {
-        setLoading(false);
+        dispatch({ type: "SET_LOADING", payload: false });
       }
     };
     loadThreads();
   }, []);
+
+  // Auto scroll (to bottom, which is offset 0 on inverted list) only if the
+  // user is already viewing the latest messages. This prevents the list from
+  // hijacking the scroll position while the user is browsing older content.
+  useEffect(() => {
+    if (isAtBottom && messages.length > 0 && flatListRef.current) {
+      // Small delay to ensure the message is rendered before scrolling
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      }, 100);
+    }
+  }, [messages.length, isAtBottom]);
+
+  // Track whether the user is currently at the bottom (offset 0 in inverted list)
+  const handleScroll = (e: any) => {
+    const offsetY = e.nativeEvent.contentOffset.y;
+    // When inverted, offset 0 means bottom; apply small threshold (<=10)
+    setIsAtBottom(offsetY <= 10);
+  };
 
   const formatAPIMessages = async (apiMessages: any[]): Promise<Message[]> => {
     const formatted: Message[] = [];
@@ -470,36 +298,36 @@ export default function ChatScreen() {
   };
 
   const fetchMessagesForThread = async (threadId: string) => {
-    setLoading(true);
+    dispatch({ type: "SET_LOADING", payload: true });
     try {
       const res = await AIService.listMessagesByThread(threadId);
       const data = res?.data?.data || [];
       const formatted = await formatAPIMessages(data);
-      setMessages(formatted);
+      dispatch({ type: "SET_MESSAGES", payload: formatted });
     } catch (error) {
       console.error("Failed to fetch messages:", error);
     } finally {
-      setLoading(false);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 
   const handleThreadSelect = (thread: Thread) => {
-    setSelectedThread(thread);
-    setShowDropdown(false);
+    dispatch({ type: "SET_SELECTED_THREAD", payload: thread });
+    dispatch({ type: "SET_SHOW_DROPDOWN", payload: false });
     fetchMessagesForThread(thread._id);
   };
 
   const createNewThread = async () => {
     // Do NOT call API yet, just reset UI
-    setSelectedThread(null);
-    setMessages([]);
-    setIsNewConversation(true);
-    setShowDropdown(false);
+    dispatch({ type: "SET_SELECTED_THREAD", payload: null });
+    dispatch({ type: "SET_MESSAGES", payload: [] });
+    dispatch({ type: "SET_IS_NEW_CONVERSATION", payload: true });
+    dispatch({ type: "SET_SHOW_DROPDOWN", payload: false });
   };
 
   const toggleDropdown = () => {
     if (selectedTab === "ai") {
-      setShowDropdown(!showDropdown);
+      dispatch({ type: "SET_SHOW_DROPDOWN", payload: !showDropdown });
     }
   };
 
@@ -513,7 +341,7 @@ export default function ChatScreen() {
   const handleSend = async () => {
     if (sending || (!input.trim() && attachedImages.length === 0)) return;
 
-    setSending(true);
+    dispatch({ type: "SET_SENDING", payload: true });
 
     let currentThread = selectedThread;
     if (!currentThread) {
@@ -526,12 +354,15 @@ export default function ChatScreen() {
           description: res.description,
           createdAt: res.createdAt || new Date().toISOString(),
         };
-        setThreads((prev) => [currentThread!, ...prev]);
-        setSelectedThread(currentThread);
-        setIsNewConversation(false);
+        dispatch({
+          type: "SET_THREADS",
+          payload: [currentThread!, ...threads],
+        });
+        dispatch({ type: "SET_SELECTED_THREAD", payload: currentThread });
+        dispatch({ type: "SET_IS_NEW_CONVERSATION", payload: false });
       } catch (err) {
         console.error("Error creating thread:", err);
-        setSending(false);
+        dispatch({ type: "SET_SENDING", payload: false });
         return;
       }
     }
@@ -543,7 +374,7 @@ export default function ChatScreen() {
       images: attachedImages.map((i) => i.uri),
     };
     const originalInput = input;
-    setInput("");
+    dispatch({ type: "SET_INPUT", payload: "" });
 
     const typingMessage: Message = {
       id: "typing-indicator",
@@ -551,7 +382,10 @@ export default function ChatScreen() {
       role: "assistant",
       isTyping: true,
     };
-    setMessages((prev) => [typingMessage, userMessage, ...prev]);
+    dispatch({
+      type: "SET_MESSAGES",
+      payload: [typingMessage, userMessage, ...messages],
+    });
 
     try {
       let contentPayload: any[] = [];
@@ -599,23 +433,9 @@ export default function ChatScreen() {
       const assistantMsgId = `assistant-${Date.now()}`;
 
       const updateAssistant = (text: string) => {
-        setMessages((prev) => {
-          const filtered = prev.filter((m) => m.id !== "typing-indicator");
-          const exists = filtered.find((m) => m.id === assistantMsgId);
-          if (exists) {
-            return filtered.map((m) =>
-              m.id === assistantMsgId
-                ? { ...m, content: formatMarkdown(text) }
-                : m
-            );
-          } else {
-            const newMsg: Message = {
-              id: assistantMsgId,
-              content: formatMarkdown(text),
-              role: "assistant",
-            };
-            return [newMsg, ...filtered];
-          }
+        dispatch({
+          type: "UPDATE_OR_ADD_ASSISTANT_MESSAGE",
+          payload: { id: assistantMsgId, content: formatMarkdown(text) },
         });
       };
 
@@ -661,7 +481,9 @@ export default function ChatScreen() {
                 });
                 updateAssistant(assistantText);
               }
-            } catch (e) {}
+            } catch (e) {
+              console.error("Error parsing JSON:", e);
+            }
           }
         }
       } else {
@@ -675,10 +497,13 @@ export default function ChatScreen() {
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      setMessages((prev) => prev.filter((m) => m.id !== "typing-indicator"));
+      dispatch({
+        type: "REMOVE_MESSAGE",
+        payload: "typing-indicator",
+      });
     } finally {
-      setSending(false);
-      setAttachedImages([]);
+      dispatch({ type: "SET_SENDING", payload: false });
+      dispatch({ type: "SET_ATTACHED_IMAGES", payload: [] });
     }
   };
 
@@ -701,7 +526,10 @@ export default function ChatScreen() {
 
         if (!result.canceled) {
           const selected = result.assets.map((a) => ({ uri: a.uri }));
-          setAttachedImages((prev) => [...prev, ...selected]);
+          dispatch({
+            type: "SET_ATTACHED_IMAGES",
+            payload: [...attachedImages, ...selected],
+          });
         }
       } catch (error) {
         console.error("Image picker error:", error);
@@ -750,7 +578,11 @@ export default function ChatScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+        accessible={false}
+        style={{ flex: 1 }}
+      >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row relative">
             <View className="flex-row bg-[#02AAEB] pt-1 w-full h-12">
@@ -761,7 +593,9 @@ export default function ChatScreen() {
                     : "bg-[#02AAEB]"
                 } `}
                 style={{ zIndex: selectedTab === "ai" ? 2 : 1 }}
-                onPress={() => setSelectedTab("ai")}
+                onPress={() =>
+                  dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
+                }
               >
                 <Text
                   className={`text-base font-semibold max-w-[150px] ${
@@ -791,7 +625,9 @@ export default function ChatScreen() {
                     : "bg-[#02AAEB]"
                 } flex-row`}
                 style={{ zIndex: selectedTab === "expert" ? 2 : 1 }}
-                onPress={() => setSelectedTab("expert")}
+                onPress={() =>
+                  dispatch({ type: "SET_SELECTED_TAB", payload: "expert" })
+                }
               >
                 <Text
                   className={`text-base font-semibold ${
@@ -870,19 +706,26 @@ export default function ChatScreen() {
           </View>
 
           {selectedTab === "ai" && selectedThread ? (
-            <View className="flex-1">
-              <FlatList
-                data={messages}
-                keyExtractor={(msg, idx) => msg.id || idx.toString()}
-                renderItem={renderMessage}
-                contentContainerStyle={{
-                  padding: 16,
-                  flexGrow: 1,
-                  justifyContent: "flex-end",
-                }}
-                inverted
-              />
-            </View>
+            <FlatList
+              data={messages}
+              keyExtractor={(msg, idx) => msg.id || idx.toString()}
+              renderItem={renderMessage}
+              style={{ flex: 1 }}
+              contentContainerStyle={{
+                padding: 16,
+                flexGrow: messages.length === 0 ? 1 : 0,
+              }}
+              keyboardShouldPersistTaps="handled"
+              scrollEventThrottle={16}
+              inverted
+              showsVerticalScrollIndicator={false}
+              removeClippedSubviews={false}
+              maintainVisibleContentPosition={{
+                minIndexForVisible: 0,
+                autoscrollToTopThreshold: 10,
+              }}
+              onScroll={handleScroll}
+            />
           ) : (
             <View className="flex-1 items-center justify-center">
               <Image
@@ -913,9 +756,7 @@ export default function ChatScreen() {
                   />
                   <Pressable
                     onPress={() =>
-                      setAttachedImages((prev) =>
-                        prev.filter((_, i) => i !== idx)
-                      )
+                      dispatch({ type: "REMOVE_ATTACHED_IMAGE", payload: idx })
                     }
                     style={{
                       position: "absolute",
@@ -948,7 +789,9 @@ export default function ChatScreen() {
           <View className="flex-row items-center px-2 bg-white pb-2">
             <Pressable
               className="p-2"
-              onPress={() => setShowAttachmentMenu(true)}
+              onPress={() =>
+                dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: true })
+              }
             >
               <Feather name="plus" size={24} color="#02AAEB" />
             </Pressable>
@@ -958,7 +801,9 @@ export default function ChatScreen() {
                 placeholder="Gửi tin nhắn..."
                 placeholderTextColor="#B0B0B0"
                 value={input}
-                onChangeText={setInput}
+                onChangeText={(text) =>
+                  dispatch({ type: "SET_INPUT", payload: text })
+                }
                 editable={!sending}
               />
             </View>
@@ -976,7 +821,9 @@ export default function ChatScreen() {
 
             <AttachmentMenu
               visible={showAttachmentMenu}
-              onClose={() => setShowAttachmentMenu(false)}
+              onClose={() =>
+                dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: false })
+              }
               onSelect={handleAttachmentSelect}
             />
           </View>
