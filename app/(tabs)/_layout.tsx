@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import { Tabs, usePathname } from "expo-router";
-import { Image, Text, View } from "react-native";
+import { router, Tabs, usePathname } from "expo-router";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
 import { useAuth } from "../../src/contexts/auth-context";
@@ -30,16 +30,19 @@ export default function TabsLayout() {
           ) && (
             <SafeAreaView className="">
               {/* Custom Header - Ẩn khi ở tab chat hoặc scan */}
-              <View className="flex-row justify-between items-center px-4 py-3">
+              <View className="flex-row items-center justify-between px-4 py-3">
                 <Text className="text-lg font-bold">Hello {username}</Text>
                 <View className="flex-row items-center gap-2.5">
                   <Feather name="bell" size={20} color="#333" />
-                  <View className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden">
+                  <TouchableOpacity
+                    onPress={() => router.push("/profile")}
+                    className="w-10 h-10 overflow-hidden bg-gray-300 rounded-full"
+                  >
                     <Image
                       source={{ uri: "https://via.placeholder.com/150" }}
                       className="w-full h-full"
                     />
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
             </SafeAreaView>
