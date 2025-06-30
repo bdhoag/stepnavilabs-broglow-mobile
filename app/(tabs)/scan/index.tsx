@@ -1,14 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useState, useRef } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const ScanScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("front");
   const cameraRef = useRef<any>(null);
+  const galleryAdd = require("../../../assets/images/gallery-add.png")
 
   if (!permission) {
     // Camera permissions are still loading
@@ -88,7 +89,7 @@ const ScanScreen = () => {
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Ionicons name="chevron-back" size={24} color="white" />
+            <Ionicons name="close" size={24} color="white" />
           </TouchableOpacity>
 
           {/* Camera Frame */}
@@ -105,7 +106,8 @@ const ScanScreen = () => {
               style={styles.galleryButton}
               onPress={pickImageFromGallery}
             >
-              <Ionicons name="images" size={24} color="white" />
+              <Image source={galleryAdd} style={styles.galleryButtonImage} />
+              <Text style={styles.buttonText}>Chọn ảnh</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -119,7 +121,8 @@ const ScanScreen = () => {
               style={styles.flipButton}
               onPress={toggleCameraFacing}
             >
-              <Ionicons name="camera-reverse" size={24} color="white" />
+              <MaterialIcons name="cameraswitch" size={36} color="white" />
+              <Text style={styles.buttonText}>Lật</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -174,21 +177,21 @@ const styles = StyleSheet.create({
     left: 20,
     zIndex: 3,
     padding: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    // backgroundColor: "rgba(0, 0, 0, 0.3)",
     borderRadius: 25,
   },
   frame: {
     flex: 1,
-    marginTop: 120, // Increased top margin to avoid Back Button
-    marginBottom: 120,
+    marginTop: 160, // Increased top margin to avoid Back Button
+    marginBottom: 160,
     marginHorizontal: 40,
     borderRadius: 20,
     position: "relative",
   },
   corner: {
     position: "absolute",
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
     borderColor: "white",
     borderWidth: 3,
   },
@@ -197,28 +200,28 @@ const styles = StyleSheet.create({
     left: 0,
     borderRightWidth: 0,
     borderBottomWidth: 0,
-    borderTopLeftRadius: 20,
+    borderTopLeftRadius: 25,
   },
   topRight: {
     top: 0,
     right: 0,
     borderLeftWidth: 0,
     borderBottomWidth: 0,
-    borderTopRightRadius: 20,
+    borderTopRightRadius: 25,
   },
   bottomLeft: {
     bottom: 0,
     left: 0,
     borderRightWidth: 0,
     borderTopWidth: 0,
-    borderBottomLeftRadius: 20,
+    borderBottomLeftRadius: 25,
   },
   bottomRight: {
     bottom: 0,
     right: 0,
     borderLeftWidth: 0,
     borderTopWidth: 0,
-    borderBottomRightRadius: 20,
+    borderBottomRightRadius: 25,
   },
   bottomControls: {
     flexDirection: "row",
@@ -227,7 +230,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     paddingHorizontal: 30,
     marginBottom: 50,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    // backgroundColor: "rgba(0, 0, 0, 0.3)",
     borderRadius: 25,
     marginHorizontal: 20,
   },
@@ -238,29 +241,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.3)",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: "white",
+    // borderWidth: 3,
+    // borderColor: "white",
   },
   captureButtonInner: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: "white",
   },
   galleryButton: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     borderRadius: 25,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    // backgroundColor: "rgba(255, 255, 255, 0.3)",
     justifyContent: "center",
     alignItems: "center",
+    gap: 6,
+  },
+  galleryButtonImage: {
+    width: 32,
+    height: 32,
+    tintColor: "white",
   },
   flipButton: {
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     borderRadius: 25,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    // backgroundColor: "rgba(255, 255, 255, 0.3)",
     justifyContent: "center",
     alignItems: "center",
+    gap: 6,
   },
+  buttonText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "500",
+  }
 });
