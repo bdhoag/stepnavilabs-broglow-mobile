@@ -5,7 +5,7 @@ import { HomeIcon, HomeOutlineIcon } from "@/src/components/svg/home-icon";
 import ScannerIcon from "@/src/components/svg/scanner-icon";
 import { ShopIcon, ShopOutlineIcon } from "@/src/components/svg/shop-icon";
 import { Feather } from "@expo/vector-icons";
-import { Tabs, usePathname } from "expo-router";
+import { router, Tabs, usePathname } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
@@ -66,7 +66,6 @@ export default function TabsLayout ()
                       </Text>
                     </TouchableOpacity>
                     <Feather name="bell" size={ 20 } color="#333" />
-
                   </View>
                 </View>
               </SafeAreaView>

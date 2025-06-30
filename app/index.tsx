@@ -19,8 +19,8 @@ export default function IndexScreen() {
         console.log("Redirecting to home...");
         router.replace("/(tabs)/home" as Href);
       } else {
-        console.log("Redirecting to login...");
-        router.replace("/login" as Href);
+        console.log("Redirecting to onboarding...");
+        router.replace("/onboarding" as Href);
       }
     }
   }, [isAuthenticated, isLoading, router]);
