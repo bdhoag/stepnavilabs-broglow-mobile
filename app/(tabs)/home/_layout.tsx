@@ -17,6 +17,8 @@ export default function HomeLayout() {
         name="skin-profile/index"
         options={{
           title: "Xác định hồ sơ da",
+          headerShown: false,
+          presentation: 'fullScreenModal', // Ẩn tab bar
         }}
       />
       <Stack.Screen

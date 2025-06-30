@@ -1,16 +1,25 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Dimensions,
   FlatList,
+  Modal,
   SafeAreaView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
+const { width, height } = Dimensions.get("window");
+
 export interface QuizQuestion {
   id: number;
   question: string;
+  subtitle?: string;
   options: { id: string; text: string }[];
   multiSelect: boolean;
 }
@@ -19,9 +28,11 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
     question: "Loại da của bạn là gì?",
+    subtitle: "Hãy trả lời những câu hỏi sau",
     options: [
       { id: "oily", text: "Da dầu" },
       { id: "dry", text: "Da khô" },
+      { id: "combination", text: "Da hỗn hợp" },
       { id: "sensitive", text: "Da nhạy cảm" },
     ],
     multiSelect: false,
@@ -29,6 +40,7 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 2,
     question: "Bạn có gặp vấn đề nào sau đây không?",
+    subtitle: "Có thể chọn nhiều đáp án",
     options: [
       {
         id: "irritation",
@@ -50,6 +62,7 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 3,
     question: "Bạn có bị dị ứng với thành phần mỹ phẩm nào không?",
+    subtitle: "Có thể chọn nhiều đáp án",
     options: [
       { id: "alcohol", text: "Cồn (Alcohol)" },
       { id: "fragrance", text: "Hương liệu (Fragrance, Parfum)" },
@@ -62,6 +75,7 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 4,
     question: "Bạn có đang sử dụng các sản phẩm nào sau đây không?",
+    subtitle: "Có thể chọn nhiều đáp án",
     options: [
       { id: "cleanser", text: "Sữa rửa mặt" },
       { id: "toner", text: "Toner/Nước cân bằng" },
@@ -78,6 +92,7 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 5,
     question: "Bạn có thói quen nào có thể ảnh hưởng đến làn da không?",
+    subtitle: "Có thể chọn nhiều đáp án",
     options: [
       { id: "smoking", text: "Hút thuốc lá" },
       { id: "alcohol", text: "Uống rượu bia thường xuyên" },
@@ -93,6 +108,7 @@ export const quizQuestions: QuizQuestion[] = [
   {
     id: 6,
     question: "Bạn có đang gặp tình trạng da nào sau đây không?",
+    subtitle: "Có thể chọn nhiều đáp án",
     options: [
       { id: "dark_spots", text: "Da có nhiều vết thâm do mụn cũ" },
       { id: "brown_spots", text: "Da xuất hiện đốm nâu/tàn nhang" },
@@ -109,8 +125,32 @@ export const quizQuestions: QuizQuestion[] = [
 const QuizScreen = () => {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string[] }>({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const question = quizQuestions[current];
   const router = useRouter();
+  const navigation = useNavigation();
+
+  // Hide tab bar when this screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      // Hide tab bar
+      const parent = navigation.getParent();
+      if (parent) {
+        parent.setOptions({
+          tabBarStyle: { display: "none" },
+        });
+      }
+
+      return () => {
+        // Show tab bar again when leaving this screen
+        if (parent) {
+          parent.setOptions({
+            tabBarStyle: { display: "flex" },
+          });
+        }
+      };
+    }, [navigation])
+  );
 
   const handleSelect = (optionId: string) => {
     setAnswers((prev) => {
@@ -128,77 +168,353 @@ const QuizScreen = () => {
   };
 
   const handleNext = () => {
-    if (current < quizQuestions.length - 1) setCurrent(current + 1);
-    else router.replace("/(tabs)/chat");
+    if (current < quizQuestions.length - 1) {
+      setCurrent(current + 1);
+    } else {
+      // Show success modal when completing the quiz
+      setShowSuccessModal(true);
+    }
   };
+
   const handlePrev = () => {
     if (current > 0) setCurrent(current - 1);
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleModalOK = () => {
+    setShowSuccessModal(false);
+    router.replace("/(tabs)/chat");
+  };
+
   const selectedOptions = answers[question.id] || [];
 
-  return (
-    <SafeAreaView className="flex-1 items-center px-4 pb-5">
-      <View className="w-full h-2 bg-white rounded mb-6">
-        <View
-          className="h-2 bg-[#82E9C5] rounded"
-          style={{
-            width: `${(current / quizQuestions.length) * 100}%`,
-          }}
-        />
-      </View>
-      <Text className="text-2xl font-bold text-[#02AAEB] mb-6 text-center">
-        {question.question}
-      </Text>
-      <FlatList
-        data={question.options}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const selected = (answers[question.id] || []).includes(item.id);
-          return (
-            <TouchableOpacity
-              className={`p-4 rounded-2xl border-2 mb-4 items-center ${
-                selected
-                  ? "bg-[#02AAEB] border-[#02AAEB]"
-                  : "bg-white border-[#02AAEB]"
+  const ProgressBar = () => {
+    return (
+      <View className="flex-row items-center justify-center px-4 mb-8">
+        {quizQuestions.map((_, index) => (
+          <React.Fragment key={index}>
+            <View
+              className={`h-1 flex-1 rounded-full ${
+                index <= current ? "bg-[#4A90E2]" : "bg-gray-200"
               }`}
-              onPress={() => handleSelect(item.id)}
-              activeOpacity={0.8}
-            >
-              <Text
-                className={`text-lg font-semibold ${
-                  selected ? "text-white" : "text-[#02AAEB]"
-                }`}
-              >
-                {item.text}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
-        style={{ width: "100%" }}
-      />
-      <View className="flex-row justify-between w-full mt-6">
-        <TouchableOpacity
-          onPress={handlePrev}
-          disabled={current === 0}
-          className={`flex-1 p-3 bg-[#1584F2] rounded-xl mx-2 items-center ${
-            current === 0 ? "opacity-50" : ""
-          }`}
-        >
-          <Text className="text-white font-bold text-base">Quay lại</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleNext}
-          disabled={selectedOptions.length === 0}
-          className={`flex-1 p-3 bg-[#1584F2] rounded-xl mx-2 items-center ${
-            selectedOptions.length === 0 ? "opacity-50" : ""
-          }`}
-        >
-          <Text className="text-white font-bold text-base">
-            {current === quizQuestions.length - 1 ? "Hoàn thành" : "Tiếp tục"}
-          </Text>
-        </TouchableOpacity>
+            />
+            {index < quizQuestions.length - 1 && <View className="w-2" />}
+          </React.Fragment>
+        ))}
       </View>
+    );
+  };
+
+  const OptionItem = ({ item }: { item: { id: string; text: string } }) => {
+    const isSelected = selectedOptions.includes(item.id);
+
+    const content = (
+      <View
+        className={`flex-row items-center justify-between py-3 px-4 rounded-2xl ${
+          isSelected ? "" : "bg-white border border-gray-200"
+        }`}
+      >
+        <Text
+          className={`flex-1 text-base leading-5 ${
+            isSelected ? "text-white" : "text-gray-800"
+          }`}
+        >
+          {item.text}
+        </Text>
+        {isSelected && (
+          <View className="ml-3">
+            <Ionicons name="checkmark" size={20} color="#fff" />
+          </View>
+        )}
+      </View>
+    );
+
+    return (
+      <TouchableOpacity
+        className="self-center w-11/12 mb-3 overflow-hidden rounded-2xl"
+        onPress={() => handleSelect(item.id)}
+        activeOpacity={0.7}
+      >
+        {isSelected ? (
+          <LinearGradient
+            colors={["#3eaef4", "#1e90ff"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ borderRadius: 16 }}
+          >
+            {content}
+          </LinearGradient>
+        ) : (
+          content
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const SuccessModal = () => (
+    <Modal
+      visible={showSuccessModal}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => {}}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 50,
+            paddingHorizontal: 32,
+            paddingTop: 32,
+            paddingBottom: 16,
+            width: width * 0.8,
+            minHeight: 300,
+            alignItems: "center",
+            justifyContent: "space-between",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+        >
+          {/* Decorative dots */}
+          <View style={{ position: "absolute", top: 40, left: 80 }}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 20,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", top: 30, right: 80 }}>
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 10,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", top: 20, left: 150 }}>
+            <View
+              style={{
+                width: 4,
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", top: 90, right: 100 }}>
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 3,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", bottom: 80, left: 60 }}>
+            <View
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: 2.5,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", bottom: 130, right: 50 }}>
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 3.5,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", bottom: 150, left: 120 }}>
+            <View
+              style={{
+                width: 4,
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+          <View style={{ position: "absolute", top: 150, right: 140 }}>
+            <View
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: 2.5,
+                backgroundColor: "#4A90E2",
+              }}
+            />
+          </View>
+
+          {/* Checkmark Circle */}
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: "#4A90E2",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 40,
+              marginTop: 20
+            }}
+          >
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                backgroundColor: "white",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons name="checkmark" size={30} color="#4A90E2" />
+            </View>
+          </View>
+
+          {/* Text */}
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: "#4A90E2",
+              textAlign: "center",
+              marginBottom: 6
+            }}
+          >
+            Hoàn Thành
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#666",
+              textAlign: "center",
+              marginBottom: 7
+            }}
+          >
+            Bạn đã xác định hồ sơ da thành công
+          </Text>
+
+          {/* OK Button */}
+          <TouchableOpacity
+            onPress={handleModalOK}
+            style={{
+              backgroundColor: "#4A90E2",
+              paddingHorizontal: 48,
+              paddingVertical: 14,
+              borderRadius: 24,
+              width: "100%",
+              marginTop: 24,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 16,
+                fontWeight: "600",
+                textAlign: "center",
+              }}
+            >
+              OK
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <StatusBar barStyle="dark-content" />
+
+      {/* Header */}
+      <View className="flex-row items-center px-4 pt-3">
+        <TouchableOpacity onPress={handleBack} className="mr-3">
+          <Ionicons name="arrow-back" size={20} color="#333" />
+        </TouchableOpacity>
+        <Text className="text-lg font-semibold text-gray-900">
+          Xác định hồ sơ da
+        </Text>
+      </View>
+
+      <View className="flex-1 px-4 pt-6">
+        {/* Progress Bar */}
+        <ProgressBar />
+
+        {/* Question */}
+        <View className="mb-6">
+          <Text className="px-3 mb-2 text-xl font-bold text-center text-gray-900">
+            {question.question}
+          </Text>
+          {question.subtitle && (
+            <Text className="text-xs italic text-center text-gray-500">
+              {question.subtitle}
+            </Text>
+          )}
+        </View>
+
+        {/* Options */}
+        <FlatList
+          data={question.options}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <OptionItem item={item} />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
+        />
+
+        {/* Navigation Buttons */}
+        <View className="flex-row items-center self-center justify-between w-11/12 py-4 bg-gray-50">
+          <TouchableOpacity
+            onPress={handlePrev}
+            disabled={current === 0}
+            className={`px-6 py-3 rounded-full border ${
+              current === 0
+                ? "opacity-40 border-blue-100 bg-blue-100"
+                : "border-blue-100 bg-blue-100"
+            }`}
+          >
+            <Text className="font-medium text-blue-500">Câu trước</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleNext}
+            disabled={selectedOptions.length === 0}
+            className={`px-6 py-3 rounded-full ${
+              selectedOptions.length === 0 ? "bg-gray-300" : "bg-[#1e90ff]"
+            }`}
+          >
+            <Text className="font-medium text-white">
+              {current === quizQuestions.length - 1 ? "Hoàn thành" : "Tiếp tục"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <SuccessModal />
     </SafeAreaView>
   );
 };
