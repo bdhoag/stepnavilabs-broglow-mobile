@@ -1,4 +1,4 @@
-import { OpenSans_300Light, OpenSans_400Regular, OpenSans_500Medium, OpenSans_600SemiBold, OpenSans_700Bold, useFonts } from '@expo-google-fonts/open-sans';
+import { Quicksand_300Light, Quicksand_400Regular, Quicksand_500Medium, Quicksand_600SemiBold, Quicksand_700Bold, useFonts } from "@expo-google-fonts/quicksand";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -9,25 +9,29 @@ import { AuthProvider } from "../src/contexts/auth-context";
 // Keep splash screen visible while loading fonts
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    OpenSans_400Regular,
-    OpenSans_700Bold,
-    OpenSans_600SemiBold,
-    OpenSans_500Medium,
-    OpenSans_300Light,
-  });
+export default function RootLayout ()
+{
+  const [ fontsLoaded ] = useFonts( {
+    Quicksand_400Regular,
+    Quicksand_700Bold,
+    Quicksand_600SemiBold,
+    Quicksand_500Medium,
+    Quicksand_300Light,
+  } );
 
-  useEffect(() => {
-    if (fontsLoaded) {
+  useEffect( () =>
+  {
+    if ( fontsLoaded )
+    {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [ fontsLoaded ] );
 
-  if (!fontsLoaded) {
+  if ( !fontsLoaded )
+  {
     return null;
   }
-
+  console.log( "Fonts loaded successfully", fontsLoaded );
   return (
     <SafeAreaProvider>
       <AuthProvider>
@@ -39,7 +43,7 @@ export default function RootLayout() {
           <Stack.Screen name="register" options={{ headerShown: false }} />
           <Stack.Screen
             name="forgot-password"
-            options={{ headerShown: false }}
+            options={ { headerShown: false } }
           />
         </Stack>
       </AuthProvider>
