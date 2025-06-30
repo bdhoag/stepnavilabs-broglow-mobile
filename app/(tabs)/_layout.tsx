@@ -5,7 +5,7 @@ import { HomeIcon, HomeOutlineIcon } from "@/src/components/svg/home-icon";
 import ScannerIcon from "@/src/components/svg/scanner-icon";
 import { ShopIcon, ShopOutlineIcon } from "@/src/components/svg/shop-icon";
 import { Feather } from "@expo/vector-icons";
-import { router, Tabs, usePathname } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
@@ -38,10 +38,10 @@ export default function TabsLayout ()
             ( pathname.includes( "/chat" ) || pathname.includes( "/scan" ) )
           ) && (
               <SafeAreaView className="">
-                <View className="flex-row justify-between items-center px-5 pt-6">
+                <View className="flex-row items-center justify-between px-5 pt-6">
                   <View className="flex-row items-center gap-2.5">
 
-                    <View className="w-12 h-12 rounded-2xl bg-gray-300 overflow-hidden">
+                    <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
                       <Image
                         source={ { uri: "https://via.placeholder.com/150" } }
                         className="w-full h-full"
@@ -61,7 +61,7 @@ export default function TabsLayout ()
                       className="bg-[#1E233A] rounded-full px-4 py-2.5"
                       onPress={ () => { } }
                     >
-                      <Text className="text-white text-center font-quicksand">
+                      <Text className="text-center text-white font-quicksand">
                         Nâng Cấp Gói
                       </Text>
                     </TouchableOpacity>
