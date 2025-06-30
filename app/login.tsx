@@ -30,6 +30,7 @@ const redirectUri = AuthSession.makeRedirectUri({
 });
 
 export default function LoginScreen() {
+  const logoGoogle = require("../assets/images/icons8-google-48.png");
   const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -107,13 +108,29 @@ export default function LoginScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo */}
+          {/* Logo
           <View style={styles.logoContainer}>
             <Image
               source={require("../assets/images/logo-text.png")}
               style={styles.logoImage}
               resizeMode="contain"
             />
+          </View> */}
+
+
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerIconContainer}>
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+              >
+                <Ionicons name="arrow-back" size={24} color="#171B2E" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerText}>Đăng nhập</Text>
+            </View>
           </View>
 
           {/* Form */}
@@ -123,12 +140,13 @@ export default function LoginScreen() {
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
                 style={styles.input}
-                placeholder="broglow@mail.com"
+                placeholder="Email đã đăng ký"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                placeholderTextColor={'#9496A5'}
               />
             </View>
 
@@ -138,7 +156,7 @@ export default function LoginScreen() {
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
-                  placeholder="••••••••••"
+                  placeholder="Mật khẩu của bạn"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
@@ -150,9 +168,9 @@ export default function LoginScreen() {
                   style={styles.eyeIcon}
                 >
                   <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={20}
-                    color="#9CA3AF"
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={24}
+                    color="#9496A5"
                   />
                 </TouchableOpacity>
               </View>
@@ -184,9 +202,9 @@ export default function LoginScreen() {
 
             {/* Divider */}
             <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
+              {/* <View style={styles.dividerLine} /> */}
               <Text style={styles.dividerText}>hoặc</Text>
-              <View style={styles.dividerLine} />
+              {/* <View style={styles.dividerLine} /> */}
             </View>
 
             {/* Google Login Button */}
@@ -202,22 +220,21 @@ export default function LoginScreen() {
                 <ActivityIndicator color="#4285F4" />
               ) : (
                 <>
-                  <View style={styles.googleIcon}>
-                    <Text style={styles.googleG}>G</Text>
-                  </View>
+                  <Image source={logoGoogle} style={styles.googleLogo} />
+                  <Text style={styles.googleButtonText}>Đăng nhập với Google</Text>
                 </>
               )}
             </TouchableOpacity>
-
-            {/* Sign Up Link */}
-            <View style={styles.signUpContainer}>
-              <Text style={styles.signUpText}>Không có tài khoản? </Text>
-              <TouchableOpacity onPress={handleSignUp}>
-                <Text style={styles.signUpLink}>Đăng ký ngay!</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
+
+        {/* Sign Up Link - Moved to bottom */}
+        <View style={styles.signUpContainer}>
+          <Text style={styles.signUpText}>Chưa có tài khoản? </Text>
+          <TouchableOpacity onPress={handleSignUp}>
+            <Text style={styles.signUpLink}>Đăng ký ngay!</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -231,7 +248,39 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
+    // paddingTop: 40,
+  },
+  header: {
+    height: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
+  },
+  headerIconContainer: {
+    position: 'absolute',
+    left: 0,
+    zIndex: 1,
+  },
+  headerTitleContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#171B2E",
+    textAlign: "center",
+  },
+  backButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: "#F9F6EF",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoContainer: {
     alignItems: "center",
@@ -243,52 +292,49 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
+    paddingVertical: 50,
   },
   inputContainer: {
     marginBottom: 20,
   },
   inputLabel: {
-    fontSize: 16,
-    color: "#374151",
+    fontSize: 14,
+    color: "#171B2E",
     marginBottom: 8,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
+    borderRadius: 26,
     padding: 16,
-    fontSize: 16,
-    backgroundColor: "#FFFFFF",
+    fontSize: 14,
+    backgroundColor: "#F9F9F9",
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
+    borderRadius: 26,
+    backgroundColor: "#F9F9F9",
   },
   passwordInput: {
     flex: 1,
     padding: 16,
-    fontSize: 16,
+    fontSize: 14,
   },
   eyeIcon: {
-    padding: 16,
+    padding: 12,
   },
   forgotPasswordContainer: {
     alignItems: "flex-end",
     marginBottom: 32,
   },
   forgotPasswordText: {
-    color: "#3B82F6",
+    color: "#616161",
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "400",
   },
   loginButton: {
-    backgroundColor: "#3B82F6",
-    borderRadius: 12,
+    backgroundColor: "#1584F2",
+    borderRadius: 28,
     padding: 16,
     alignItems: "center",
     marginBottom: 24,
@@ -298,12 +344,13 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
   },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginBottom: 24,
   },
   dividerLine: {
@@ -313,47 +360,50 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     marginHorizontal: 16,
-    color: "#9CA3AF",
+    color: "#9496A5",
     fontSize: 14,
+    fontWeight: "400",
   },
   googleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: "#E5E7EB",
-    borderRadius: 12,
+    borderRadius: 28,
     padding: 16,
-    alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 20,
     backgroundColor: "#FFFFFF",
   },
   googleButtonDisabled: {
     opacity: 0.6,
   },
-  googleIcon: {
+  googleLogo: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: "#4285F4",
-    alignItems: "center",
-    justifyContent: "center",
+    marginRight: 12,
   },
-  googleG: {
-    color: "#FFFFFF",
+  googleButtonText: {
+    color: "#171B2E",
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   signUpContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 32,
+    paddingVertical: 40,
+    paddingHorizontal: 24,
+    backgroundColor: "#FFFFFF",
   },
   signUpText: {
-    color: "#6B7280",
+    color: "#9496A5",
     fontSize: 14,
   },
   signUpLink: {
-    color: "#3B82F6",
+    color: "#2972FE",
     fontSize: 14,
     fontWeight: "600",
   },
 });
+
