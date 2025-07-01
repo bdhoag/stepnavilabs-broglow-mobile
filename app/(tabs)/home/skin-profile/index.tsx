@@ -128,6 +128,8 @@ const QuizScreen = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const question = quizQuestions[current];
   const router = useRouter();
+  const [skipped, setSkipped] = useState<Set<number>>(new Set());
+  const [skippedQuestions, setSkippedQuestions] = useState<number[]>([]);
   const navigation = useNavigation();
 
   // Hide tab bar when this screen is focused
@@ -198,7 +200,9 @@ const QuizScreen = () => {
           <React.Fragment key={index}>
             <View
               className={`h-1 flex-1 rounded-full ${
-                index <= current ? "bg-[#4A90E2]" : "bg-gray-200"
+                index < current && !skipped.has(quizQuestions[index].id)
+                  ? "bg-[#4A90E2]"
+                  : "bg-gray-200"
               }`}
             />
             {index < quizQuestions.length - 1 && <View className="w-2" />}
@@ -252,6 +256,11 @@ const QuizScreen = () => {
         )}
       </TouchableOpacity>
     );
+  };
+
+  const handleSkip = () => {
+    setSkipped((prev) => new Set(prev).add(question.id));
+    handleNext();
   };
 
   const SuccessModal = () => (
@@ -379,7 +388,7 @@ const QuizScreen = () => {
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 40,
-              marginTop: 20
+              marginTop: 20,
             }}
           >
             <View
@@ -403,7 +412,7 @@ const QuizScreen = () => {
               fontWeight: "bold",
               color: "#4A90E2",
               textAlign: "center",
-              marginBottom: 6
+              marginBottom: 6,
             }}
           >
             Hoàn Thành
@@ -414,7 +423,7 @@ const QuizScreen = () => {
               fontSize: 12,
               color: "#666",
               textAlign: "center",
-              marginBottom: 7
+              marginBottom: 7,
             }}
           >
             Bạn đã xác định hồ sơ da thành công
@@ -451,9 +460,8 @@ const QuizScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <StatusBar barStyle="dark-content" />
-
       {/* Header */}
-      <View className="flex-row items-center px-4 pt-3">
+      <View className="flex-row items-center px-4 pt-5">
         <TouchableOpacity onPress={handleBack} className="mr-3">
           <Ionicons name="arrow-back" size={20} color="#333" />
         </TouchableOpacity>
@@ -489,10 +497,11 @@ const QuizScreen = () => {
 
         {/* Navigation Buttons */}
         <View className="flex-row items-center self-center justify-between w-11/12 py-4 bg-gray-50">
+          {/* Nút Câu trước */}
           <TouchableOpacity
             onPress={handlePrev}
             disabled={current === 0}
-            className={`px-6 py-3 rounded-full border ${
+            className={`px-5 py-3 rounded-full border ${
               current === 0
                 ? "opacity-40 border-blue-100 bg-blue-100"
                 : "border-blue-100 bg-blue-100"
@@ -501,17 +510,30 @@ const QuizScreen = () => {
             <Text className="font-medium text-blue-500">Câu trước</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={selectedOptions.length === 0}
-            className={`px-6 py-3 rounded-full ${
-              selectedOptions.length === 0 ? "bg-gray-300" : "bg-[#1e90ff]"
-            }`}
-          >
-            <Text className="font-medium text-white">
-              {current === quizQuestions.length - 1 ? "Hoàn thành" : "Tiếp tục"}
-            </Text>
-          </TouchableOpacity>
+          {/* Cụm Tiếp tục + Bỏ qua */}
+          <View className="flex-row items-center gap-3">
+            {/* Nút Bỏ qua dạng link */}
+            <TouchableOpacity onPress={handleSkip}>
+              <Text className="mb-1 text-sm text-blue-500 underline">
+                Bỏ qua
+              </Text>
+            </TouchableOpacity>
+
+            {/* Nút Tiếp tục */}
+            <TouchableOpacity
+              onPress={handleNext}
+              disabled={selectedOptions.length === 0}
+              className={`px-6 py-3 rounded-full ${
+                selectedOptions.length === 0 ? "bg-gray-300" : "bg-[#1e90ff]"
+              }`}
+            >
+              <Text className="font-medium text-white">
+                {current === quizQuestions.length - 1
+                  ? "Hoàn thành"
+                  : "Tiếp tục"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       <SuccessModal />

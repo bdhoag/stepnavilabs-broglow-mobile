@@ -1,11 +1,14 @@
 import { ChatIcon, ChatOutlineIcon } from "@/src/components/svg/chat-icon";
 // import HistoryIcon from "@/src/components/svg/history-icon";
-import { HistoryIcon, HistoryOutlineIcon } from "@/src/components/svg/history-icon";
+import {
+  HistoryIcon,
+  HistoryOutlineIcon,
+} from "@/src/components/svg/history-icon";
 import { HomeIcon, HomeOutlineIcon } from "@/src/components/svg/home-icon";
 import ScannerIcon from "@/src/components/svg/scanner-icon";
 import { ShopIcon, ShopOutlineIcon } from "@/src/components/svg/shop-icon";
 import { Feather } from "@expo/vector-icons";
-import { Tabs, usePathname } from "expo-router";
+import { Tabs, usePathname, useRouter } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
@@ -13,89 +16,98 @@ import { useAuth } from "../../src/contexts/auth-context";
 
 // Import your custom icons
 
-
-export default function TabsLayout ()
-{
+export default function TabsLayout() {
   const { user } = useAuth();
   const username = user?.firstName || "User";
+  const router = useRouter();
   const pathname = usePathname();
   // const isChatScreen = pathname && pathname.includes( "/chat" );
 
   // Check if we're on scan screen
-  const isOnScanScreen = pathname && pathname.includes( "/scan" );
+  const isOnScanScreen = pathname && pathname.includes("/scan");
 
   return (
     <AuthGuard>
       <SafeAreaProvider>
         <View
-          style={ {
+          style={{
             flex: 1,
             backgroundColor: "#FFFFFF",
-          } }
+          }}
         >
-          { !(
+          {!(
             pathname &&
-            ( pathname.includes( "/chat" ) || pathname.includes( "/scan" ) )
+            (pathname.includes("/chat") || pathname.includes("/scan"))
           ) && (
-              <SafeAreaView className="">
-                <View className="flex-row items-center justify-between px-5 pt-6">
-                  <View className="flex-row items-center gap-2.5">
-
-                    <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
-                      <Image
-                        source={ { uri: "https://via.placeholder.com/150" } }
-                        className="w-full h-full"
-                      />
-                    </View>
-                    <View className="flex-col items-start" style={ { flex: 1, maxWidth: '50%' } }>
-                      <Text className="text-lg font-quicksand" numberOfLines={ 1 } ellipsizeMode="tail">
-                        Xin chào, <Text className="font-quicksand-bold">{ username }</Text>
-                      </Text>
-                      <Text className="text-sm font-quicksand-light">
-                        Da bạn thế nào rồi?
-                      </Text>
-                    </View>
-                  </View>
-                  <View className="flex-row items-center gap-2.5">
-                    <TouchableOpacity
-                      className="bg-[#1E233A] rounded-full px-4 py-2.5"
-                      onPress={ () => { } }
+            <SafeAreaView className="">
+              <View className="flex-row items-center justify-between px-5 pt-6">
+                <View className="flex-row items-center gap-2.5">
+                  <TouchableOpacity
+                    onPress={() => router.push("/profile")}
+                    className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl"
+                  >
+                    <Image
+                      source={{ uri: "https://via.placeholder.com/150" }}
+                      className="w-full h-full"
+                    />
+                  </TouchableOpacity>
+                  <View
+                    className="flex-col items-start"
+                    style={{ flex: 1, maxWidth: "50%" }}
+                  >
+                    <Text
+                      className="text-lg font-quicksand"
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
                     >
-                      <Text className="text-center text-white font-quicksand">
-                        Nâng Cấp Gói
-                      </Text>
-                    </TouchableOpacity>
-                    <Feather name="bell" size={ 20 } color="#333" />
+                      Xin chào,{" "}
+                      <Text className="font-quicksand-bold">{username}</Text>
+                    </Text>
+                    <Text className="text-sm font-quicksand-light">
+                      Da bạn thế nào rồi?
+                    </Text>
                   </View>
                 </View>
-              </SafeAreaView>
-            ) }
+                <View className="flex-row items-center gap-2.5">
+                  <TouchableOpacity
+                    className="bg-[#1E233A] rounded-full px-4 py-2.5"
+                    onPress={() => {}}
+                  >
+                    <Text className="text-center text-white font-quicksand">
+                      Nâng Cấp Gói
+                    </Text>
+                  </TouchableOpacity>
+                  <Feather name="bell" size={20} color="#333" />
+                </View>
+              </View>
+            </SafeAreaView>
+          )}
 
           <Tabs
-            screenOptions={ ( { route } ) => ( {
+            screenOptions={({ route }) => ({
               headerShown: false,
               tabBarShowLabel: false,
               // Hide tab bar when on scan screen
               tabBarStyle: isOnScanScreen
                 ? { display: "none" }
                 : {
-                  height: 90,
-                  borderTopWidth: 0,
-                  borderTopLeftRadius: 25,
-                  borderTopRightRadius: 25,
-                  backgroundColor: "#FFFFFF",
-                  position: "relative",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: -2,
+                    height: 90,
+                    borderTopWidth: 0,
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25,
+                    backgroundColor: "#FFFFFF",
+                    position: "relative",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: -2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 8,
                   },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 8,
-                  elevation: 8,
-                },
               tabBarItemStyle: {
                 height: "100%",
                 justifyContent: "center",
@@ -106,25 +118,23 @@ export default function TabsLayout ()
               },
               tabBarPressColor: "#FFFFFF",
               pressColor: "#FFFFFF",
-              tabBarIcon: ( { color, size, focused } ) =>
-              {
+              tabBarIcon: ({ color, size, focused }) => {
                 // Define the icon color based on focus state - using more subtle colors like in the reference
                 // const iconColor = focused ? "#1584F2" : "#8E8E93";
 
                 // Handle the special scan button with custom styling - positioned slightly higher
-                if ( route.name === "scan" )
-                {
+                if (route.name === "scan") {
                   return (
                     <View
-                      style={ {
+                      style={{
                         width: 56,
                         height: 56,
                         borderRadius: 28,
-                        backgroundColor: '#1584F2',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        backgroundColor: "#1584F2",
+                        justifyContent: "center",
+                        alignItems: "center",
                         marginTop: -50, // Slight upward adjustment without absolute positioning
-                        shadowColor: '#1584F2',
+                        shadowColor: "#1584F2",
                         shadowOffset: {
                           width: 0,
                           height: 4,
@@ -132,17 +142,16 @@ export default function TabsLayout ()
                         shadowOpacity: 0.3,
                         shadowRadius: 8,
                         elevation: 8,
-                      } }
+                      }}
                     >
-                      <ScannerIcon width={ 28 } height={ 28 } fill="#ffffff" />
+                      <ScannerIcon width={28} height={28} fill="#ffffff" />
                     </View>
                   );
                 }
 
                 // Define which custom icon to use for each route
                 let IconComponent;
-                switch ( route.name )
-                {
+                switch (route.name) {
                   case "home":
                     IconComponent = focused ? HomeIcon : HomeOutlineIcon;
                     break;
@@ -159,16 +168,16 @@ export default function TabsLayout ()
                     // Fallback to a Feather icon if route not recognized
                     return (
                       <View
-                        style={ {
+                        style={{
                           width: 46,
                           height: 46,
                           borderRadius: 23,
-                          backgroundColor: focused ? '#E3F2FD' : 'transparent',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        } }
+                          backgroundColor: focused ? "#E3F2FD" : "transparent",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
                       >
-                        <Feather name="help-circle" size={ 24 } />
+                        <Feather name="help-circle" size={24} />
                       </View>
                     );
                 }
@@ -176,58 +185,58 @@ export default function TabsLayout ()
                 // Render the custom icon with proper styling that matches the reference design
                 return (
                   <View
-                    style={ {
+                    style={{
                       width: 46,
                       height: 46,
                       borderRadius: 23,
-                      backgroundColor: focused ? '#E3F2FD' : 'transparent', // Light blue background when active
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    } }
+                      backgroundColor: focused ? "#E3F2FD" : "transparent", // Light blue background when active
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
                   >
                     <IconComponent
-                      width={ 24 }
-                      height={ 24 }
-                    // color={ iconColor }
+                      width={24}
+                      height={24}
+                      // color={ iconColor }
                     />
                   </View>
                 );
               },
-            } ) }
+            })}
           >
             <Tabs.Screen
               name="home"
-              options={ {
+              options={{
                 title: "Home",
-              } }
+              }}
             />
             <Tabs.Screen
               name="chat"
-              options={ {
+              options={{
                 title: "Chat",
-              } }
+              }}
             />
             <Tabs.Screen
               name="scan"
-              options={ {
+              options={{
                 title: "Scan",
-              } }
+              }}
             />
             <Tabs.Screen
               name="progress"
-              options={ {
+              options={{
                 title: "Progress",
-              } }
+              }}
             />
             <Tabs.Screen
               name="product"
-              options={ {
+              options={{
                 title: "Product",
-              } }
+              }}
             />
           </Tabs>
         </View>
       </SafeAreaProvider>
-    </AuthGuard >
+    </AuthGuard>
   );
 }
