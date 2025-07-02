@@ -2,6 +2,7 @@ import { Quicksand_300Light, Quicksand_400Regular, Quicksand_500Medium, Quicksan
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 import { AuthProvider } from "../src/contexts/auth-context";
@@ -35,17 +36,19 @@ export default function RootLayout ()
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="forgot-password"
-            options={ { headerShown: false } }
-          />
-        </Stack>
+        <GestureHandlerRootView style={ { flex: 1 } }>
+          <Stack screenOptions={ { headerShown: false } }>
+            <Stack.Screen name="index" options={ { headerShown: false } } />
+            <Stack.Screen name="(tabs)" options={ { headerShown: false } } />
+            <Stack.Screen name="onboarding" options={ { headerShown: false } } />
+            <Stack.Screen name="login" options={ { headerShown: false } } />
+            <Stack.Screen name="register" options={ { headerShown: false } } />
+            <Stack.Screen
+              name="forgot-password"
+              options={ { headerShown: false } }
+            />
+          </Stack>
+        </GestureHandlerRootView>
       </AuthProvider>
     </SafeAreaProvider>
   );
