@@ -1,5 +1,6 @@
 // ProductSection.tsx (Updated)
 import { Product, productService } from '@/src/services/product.service';
+import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import ProductSkeleton from './product-skeleton';
@@ -123,8 +124,21 @@ const ProductSection = () =>
 
     return (
         <View className="mb-6">
-            <View className="px-5 mb-2">
-                <Text className="text-xl font-quicksand-bold text-gray-800">Sản phẩm dưỡng da</Text>
+            <View className="px-5 mb-2 flex-row items-center justify-between">
+                <Text className="text-xl font-quicksand-bold text-gray-800">
+                    Sản phẩm dưỡng da
+                </Text>
+                <TouchableOpacity
+                    onPress={ () =>
+                    {
+                        router.navigate( "/product" );
+                    } }
+                    activeOpacity={ 0.8 }
+                >
+                    <Text className="text-lg font-quicksand text-[#1584F2]">
+                        Xem thêm
+                    </Text>
+                </TouchableOpacity>
             </View>
             { renderContent() }
         </View>
