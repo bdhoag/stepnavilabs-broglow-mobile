@@ -43,7 +43,7 @@ export default function TabsLayout() {
               <View className="flex-row items-center justify-between px-5 pt-6">
                 <View className="flex-row items-center gap-2.5">
                   <TouchableOpacity
-                    onPress={() => router.push("/profile")}
+                    onPress={() => router.push({ pathname: "/profile" })}
                     className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl"
                   >
                     <Image
@@ -51,6 +51,7 @@ export default function TabsLayout() {
                       className="w-full h-full"
                     />
                   </TouchableOpacity>
+
                   <View
                     className="flex-col items-start"
                     style={{ flex: 1, maxWidth: "50%" }}
