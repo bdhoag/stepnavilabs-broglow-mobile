@@ -20,6 +20,7 @@ interface MenuItem {
   switchValue?: boolean;
   onSwitchChange?: (value: boolean) => void;
   rightText?: string;
+  onPress?: () => void;
 }
 
 const ProfileScreen: React.FC = () => {
@@ -32,21 +33,25 @@ const ProfileScreen: React.FC = () => {
       icon: "person-outline",
       title: "Thông tin tài khoản",
       hasArrow: true,
+      onPress: () => router.push("/profile/edit-profile"),
     },
     {
       icon: "lock-closed-outline",
       title: "Đổi mật khẩu",
       hasArrow: true,
+      onPress: () => router.push("/profile/change-password"),
     },
     {
       icon: "shield-checkmark-outline",
       title: "Xác thực 2 yếu tố",
       hasArrow: true,
+      onPress: () => router.push("/profile/factor-verify"),
     },
     {
       icon: "card-outline",
       title: "Phương thức thanh toán",
       hasArrow: true,
+      // onPress: () => router.push("/profile/payment"),
     },
   ];
 
@@ -78,7 +83,12 @@ const ProfileScreen: React.FC = () => {
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => (
-    <TouchableOpacity key={index} style={styles.menuItem} activeOpacity={0.7}>
+    <TouchableOpacity
+      key={index}
+      style={styles.menuItem}
+      activeOpacity={0.7}
+      onPress={item.onPress}
+    >
       <View style={styles.menuItemLeft}>
         <Ionicons name={item.icon} size={20} color="#666" />
         <Text style={styles.menuItemText}>{item.title}</Text>
@@ -182,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backButton: {
-    marginRight: 4
+    marginRight: 3,
   },
   headerTitle: {
     fontSize: 18,
@@ -207,9 +217,9 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
   },
   avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     overflow: "hidden",
     backgroundColor: "#000000",
     marginBottom: 16,
