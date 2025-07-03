@@ -28,6 +28,13 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen
+        name="notification/index"
+        options={{
+
+          title: "Thông báo",
+        }}
+      />
+      <Stack.Screen
         name="explore/index"
         options={{
           title: "Khám phá",
