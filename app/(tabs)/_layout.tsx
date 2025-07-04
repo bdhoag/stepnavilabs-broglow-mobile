@@ -1,14 +1,11 @@
 import { ChatIcon, ChatOutlineIcon } from "@/src/components/svg/chat-icon";
 // import HistoryIcon from "@/src/components/svg/history-icon";
-import {
-  HistoryIcon,
-  HistoryOutlineIcon,
-} from "@/src/components/svg/history-icon";
+import { HistoryIcon, HistoryOutlineIcon } from "@/src/components/svg/history-icon";
 import { HomeIcon, HomeOutlineIcon } from "@/src/components/svg/home-icon";
 import ScannerIcon from "@/src/components/svg/scanner-icon";
 import { ShopIcon, ShopOutlineIcon } from "@/src/components/svg/shop-icon";
 import { Feather } from "@expo/vector-icons";
-import { Tabs, usePathname, useRouter } from "expo-router";
+import { Tabs, router, usePathname } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
@@ -16,10 +13,10 @@ import { useAuth } from "../../src/contexts/auth-context";
 
 // Import your custom icons
 
+
 export default function TabsLayout() {
   const { user } = useAuth();
   const username = user?.firstName || "User";
-  const router = useRouter();
   const pathname = usePathname();
   // const isChatScreen = pathname && pathname.includes( "/chat" );
 
@@ -37,52 +34,52 @@ export default function TabsLayout() {
         >
           {!(
             pathname &&
-            (pathname.includes("/chat") || pathname.includes("/scan"))
+            (pathname.includes("/chat") || pathname.includes("/notification") || pathname.includes("/scan"))
           ) && (
-            <SafeAreaView className="">
-              <View className="flex-row items-center justify-between px-5 pt-6">
-                <View className="flex-row items-center gap-2.5">
-                  <TouchableOpacity
-                    onPress={() => router.push({ pathname: "/profile" })}
-                    className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl"
-                  >
-                    <Image
-                      source={{ uri: "https://via.placeholder.com/150" }}
-                      className="w-full h-full"
-                    />
-                  </TouchableOpacity>
+              <SafeAreaView className="">
+                <View className="flex-row items-center justify-between px-5 pt-6">
+                  <View className="flex-row items-center gap-2.5">
 
-                  <View
-                    className="flex-col items-start"
-                    style={{ flex: 1, maxWidth: "50%" }}
-                  >
-                    <Text
-                      className="text-lg font-quicksand"
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
+                    <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
+                      <Image
+                        source={{ uri: "https://via.placeholder.com/150" }}
+                        className="w-full h-full"
+                      />
+                    </View>
+                    <View className="flex-col items-start" style={{ flex: 1, maxWidth: '50%' }}>
+                      <Text className="text-lg font-quicksand" numberOfLines={1} ellipsizeMode="tail">
+                        Xin chào, <Text className="font-quicksand-bold">{username}</Text>
+                      </Text>
+                      <Text className="text-sm font-quicksand-light">
+                        Da bạn thế nào rồi?
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="flex-row items-center gap-2.5">
+                    <TouchableOpacity
+                      className="bg-[#1E233A] rounded-full px-4 py-2.5"
+                      onPress={() => { }}
                     >
-                      Xin chào,{" "}
-                      <Text className="font-quicksand-bold">{username}</Text>
-                    </Text>
-                    <Text className="text-sm font-quicksand-light">
-                      Da bạn thế nào rồi?
-                    </Text>
+                      <Text className="text-center text-white font-quicksand">
+                        Nâng Cấp Gói
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+
+                      onPress={() => {
+                        router.push("/(tabs)/home/notification"); // Navigate to notification screen
+                      }}
+
+                    >
+
+                      <Feather name="bell" size={20} color="#333" />
+
+                    </TouchableOpacity>
+
                   </View>
                 </View>
-                <View className="flex-row items-center gap-2.5">
-                  <TouchableOpacity
-                    className="bg-[#1E233A] rounded-full px-4 py-2.5"
-                    onPress={() => {}}
-                  >
-                    <Text className="text-center text-white font-quicksand">
-                      Nâng Cấp Gói
-                    </Text>
-                  </TouchableOpacity>
-                  <Feather name="bell" size={20} color="#333" />
-                </View>
-              </View>
-            </SafeAreaView>
-          )}
+              </SafeAreaView>
+            )}
 
           <Tabs
             screenOptions={({ route }) => ({
@@ -92,23 +89,23 @@ export default function TabsLayout() {
               tabBarStyle: isOnScanScreen
                 ? { display: "none" }
                 : {
-                    height: 90,
-                    borderTopWidth: 0,
-                    borderTopLeftRadius: 25,
-                    borderTopRightRadius: 25,
-                    backgroundColor: "#FFFFFF",
-                    position: "relative",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: -2,
-                    },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 8,
-                    elevation: 8,
+                  height: 90,
+                  borderTopWidth: 0,
+                  borderTopLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  backgroundColor: "#FFFFFF",
+                  position: "relative",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: -2,
                   },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 8,
+                  elevation: 8,
+                },
               tabBarItemStyle: {
                 height: "100%",
                 justifyContent: "center",
@@ -131,11 +128,11 @@ export default function TabsLayout() {
                         width: 56,
                         height: 56,
                         borderRadius: 28,
-                        backgroundColor: "#1584F2",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        backgroundColor: '#1584F2',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         marginTop: -50, // Slight upward adjustment without absolute positioning
-                        shadowColor: "#1584F2",
+                        shadowColor: '#1584F2',
                         shadowOffset: {
                           width: 0,
                           height: 4,
@@ -173,9 +170,9 @@ export default function TabsLayout() {
                           width: 46,
                           height: 46,
                           borderRadius: 23,
-                          backgroundColor: focused ? "#E3F2FD" : "transparent",
-                          justifyContent: "center",
-                          alignItems: "center",
+                          backgroundColor: focused ? '#E3F2FD' : 'transparent',
+                          justifyContent: 'center',
+                          alignItems: 'center',
                         }}
                       >
                         <Feather name="help-circle" size={24} />
@@ -190,15 +187,15 @@ export default function TabsLayout() {
                       width: 46,
                       height: 46,
                       borderRadius: 23,
-                      backgroundColor: focused ? "#E3F2FD" : "transparent", // Light blue background when active
-                      justifyContent: "center",
-                      alignItems: "center",
+                      backgroundColor: focused ? '#E3F2FD' : 'transparent', // Light blue background when active
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
                   >
                     <IconComponent
                       width={24}
                       height={24}
-                      // color={ iconColor }
+                    // color={ iconColor }
                     />
                   </View>
                 );
@@ -238,6 +235,6 @@ export default function TabsLayout() {
           </Tabs>
         </View>
       </SafeAreaProvider>
-    </AuthGuard>
+    </AuthGuard >
   );
 }

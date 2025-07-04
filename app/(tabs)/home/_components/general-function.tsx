@@ -75,35 +75,36 @@ const GeneralFunction = () =>
                                 >
                                     <LinearGradient
                                         colors={ option.gradientColors as any }
-                                        className="p-3 justify-between"
                                         style={ { minHeight: 160 } }
                                     >
-                                        <View className="flex-1 mb-4">
-                                            <Text className="text-white text-lg font-quicksand-bold mb-2 leading-6">
-                                                { option.title }
-                                            </Text>
-                                            <Text className="text-white text-sm leading-5 font-quicksand-light">
-                                                { option.description }
-                                            </Text>
-                                        </View>
-
-                                        <View className="flex-row items-center justify-between">
-                                            <View className="flex-row items-center">
-                                                <View className="w-10 h-10 bg-white rounded-xl items-center justify-center mr-3">
-                                                    <option.icon />
-                                                </View>
-
-                                                <Text className="text-white font-quicksand-medium text-base">
-                                                    { option.buttonText }
+                                        <View className={ "flex-1 p-3 justify-between" }>
+                                            <View className="flex-1 mb-4">
+                                                <Text className="text-white text-lg font-quicksand-bold mb-2 leading-6">
+                                                    { option.title }
+                                                </Text>
+                                                <Text className="text-white text-sm leading-5 font-quicksand-light">
+                                                    { option.description }
                                                 </Text>
                                             </View>
 
-                                            <View className="w-8 h-8 items-center justify-center">
-                                                <Feather
-                                                    name="arrow-right"
-                                                    size={ 18 }
-                                                    color="white"
-                                                />
+                                            <View className="flex-row items-center justify-between">
+                                                <View className="flex-row items-center">
+                                                    <View className="w-10 h-10 bg-white rounded-xl items-center justify-center mr-3">
+                                                        <option.icon />
+                                                    </View>
+
+                                                    <Text className="text-white font-quicksand-medium text-base">
+                                                        { option.buttonText }
+                                                    </Text>
+                                                </View>
+
+                                                <View className="w-8 h-8 items-center justify-center">
+                                                    <Feather
+                                                        name="arrow-right"
+                                                        size={ 18 }
+                                                        color="white"
+                                                    />
+                                                </View>
                                             </View>
                                         </View>
                                     </LinearGradient>
