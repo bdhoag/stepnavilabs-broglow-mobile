@@ -42,7 +42,7 @@ export default function Subscription() {
       <View className="bg-white rounded-2xl shadow p-0.5">
         {!showPaid && (
           <View className="bg-[#02AAEB] rounded-2xl py-4 items-center">
-            <Text className="text-white text-xl font-bold">
+            <Text className="text-xl font-bold text-white">
               {showPaid ? "Trả phí" : "Miễn Phí"}
             </Text>
           </View>
@@ -109,14 +109,14 @@ export default function Subscription() {
       </View>
       {showPaid ? (
         <TouchableOpacity className="mt-6 bg-[#6EC1F6] rounded-xl py-3 items-center">
-          <Text className="text-white font-bold text-lg">Xác Nhận</Text>
+          <Text className="text-lg font-bold text-white">Xác Nhận</Text>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
           className="mt-6 bg-[#02AAEB] rounded-xl py-3 items-center"
           onPress={() => setShowPaid(true)}
         >
-          <Text className="text-white font-bold text-lg">Nâng Cấp</Text>
+          <Text className="text-lg font-bold text-white">Nâng Cấp</Text>
         </TouchableOpacity>
       )}
     </View>
