@@ -34,8 +34,8 @@ const GeneralFunction = () =>
             route: "/home/skincare-routine" as Route,
         },
         {
-            title: "Khám Phá Bài Viết Về Chăm Sóc Da",
-            description: "Khám Phá Bài Viết Về Chăm Sóc Da",
+            title: "Khám Phá Bài Viết Chăm Sóc",
+            description: "Khám Phá Bài Viết Chăm Sóc Da",
             icon: DiscoverIcon,
             buttonText: "Khám phá",
             gradientColors: [ "#FFDA7B", "#FFB800" ],
