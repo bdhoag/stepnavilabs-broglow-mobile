@@ -25,7 +25,7 @@ interface Thread {
 const ChatHistoryScreen = () => {
   const [activeTab, setActiveTab] = useState<"ai" | "expert">("ai");
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
-    const router = useRouter();
+  const router = useRouter();
   const [threads] = useState<Thread[]>([
     { _id: "1", name: "Tiêu đề đoạn chat", createdAt: "20/6/2025  • 18:04" },
     { _id: "2", name: "Tiêu đề đoạn chat", createdAt: "20/6/2025  • 18:04" },
@@ -35,11 +35,15 @@ const ChatHistoryScreen = () => {
   ]);
 
   const handleNewChat = () => {
-    router.push("/chat/new-chat"); // đường dẫn tới ChatScreen
+    router.push("/chat/new-chat");
   };
 
   const handleThreadSelect = (thread: Thread) => {
     setSelectedThread(thread._id);
+    router.push({
+      pathname: "/chat/continue-chat",
+      params: { threadId: thread._id },
+    });
   };
 
   const handleDeleteThread = (threadId: string) => {
@@ -47,7 +51,11 @@ const ChatHistoryScreen = () => {
   };
 
   const handleTabPress = (tab: "ai" | "expert") => {
-    setActiveTab(tab);
+    if (tab === "expert") {
+      router.push("/chat/expert");
+    } else {
+      setActiveTab(tab);
+    }
   };
 
   const renderThread = ({ item }: { item: Thread }) => {
@@ -146,7 +154,7 @@ const ChatHistoryScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
+    paddingVertical: 10,
     paddingHorizontal: 5,
     flex: 1,
     backgroundColor: "#FFFFFF",

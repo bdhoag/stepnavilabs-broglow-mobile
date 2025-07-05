@@ -1,12 +1,16 @@
 import AssistantMessage from "@/src/components/chat/AssistantMessage";
-import AttachmentMenu from "@/src/components/chat/AttachmentMenu";
 import TypingIndicator from "@/src/components/chat/TypingIndicator";
 import UserMessage from "@/src/components/chat/UserMessage";
 import { AIService } from "@/src/services/AI.service";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useReducer, useRef, useState } from "react";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -190,6 +194,8 @@ export default function ChatScreen() {
   const [state, dispatch] = useReducer(chatReducer, initialState);
   const flatListRef = useRef<FlatList>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const navigation = useNavigation();
+  const router = useRouter();
   const {
     selectedTab,
     showDropdown,
@@ -206,6 +212,20 @@ export default function ChatScreen() {
 
   // Get params from navigation (e.g., when coming from Scan screen)
   const params = useLocalSearchParams<{ imageUri?: string }>();
+
+  useFocusEffect(
+    useCallback(() => {
+      const parent = navigation.getParent();
+      if (parent) {
+        parent.setOptions({ tabBarStyle: { display: "none" } });
+      }
+      return () => {
+        if (parent) {
+          parent.setOptions({ tabBarStyle: { display: "flex" } });
+        }
+      };
+    }, [navigation])
+  );
 
   useEffect(() => {
     const uriParam = params?.imageUri;
@@ -584,99 +604,49 @@ export default function ChatScreen() {
         style={{ flex: 1 }}
       >
         <SafeAreaView className="flex-1 bg-white">
-          <View className="relative flex-row">
-            <View className="flex-row w-full h-12 bg-white border-b border-gray-200">
+          <View className="relative flex-row items-center justify-between px-4 py-3 bg-white">
+            <View className="relative left-2">
+              <Pressable onPress={() => router.back()}>
+                <Feather name="arrow-left" size={22} color="#374151" />
+              </Pressable>
+            </View>
+
+            <View className="relative flex-row -translate-x-1/2 bg-gray-100 rounded-full left-20">
               <Pressable
-                className={`flex-1 flex-row items-center justify-center h-full py-2 ${
-                  selectedTab === "ai" ? "bg-[#02AAEB] rounded-t-xl" : ""
+                className={`px-8 py-2 rounded-full ${
+                  selectedTab === "ai" ? "bg-[#3B82F6]" : ""
                 }`}
-                style={{ zIndex: selectedTab === "ai" ? 2 : 1 }}
                 onPress={() =>
                   dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
                 }
               >
                 <Text
-                  className={`text-base font-semibold ${
-                    selectedTab === "ai" ? "text-white" : "text-[#6B7280]"
+                  className={`text-base font-medium ${
+                    selectedTab === "ai" ? "text-white" : "text-[#374151]"
                   }`}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
                 >
-                  {selectedThread?.name ||
-                    (isNewConversation ? "Cuộc trò chuyện mới" : "BroGlow AI")}
+                  BroGlow AI
                 </Text>
-                {selectedTab === "ai" && (
-                  <Pressable onPress={toggleDropdown}>
-                    <Feather
-                      name={showDropdown ? "chevron-up" : "chevron-down"}
-                      size={18}
-                      color={selectedTab === "ai" ? "white" : "#6B7280"}
-                      style={{ marginLeft: 4 }}
-                    />
-                  </Pressable>
-                )}
               </Pressable>
+
               <Pressable
-                className={`flex-1 items-center justify-center h-full py-2 ${
-                  selectedTab === "expert" ? "bg-[#02AAEB] rounded-t-xl" : ""
-                } flex-row`}
-                style={{ zIndex: selectedTab === "expert" ? 2 : 1 }}
-                onPress={() =>
-                  dispatch({ type: "SET_SELECTED_TAB", payload: "expert" })
-                }
+                className={`px-8 py-2 rounded-full ${
+                  selectedTab === "expert" ? "bg-[#3B82F6]" : ""
+                }`}
+                onPress={() => router.replace("/chat/expert")}
+                // onPress={() =>
+                //   dispatch({ type: "SET_SELECTED_TAB", payload: "expert" })
+                // }
               >
                 <Text
-                  className={`text-base font-semibold ${
-                    selectedTab === "expert" ? "text-white" : "text-[#6B7280]"
+                  className={`text-base font-medium ${
+                    selectedTab === "expert" ? "text-white" : "text-[#374151]"
                   }`}
                 >
                   Chuyên gia
                 </Text>
               </Pressable>
             </View>
-
-            {showDropdown && selectedTab === "ai" && (
-              <View className="absolute left-0 z-10 w-full bg-white border-t border-gray-200 shadow-lg top-12 rounded-b-xl">
-                <Pressable
-                  className="flex-row items-center px-4 py-3 bg-blue-50"
-                  onPress={createNewThread}
-                >
-                  <Feather name="plus" size={16} color="#02AAEB" />
-                  <Text className="ml-3 text-base font-medium text-[#02AAEB]">
-                    + Đón chat mới
-                  </Text>
-                </Pressable>
-                <FlatList
-                  data={threads}
-                  keyExtractor={(item) => item._id}
-                  renderItem={({ item }) => (
-                    <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                      <Text className="text-base font-medium text-gray-800">
-                        Tiêu đề đoàn chat
-                      </Text>
-                      <Text className="text-xs text-gray-400">
-                        20/6/2025 • 18:04
-                      </Text>
-                      <Pressable>
-                        <Feather name="trash-2" size={18} color="#FF4D4F" />
-                      </Pressable>
-                    </View>
-                  )}
-                  ListEmptyComponent={
-                    !loading ? (
-                      <View className="items-center px-4 py-6">
-                        <Text className="text-center text-gray-500">
-                          Chưa có cuộc trò chuyện nào
-                        </Text>
-                        <Text className="mt-1 text-sm text-center text-gray-400">
-                          Tạo cuộc trò chuyện mới để bắt đầu
-                        </Text>
-                      </View>
-                    ) : null
-                  }
-                />
-              </View>
-            )}
           </View>
 
           {selectedTab === "ai" && selectedThread ? (
@@ -701,12 +671,35 @@ export default function ChatScreen() {
               onScroll={handleScroll}
             />
           ) : (
-            <View className="items-center justify-center flex-1">
+            <View className="items-center justify-center flex-1 px-6">
+              {/* Logo */}
               <Image
                 source={require("../../../../assets/images/logo-text.png")}
-                className="h-36"
+                className="mb-14 h-36"
                 resizeMode="contain"
               />
+
+              {/* Heading */}
+              <Text className="mt-4 text-lg font-semibold text-gray-700">
+                Tôi có thể giúp bạn
+              </Text>
+
+              {/* Suggestions */}
+              <View className="w-full mt-4 space-y-3">
+                {[1, 2, 3].map((_, idx) => (
+                  <View
+                    key={idx}
+                    className="px-4 py-3 bg-gray-100 rounded-2xl"
+                    style={{ width: "100%", marginBottom: 10, opacity: 0.5 }}
+                  >
+                    <Text className="text-sm leading-relaxed text-gray-600">
+                      Lorem ipsum dolor sit amet consectetur. Neque volutpat ut
+                      enim orci tellus mattis leo arcu. Viverra morbi vivamus
+                      adipiscing interdum volutpat curabitur.
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
           )}
 
@@ -760,46 +753,61 @@ export default function ChatScreen() {
           )}
 
           {/* Chat input row */}
-          <View className="flex-row items-center px-2 pb-2 bg-white">
-            <Pressable
-              className="p-2"
-              onPress={() =>
-                dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: true })
-              }
-            >
-              <Feather name="plus" size={24} color="#02AAEB" />
-            </Pressable>
-            <View className="flex-1 mx-2 rounded-full bg-[#F5F5F5] flex-row items-center px-4">
+          <View className="px-4 py-2 bg-white border-t border-gray-200">
+            <View className="flex-row items-center px-3 py-2 bg-gray-100 rounded-full">
+              {/* Icon ảnh */}
+              <Pressable
+                onPress={() =>
+                  dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: true })
+                }
+                className="mr-3"
+              >
+                <Feather name="image" size={18} color="#A0A0A0" />
+              </Pressable>
+
+              {/* Icon mic */}
+              <Pressable className="mr-2">
+                <Feather name="mic" size={18} color="#A0A0A0" />
+              </Pressable>
+
+              {/* Đường kẻ dọc ngăn cách */}
+              <View
+                style={{
+                  width: 1,
+                  height: 20,
+                  backgroundColor: "#D1D5DB", // màu xám nhạt
+                  marginHorizontal: 6,
+                }}
+              />
+
+              {/* Ô nhập tin nhắn */}
               <TextInput
-                className="flex-1 py-2 text-base"
-                placeholder="Gửi tin nhắn..."
+                className="flex-1 text-base text-black"
+                placeholder="Nhập tin nhắn"
                 placeholderTextColor="#B0B0B0"
                 value={input}
                 onChangeText={(text) =>
                   dispatch({ type: "SET_INPUT", payload: text })
                 }
                 editable={!sending}
+                multiline
               />
-            </View>
-            <Pressable
-              className="p-2"
-              onPress={handleSend}
-              disabled={sending || !input.trim()}
-            >
-              {sending ? (
-                <ActivityIndicator size={20} color="#02AAEB" />
-              ) : (
-                <Feather name="send" size={24} color="#02AAEB" />
-              )}
-            </Pressable>
 
-            <AttachmentMenu
-              visible={showAttachmentMenu}
-              onClose={() =>
-                dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: false })
-              }
-              onSelect={handleAttachmentSelect}
-            />
+              {/* Nút gửi */}
+              <Pressable
+                onPress={handleSend}
+                disabled={sending || !input.trim()}
+                className="ml-2"
+              >
+                <View className="pr-3 rounded-full ">
+                  {sending ? (
+                    <ActivityIndicator size={20} color="#02AAEB" />
+                  ) : (
+                    <Feather name="send" size={20} color="#02AAEB" />
+                  )}
+                </View>
+              </Pressable>
+            </View>
           </View>
         </SafeAreaView>
       </TouchableWithoutFeedback>
