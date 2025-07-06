@@ -3,6 +3,7 @@ import { Blog, blogService, Comment } from '@/src/services/blog.service';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { vi } from 'date-fns/locale/vi';
+import * as Linking from 'expo-linking'; // Added for creating deep links
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import
@@ -13,13 +14,13 @@ import
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    ScrollView,
+    ScrollView, Share, // Added for the native share functionality
     StatusBar,
     Text,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
-    View,
+    View
 } from 'react-native';
 import RenderHTML from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -171,9 +172,21 @@ const BlogDetailScreen = () =>
     const [ error, setError ] = useState<string | null>( null );
     const [ isLiking, setIsLiking ] = useState( false );
     const [ likingCommentId, setLikingCommentId ] = useState<string | null>( null );
-    const [ isPostingComment, setIsPostingComment ] = useState( false ); // New state for adding comments
+    const [ isPostingComment, setIsPostingComment ] = useState( false );
 
     const scrollRef = useRef<ScrollView>( null );
+    // const url = Linking.useURL();
+
+    // if ( url )
+    // {
+    //     const { hostname, path, queryParams } = Linking.parse( url );
+
+    //     console.log(
+    //         `Linked to app with hostname: ${ hostname }, path: ${ path } and data: ${ JSON.stringify(
+    //             queryParams
+    //         ) }`
+    //     );
+    // }
 
     useEffect( () =>
     {
@@ -198,6 +211,41 @@ const BlogDetailScreen = () =>
 
         fetchBlog();
     }, [ id ] );
+
+    const handleShare = async () =>
+    {
+        if ( !blog )
+        {
+            Alert.alert( "Lỗi", "Không thể chia sẻ vì không tải được dữ liệu bài viết." );
+            return;
+        }
+
+        try
+        {
+            const deepLink = Linking.createURL( `(tabs)/home/blog/detail?id=${ blog._id }` );
+
+            const result = await Share.share( {
+                message: `Xem bài viết này nhé: "${ blog.title }"\n\n${ deepLink }`,
+                url: deepLink,
+                title: blog.title,
+            } );
+            if ( result.action === Share.sharedAction )
+            {
+                await blogService.shareBlog( blog._id );
+            } else if ( result.action === Share.dismissedAction )
+            {
+                // The user cancelled the share
+                // console.log( "Share dismissed by user." );
+                // You can optionally show a message here, but it's often better to do nothing.
+            }
+        } catch ( error: any )
+        {
+            Alert.alert( "Lỗi", "Không thể chia sẻ bài viết." );
+            console.error( 'Error sharing post', error );
+        }
+    };
+
+
     const handleLikeToggle = async () =>
     {
         if ( !user )
@@ -208,11 +256,9 @@ const BlogDetailScreen = () =>
         if ( !blog || isLiking ) return;
 
         setIsLiking( true );
-        const originalBlog = { ...blog }; // Keep a copy for rollback on error
+        const originalBlog = { ...blog };
 
-        // Optimistic Update: Update the UI immediately
         const isCurrentlyLiked = blog.likedBy.some( liker => String( liker._id ) === String( user._id ) );
-
         const updatedBlog = {
             ...blog,
             likedBy: isCurrentlyLiked
@@ -229,7 +275,7 @@ const BlogDetailScreen = () =>
         {
             console.error( "Failed to toggle like on blog:", err );
             Alert.alert( "Lỗi", "Không thể thay đổi trạng thái thích. Vui lòng thử lại." );
-            setBlog( originalBlog ); // Rollback UI on error
+            setBlog( originalBlog );
         } finally
         {
             setIsLiking( false );
@@ -248,7 +294,6 @@ const BlogDetailScreen = () =>
         setLikingCommentId( commentId );
         const originalBlog = { ...blog };
 
-        // Optimistic Update
         const updatedComments = blog.comments.map( c =>
         {
             if ( c._id === commentId )
@@ -274,7 +319,7 @@ const BlogDetailScreen = () =>
         {
             console.error( "Failed to like comment:", err );
             Alert.alert( "Lỗi", "Không thể thích bình luận. Vui lòng thử lại." );
-            setBlog( originalBlog ); // Rollback on error
+            setBlog( originalBlog );
         } finally
         {
             setLikingCommentId( null );
@@ -301,9 +346,8 @@ const BlogDetailScreen = () =>
             updatedAt: new Date().toISOString(),
         };
 
-        // Step 1 FIX: Ensure `...prevBlog` is present to preserve the entire blog state
         setBlog( prevBlog => prevBlog ? {
-            ...prevBlog, // THIS IS THE CRITICAL FIX FOR THE STATE CORRUPTION
+            ...prevBlog,
             comments: [ optimisticComment, ...prevBlog.comments ]
         } : null );
 
@@ -315,7 +359,7 @@ const BlogDetailScreen = () =>
             console.error( "Failed to add comment:", err );
             Alert.alert( "Lỗi", "Không thể đăng bình luận. Vui lòng thử lại." );
             setBlog( prevBlog => prevBlog ? {
-                ...prevBlog, // And here for the rollback
+                ...prevBlog,
                 comments: prevBlog.comments.filter( c => c._id !== tempId )
             } : null );
         } finally
@@ -325,14 +369,12 @@ const BlogDetailScreen = () =>
     };
     const handleInputFocus = () =>
     {
-        // Use a timeout to ensure the keyboard is fully visible before scrolling
         setTimeout( () =>
         {
             scrollRef.current?.scrollToEnd( { animated: true } );
         }, 300 );
     };
-    // ✅ CORRECTED: This is a plain object, not a StyleSheet.create() call.
-    // This satisfies the type `Readonly<Record<string, MixedStyleDeclaration>>`
+
     const tagsStyles = useMemo( () => ( {
         body: {
             color: '#374151',
@@ -342,7 +384,6 @@ const BlogDetailScreen = () =>
         h1: {
             color: '#111827',
             fontSize: 20,
-            // --- THIS IS THE FIX ---
             fontWeight: 'bold' as const,
             marginTop: 16,
             marginBottom: 8,
@@ -392,7 +433,7 @@ const BlogDetailScreen = () =>
                 </TouchableOpacity>
 
                 <View className="flex-row gap-x-2 mr-2">
-                    <TouchableOpacity className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
+                    <TouchableOpacity onPress={ handleShare } className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
                         <Ionicons name="share-social-outline" size={ 22 } color="#1584F2" />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -418,8 +459,6 @@ const BlogDetailScreen = () =>
             <KeyboardAvoidingView
                 behavior={ Platform.OS === "ios" ? "padding" : "height" }
                 style={ { flex: 1 } }
-            // IMPORTANT: Adjust this value to match your header's height
-            // keyboardVerticalOffset={ Platform.OS === 'ios' ? 60 : 0 }
             >
                 <ScrollView showsVerticalScrollIndicator={ false }>
                     <Image

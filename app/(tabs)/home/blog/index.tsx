@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { vi } from 'date-fns/locale/vi';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import
 {
     ActivityIndicator,
     Alert,
     Image,
+    RefreshControl,
     ScrollView,
     StatusBar,
     Text,
@@ -49,28 +50,60 @@ const BlogScreen = () =>
     const [ isLoading, setIsLoading ] = useState( true );
     const [ error, setError ] = useState<string | null>( null );
     const [ likingBlogId, setLikingBlogId ] = useState<string | null>( null );
+    const [ isRefreshing, setIsRefreshing ] = useState( false );
 
-    useEffect( () =>
+    const fetchBlogs = async ( isInitialLoad = false ) =>
     {
-        const fetchBlogs = async () =>
+        // Only show the full-screen skeleton on the very first load
+        if ( isInitialLoad )
         {
-            try
-            {
-                const response = await blogService.getBlogs( 1, 10 );
-                setBlogs( response.data );
-            } catch ( err )
-            {
-                console.error( "Failed to fetch blogs:", err );
-                setError( "Không thể tải được bài viết. Vui lòng thử lại sau." );
-            } finally
+            setIsLoading( true );
+        }
+        try
+        {
+            const response = await blogService.getBlogs( 1, 10 );
+            setBlogs( response.data );
+            setError( null );
+        } catch ( err )
+        {
+            console.error( "Failed to fetch blogs:", err );
+            setError( "Không thể tải được bài viết. Vui lòng thử lại sau." );
+        } finally
+        {
+            if ( isInitialLoad )
             {
                 setIsLoading( false );
             }
-        };
+        }
+    };
+    useFocusEffect(
+        // By wrapping the function in useCallback, we ensure it's not recreated on every render.
+        // This is a crucial performance optimization for useFocusEffect.
+        useCallback( () =>
+        {
+            console.log( 'Screen is focused, fetching blogs...' );
+            // Use 'true' for the initial load check.
+            // If blogs are already loaded, this won't show the skeleton,
+            // but it will still refresh the data.
+            fetchBlogs(
+                blogs.length === 0
+            );
 
-        fetchBlogs();
+            // You can also return a cleanup function if needed,
+            // which runs when the screen goes out of focus.
+            return () =>
+            {
+                console.log( 'Screen is unfocused.' );
+            };
+        }, [ blogs.length ] )
+    );
+
+    const onRefresh = useCallback( async () =>
+    {
+        setIsRefreshing( true ); // Show the refresh indicator
+        await fetchBlogs();     // Re-fetch the data
+        setIsRefreshing( false ); // Hide the refresh indicator
     }, [] );
-
     const handleLikeToggle = async ( blogId: string ) =>
     {
         if ( !user )
@@ -144,9 +177,12 @@ const BlogScreen = () =>
 
     const renderFloatingButton = () => (
         <TouchableOpacity
-            className="absolute bottom-8 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
+            className="absolute bottom-28 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
             style={ { elevation: 5 } }
-            onPress={ () => { } } // Example action
+            onPress={ () =>
+            {
+                router.push( '/(tabs)/home/blog/add' ); // Navigate to the add blog screen
+            } } // Example action
         >
             <Ionicons name="add" size={ 32 } color="white" />
         </TouchableOpacity>
@@ -199,6 +235,14 @@ const BlogScreen = () =>
                 <ScrollView
                     contentContainerStyle={ { paddingHorizontal: 16, paddingBottom: 100 } }
                     showsVerticalScrollIndicator={ false }
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={ isRefreshing } // Controls when the spinner is visible
+                            onRefresh={ onRefresh }      // Function to call when user pulls down
+                            tintColor="#3B82F6"          // (Optional) Spinner color on iOS
+                            colors={ [ "#3B82F6" ] }     // (Optional) Spinner color on Android
+                        />
+                    }
                 >
                     { blogs.map( blog =>
                     {
