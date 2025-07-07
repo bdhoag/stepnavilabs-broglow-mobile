@@ -53,7 +53,25 @@ export default function HomeLayout ()
         name="subscription/index"
         options={ {
           title: "Gói đăng ký",
-        } }
+          headerShown: false,
+          presentation: 'fullScreenModal', 
+        }}
+      />
+      <Stack.Screen
+        name="subscription/confirm"
+        options={{
+          title: "Xác nhận đăng ký",
+          headerShown: false,
+          presentation: 'fullScreenModal', // Ẩn tab bar
+        }}
+      />
+      <Stack.Screen
+        name="subscription/method"
+        options={{
+          title: "Phương thức thanh toán",
+          headerShown: false,
+          presentation: 'fullScreenModal', // Ẩn tab bar
+        }}
       />
     </Stack>
   );
