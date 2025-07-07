@@ -3,6 +3,7 @@ import { Blog, blogService, Comment } from '@/src/services/blog.service';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { vi } from 'date-fns/locale/vi';
+import * as Linking from 'expo-linking'; // Added for creating deep links
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import
@@ -13,13 +14,13 @@ import
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    ScrollView,
+    ScrollView, Share, // Added for the native share functionality
     StatusBar,
     Text,
     TextInput,
     TouchableOpacity,
     useWindowDimensions,
-    View,
+    View
 } from 'react-native';
 import RenderHTML from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -49,8 +50,8 @@ const CommentItem = ( {
             <View className="flex-1 bg-gray-50 rounded-2xl p-3">
                 <View className="flex-row justify-between items-start mb-1">
                     <View className="flex-1">
-                        <Text className="font-bold text-sm text-gray-800">{ comment.author.email.split( '@' )[ 0 ] }</Text>
-                        <Text className="text-xs text-gray-500 mb-2">
+                        <Text className="font-quicksand-bold text-sm text-gray-800">{ comment.author.email.split( '@' )[ 0 ] }</Text>
+                        <Text className="text-xs text-gray-500 mb-2 font-quicksand">
                             { formatDistanceToNow( new Date( comment.createdAt ), { addSuffix: true, locale: vi } ) }
                         </Text>
                     </View>
@@ -68,10 +69,10 @@ const CommentItem = ( {
                                 color={ isLikedByUser ? "#ef4444" : "#6B7280" }
                             />
                         ) }
-                        <Text className="text-sm text-gray-600">{ comment.likes }</Text>
+                        <Text className="text-sm font-quicksand text-gray-600">{ comment.likes }</Text>
                     </TouchableOpacity>
                 </View>
-                <Text className="text-gray-800 leading-5">{ comment.content }</Text>
+                <Text className="text-gray-800 font-quicksand leading-5">{ comment.content }</Text>
             </View>
         </View>
     );
@@ -110,7 +111,7 @@ const CommentSection = ( {
     return (
         <View className="px-4 py-6 border-t border-gray-200">
             <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-xl font-bold text-gray-900">
+                <Text className="text-xl font-quicksand-bold text-gray-900">
                     Bình luận <Text className="text-blue-500">{ comments.length }</Text>
                 </Text>
                 <TouchableOpacity>
@@ -132,7 +133,7 @@ const CommentSection = ( {
                             placeholderTextColor={ "#9CA3AF" }
                             onChangeText={ setNewComment }
                             editable={ !isPostingComment } // Disable input while posting
-                            className="flex-1 h-12 text-gray-900"
+                            className="flex-1 h-12 text-gray-900 font-quicksand"
                         />
                         <TouchableOpacity onPress={ handlePostComment } disabled={ isPostingComment || !newComment.trim() }>
                             { isPostingComment ? (
@@ -171,9 +172,21 @@ const BlogDetailScreen = () =>
     const [ error, setError ] = useState<string | null>( null );
     const [ isLiking, setIsLiking ] = useState( false );
     const [ likingCommentId, setLikingCommentId ] = useState<string | null>( null );
-    const [ isPostingComment, setIsPostingComment ] = useState( false ); // New state for adding comments
+    const [ isPostingComment, setIsPostingComment ] = useState( false );
 
     const scrollRef = useRef<ScrollView>( null );
+    // const url = Linking.useURL();
+
+    // if ( url )
+    // {
+    //     const { hostname, path, queryParams } = Linking.parse( url );
+
+    //     console.log(
+    //         `Linked to app with hostname: ${ hostname }, path: ${ path } and data: ${ JSON.stringify(
+    //             queryParams
+    //         ) }`
+    //     );
+    // }
 
     useEffect( () =>
     {
@@ -198,6 +211,41 @@ const BlogDetailScreen = () =>
 
         fetchBlog();
     }, [ id ] );
+
+    const handleShare = async () =>
+    {
+        if ( !blog )
+        {
+            Alert.alert( "Lỗi", "Không thể chia sẻ vì không tải được dữ liệu bài viết." );
+            return;
+        }
+
+        try
+        {
+            const deepLink = Linking.createURL( `(tabs)/home/blog/detail?id=${ blog._id }` );
+
+            const result = await Share.share( {
+                message: `Xem bài viết này nhé: "${ blog.title }"\n\n${ deepLink }`,
+                url: deepLink,
+                title: blog.title,
+            } );
+            if ( result.action === Share.sharedAction )
+            {
+                await blogService.shareBlog( blog._id );
+            } else if ( result.action === Share.dismissedAction )
+            {
+                // The user cancelled the share
+                // console.log( "Share dismissed by user." );
+                // You can optionally show a message here, but it's often better to do nothing.
+            }
+        } catch ( error: any )
+        {
+            Alert.alert( "Lỗi", "Không thể chia sẻ bài viết." );
+            console.error( 'Error sharing post', error );
+        }
+    };
+
+
     const handleLikeToggle = async () =>
     {
         if ( !user )
@@ -208,11 +256,9 @@ const BlogDetailScreen = () =>
         if ( !blog || isLiking ) return;
 
         setIsLiking( true );
-        const originalBlog = { ...blog }; // Keep a copy for rollback on error
+        const originalBlog = { ...blog };
 
-        // Optimistic Update: Update the UI immediately
         const isCurrentlyLiked = blog.likedBy.some( liker => String( liker._id ) === String( user._id ) );
-
         const updatedBlog = {
             ...blog,
             likedBy: isCurrentlyLiked
@@ -229,7 +275,7 @@ const BlogDetailScreen = () =>
         {
             console.error( "Failed to toggle like on blog:", err );
             Alert.alert( "Lỗi", "Không thể thay đổi trạng thái thích. Vui lòng thử lại." );
-            setBlog( originalBlog ); // Rollback UI on error
+            setBlog( originalBlog );
         } finally
         {
             setIsLiking( false );
@@ -248,7 +294,6 @@ const BlogDetailScreen = () =>
         setLikingCommentId( commentId );
         const originalBlog = { ...blog };
 
-        // Optimistic Update
         const updatedComments = blog.comments.map( c =>
         {
             if ( c._id === commentId )
@@ -274,7 +319,7 @@ const BlogDetailScreen = () =>
         {
             console.error( "Failed to like comment:", err );
             Alert.alert( "Lỗi", "Không thể thích bình luận. Vui lòng thử lại." );
-            setBlog( originalBlog ); // Rollback on error
+            setBlog( originalBlog );
         } finally
         {
             setLikingCommentId( null );
@@ -301,9 +346,8 @@ const BlogDetailScreen = () =>
             updatedAt: new Date().toISOString(),
         };
 
-        // Step 1 FIX: Ensure `...prevBlog` is present to preserve the entire blog state
         setBlog( prevBlog => prevBlog ? {
-            ...prevBlog, // THIS IS THE CRITICAL FIX FOR THE STATE CORRUPTION
+            ...prevBlog,
             comments: [ optimisticComment, ...prevBlog.comments ]
         } : null );
 
@@ -315,7 +359,7 @@ const BlogDetailScreen = () =>
             console.error( "Failed to add comment:", err );
             Alert.alert( "Lỗi", "Không thể đăng bình luận. Vui lòng thử lại." );
             setBlog( prevBlog => prevBlog ? {
-                ...prevBlog, // And here for the rollback
+                ...prevBlog,
                 comments: prevBlog.comments.filter( c => c._id !== tempId )
             } : null );
         } finally
@@ -325,24 +369,22 @@ const BlogDetailScreen = () =>
     };
     const handleInputFocus = () =>
     {
-        // Use a timeout to ensure the keyboard is fully visible before scrolling
         setTimeout( () =>
         {
             scrollRef.current?.scrollToEnd( { animated: true } );
         }, 300 );
     };
-    // ✅ CORRECTED: This is a plain object, not a StyleSheet.create() call.
-    // This satisfies the type `Readonly<Record<string, MixedStyleDeclaration>>`
+
     const tagsStyles = useMemo( () => ( {
         body: {
             color: '#374151',
             fontSize: 16,
             lineHeight: 26,
+
         },
         h1: {
             color: '#111827',
             fontSize: 20,
-            // --- THIS IS THE FIX ---
             fontWeight: 'bold' as const,
             marginTop: 16,
             marginBottom: 8,
@@ -383,6 +425,7 @@ const BlogDetailScreen = () =>
         );
     }
     const isLikedByUser = user ? blog.likedBy.some( liker => String( liker._id ) === String( user._id ) ) : false;
+    const isAuthor = user ? String( user._id ) === String( blog.author._id ) : false;
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" />
@@ -392,7 +435,7 @@ const BlogDetailScreen = () =>
                 </TouchableOpacity>
 
                 <View className="flex-row gap-x-2 mr-2">
-                    <TouchableOpacity className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
+                    <TouchableOpacity onPress={ handleShare } className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
                         <Ionicons name="share-social-outline" size={ 22 } color="#1584F2" />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -410,6 +453,13 @@ const BlogDetailScreen = () =>
                             />
                         ) }
                     </TouchableOpacity>
+
+                    { isAuthor && <TouchableOpacity onPress={ () =>
+                    {
+                        router.push( { pathname: '/(tabs)/home/blog/edit', params: { id: blog._id } } );
+                    } } className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
+                        <Ionicons name="create-outline" size={ 22 } color="#1584F2" />
+                    </TouchableOpacity> }
                 </View>
 
             </View>
@@ -418,8 +468,6 @@ const BlogDetailScreen = () =>
             <KeyboardAvoidingView
                 behavior={ Platform.OS === "ios" ? "padding" : "height" }
                 style={ { flex: 1 } }
-            // IMPORTANT: Adjust this value to match your header's height
-            // keyboardVerticalOffset={ Platform.OS === 'ios' ? 60 : 0 }
             >
                 <ScrollView showsVerticalScrollIndicator={ false }>
                     <Image
@@ -429,14 +477,14 @@ const BlogDetailScreen = () =>
                     />
 
                     <View className="p-4">
-                        <Text className="text-xs text-gray-500 mb-2">
+                        <Text className="text-xs text-gray-500 mb-2 font-quicksand">
                             { formatDistanceToNow( new Date( blog.createdAt ), {
                                 addSuffix: true,
                                 locale: vi,
                             } ) }
                         </Text>
 
-                        <Text className="text-2xl font-bold text-gray-900 leading-tight mb-4">
+                        <Text className="text-2xl font-quicksand-bold text-gray-900 leading-tight mb-4">
                             { blog.title }
                         </Text>
 
@@ -444,7 +492,7 @@ const BlogDetailScreen = () =>
                             <View className="flex-row items-center gap-x-4">
                                 { blog.tags?.[ 0 ] && (
                                     <View className="border border-blue-500 bg-blue-50 rounded-full px-3 py-1">
-                                        <Text className="text-blue-600 text-xs font-semibold capitalize">{ blog.tags[ 0 ] }</Text>
+                                        <Text className="text-blue-600 text-xs font-quicksand-semibold capitalize">{ blog.tags[ 0 ] }</Text>
                                     </View>
                                 ) }
                                 <View className="flex-row items-center gap-x-1">
@@ -458,7 +506,7 @@ const BlogDetailScreen = () =>
                                     source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author.email.split( '@' )[ 0 ] }&background=random` } }
                                     className="w-7 h-7 rounded-full mr-2"
                                 />
-                                <Text className="text-sm font-medium text-gray-800">{ blog.author.email.split( '@' )[ 0 ] }</Text>
+                                <Text className="text-sm font-quicksand-medium text-gray-800">{ blog.author.email.split( '@' )[ 0 ] }</Text>
                             </View>
                         </View>
 

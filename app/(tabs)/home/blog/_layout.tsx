@@ -22,6 +22,20 @@ const BlogLayout = () =>
                     headerShown: false,
                 } }
             />
+            <Stack.Screen
+                name="add"
+                options={ {
+                    title: "Tạo bài viết",
+                    headerShown: false,
+                } }
+            />
+            <Stack.Screen
+                name="edit"
+                options={ {
+                    title: "Chỉnh sửa bài viết",
+                    headerShown: false,
+                } }
+            />
         </Stack>
     )
 }

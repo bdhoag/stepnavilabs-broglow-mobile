@@ -18,6 +18,11 @@ export interface Image {
   caption: string;
 }
 
+export interface ImageRequest {
+  url: string;
+  caption: string; 
+}
+
 // Interface cho đối tượng Bình luận
 export interface Comment {
   _id: string;
@@ -44,6 +49,13 @@ export interface Blog {
   comments: Comment[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface BlogRequest {
+  title: string;
+  content: string;
+  tags?: string[];
+  images?: ImageRequest[];
 }
 
 // Interface cho thông tin phân trang
@@ -156,7 +168,8 @@ export class BlogService {
    */
   async shareBlog(blogId: string): Promise<void> {
     const tokens = await TokenStorage.getTokens();
-    
+    console.log("Sharing blog with ID:", blogId);
+    console.log("Using token:", tokens?.token);
     await apiClient.post(
       `${this.baseUrl}/${blogId}/share`,
       null, // No request body is needed for this action
@@ -166,6 +179,49 @@ export class BlogService {
         },
       }
     );
+  }
+
+  /**
+   * Tạo một bài blog mới.
+   * @param blogData - Dữ liệu của bài blog mới
+   * @returns Promise chứa đối tượng bài blog vừa được tạo
+   */
+  async createBlog(blogData: BlogRequest): Promise<Blog> {
+    const tokens = await TokenStorage.getTokens();
+    
+    const response = await apiClient.post<Blog>(
+      this.baseUrl,
+      blogData,
+      {
+        headers: {
+          Authorization: `Bearer ${tokens?.token}`,
+        },
+      }
+    );
+    
+    return response.data;
+  }
+
+  /**
+   * Cập nhật một bài blog theo ID.
+   * @param blogId - ID của bài blog cần cập nhật
+   * @param blogData - Dữ liệu mới cho bài blog
+   * @returns Promise chứa đối tượng bài blog đã được cập nhật
+   */
+  async updateBlog(blogId: string, blogData: BlogRequest): Promise<Blog> {
+    const tokens = await TokenStorage.getTokens();
+    
+    const response = await apiClient.put<Blog>(
+      `${this.baseUrl}/${blogId}`,
+      blogData,
+      {
+        headers: {
+          Authorization: `Bearer ${tokens?.token}`,
+        },
+      }
+    );
+    
+    return response.data;
   }
 }
 
