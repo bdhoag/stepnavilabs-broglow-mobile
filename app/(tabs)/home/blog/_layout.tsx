@@ -29,6 +29,13 @@ const BlogLayout = () =>
                     headerShown: false,
                 } }
             />
+            <Stack.Screen
+                name="edit"
+                options={ {
+                    title: "Chỉnh sửa bài viết",
+                    headerShown: false,
+                } }
+            />
         </Stack>
     )
 }

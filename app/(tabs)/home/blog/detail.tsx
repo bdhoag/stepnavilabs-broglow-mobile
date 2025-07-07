@@ -50,8 +50,8 @@ const CommentItem = ( {
             <View className="flex-1 bg-gray-50 rounded-2xl p-3">
                 <View className="flex-row justify-between items-start mb-1">
                     <View className="flex-1">
-                        <Text className="font-bold text-sm text-gray-800">{ comment.author.email.split( '@' )[ 0 ] }</Text>
-                        <Text className="text-xs text-gray-500 mb-2">
+                        <Text className="font-quicksand-bold text-sm text-gray-800">{ comment.author.email.split( '@' )[ 0 ] }</Text>
+                        <Text className="text-xs text-gray-500 mb-2 font-quicksand">
                             { formatDistanceToNow( new Date( comment.createdAt ), { addSuffix: true, locale: vi } ) }
                         </Text>
                     </View>
@@ -69,10 +69,10 @@ const CommentItem = ( {
                                 color={ isLikedByUser ? "#ef4444" : "#6B7280" }
                             />
                         ) }
-                        <Text className="text-sm text-gray-600">{ comment.likes }</Text>
+                        <Text className="text-sm font-quicksand text-gray-600">{ comment.likes }</Text>
                     </TouchableOpacity>
                 </View>
-                <Text className="text-gray-800 leading-5">{ comment.content }</Text>
+                <Text className="text-gray-800 font-quicksand leading-5">{ comment.content }</Text>
             </View>
         </View>
     );
@@ -111,7 +111,7 @@ const CommentSection = ( {
     return (
         <View className="px-4 py-6 border-t border-gray-200">
             <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-xl font-bold text-gray-900">
+                <Text className="text-xl font-quicksand-bold text-gray-900">
                     Bình luận <Text className="text-blue-500">{ comments.length }</Text>
                 </Text>
                 <TouchableOpacity>
@@ -133,7 +133,7 @@ const CommentSection = ( {
                             placeholderTextColor={ "#9CA3AF" }
                             onChangeText={ setNewComment }
                             editable={ !isPostingComment } // Disable input while posting
-                            className="flex-1 h-12 text-gray-900"
+                            className="flex-1 h-12 text-gray-900 font-quicksand"
                         />
                         <TouchableOpacity onPress={ handlePostComment } disabled={ isPostingComment || !newComment.trim() }>
                             { isPostingComment ? (
@@ -380,6 +380,7 @@ const BlogDetailScreen = () =>
             color: '#374151',
             fontSize: 16,
             lineHeight: 26,
+
         },
         h1: {
             color: '#111827',
@@ -424,6 +425,7 @@ const BlogDetailScreen = () =>
         );
     }
     const isLikedByUser = user ? blog.likedBy.some( liker => String( liker._id ) === String( user._id ) ) : false;
+    const isAuthor = user ? String( user._id ) === String( blog.author._id ) : false;
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" />
@@ -451,6 +453,13 @@ const BlogDetailScreen = () =>
                             />
                         ) }
                     </TouchableOpacity>
+
+                    { isAuthor && <TouchableOpacity onPress={ () =>
+                    {
+                        router.push( { pathname: '/(tabs)/home/blog/edit', params: { id: blog._id } } );
+                    } } className="bg-[#02a9eb22] rounded-xl w-12 h-12 items-center justify-center">
+                        <Ionicons name="create-outline" size={ 22 } color="#1584F2" />
+                    </TouchableOpacity> }
                 </View>
 
             </View>
@@ -468,14 +477,14 @@ const BlogDetailScreen = () =>
                     />
 
                     <View className="p-4">
-                        <Text className="text-xs text-gray-500 mb-2">
+                        <Text className="text-xs text-gray-500 mb-2 font-quicksand">
                             { formatDistanceToNow( new Date( blog.createdAt ), {
                                 addSuffix: true,
                                 locale: vi,
                             } ) }
                         </Text>
 
-                        <Text className="text-2xl font-bold text-gray-900 leading-tight mb-4">
+                        <Text className="text-2xl font-quicksand-bold text-gray-900 leading-tight mb-4">
                             { blog.title }
                         </Text>
 
@@ -483,7 +492,7 @@ const BlogDetailScreen = () =>
                             <View className="flex-row items-center gap-x-4">
                                 { blog.tags?.[ 0 ] && (
                                     <View className="border border-blue-500 bg-blue-50 rounded-full px-3 py-1">
-                                        <Text className="text-blue-600 text-xs font-semibold capitalize">{ blog.tags[ 0 ] }</Text>
+                                        <Text className="text-blue-600 text-xs font-quicksand-semibold capitalize">{ blog.tags[ 0 ] }</Text>
                                     </View>
                                 ) }
                                 <View className="flex-row items-center gap-x-1">
@@ -497,7 +506,7 @@ const BlogDetailScreen = () =>
                                     source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author.email.split( '@' )[ 0 ] }&background=random` } }
                                     className="w-7 h-7 rounded-full mr-2"
                                 />
-                                <Text className="text-sm font-medium text-gray-800">{ blog.author.email.split( '@' )[ 0 ] }</Text>
+                                <Text className="text-sm font-quicksand-medium text-gray-800">{ blog.author.email.split( '@' )[ 0 ] }</Text>
                             </View>
                         </View>
 

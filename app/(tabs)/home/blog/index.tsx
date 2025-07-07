@@ -199,6 +199,9 @@ const BlogScreen = () =>
                     <BlogListItemSkeleton />
                     <BlogListItemSkeleton />
                     <BlogListItemSkeleton />
+                    <BlogListItemSkeleton />
+                    <BlogListItemSkeleton />
+                    <BlogListItemSkeleton />
                 </ScrollView>
                 { renderFloatingButton() }
             </SafeAreaView>

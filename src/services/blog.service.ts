@@ -201,6 +201,28 @@ export class BlogService {
     
     return response.data;
   }
+
+  /**
+   * Cập nhật một bài blog theo ID.
+   * @param blogId - ID của bài blog cần cập nhật
+   * @param blogData - Dữ liệu mới cho bài blog
+   * @returns Promise chứa đối tượng bài blog đã được cập nhật
+   */
+  async updateBlog(blogId: string, blogData: BlogRequest): Promise<Blog> {
+    const tokens = await TokenStorage.getTokens();
+    
+    const response = await apiClient.put<Blog>(
+      `${this.baseUrl}/${blogId}`,
+      blogData,
+      {
+        headers: {
+          Authorization: `Bearer ${tokens?.token}`,
+        },
+      }
+    );
+    
+    return response.data;
+  }
 }
 
 // Export instance để sử dụng trong toàn bộ ứng dụng

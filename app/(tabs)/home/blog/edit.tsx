@@ -1,10 +1,9 @@
-
 import { BlogRequest, blogService } from '@/src/services/blog.service';
 import { fileService } from '@/src/services/file.service';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import
 {
     ActivityIndicator,
@@ -17,13 +16,12 @@ import
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
-// Reusable Labeled Input Component (no changes)
+// Tái sử dụng FormInput từ AddBlogScreen (Không thay đổi)
 const FormInput = ( { label, value, onChangeText, placeholder, ...props }: { label: string, value: string, onChangeText: ( text: string ) => void, placeholder: string, [ key: string ]: any } ) => (
     <View className="mb-6">
         <Text className="text-base font-semibold text-gray-800 mb-2">{ label }<Text className="text-red-500">*</Text></Text>
@@ -39,16 +37,64 @@ const FormInput = ( { label, value, onChangeText, placeholder, ...props }: { lab
 );
 
 
-const AddBlogScreen = () =>
+const EditBlogScreen = () =>
 {
+    const { id } = useLocalSearchParams<{ id: string }>();
+
     const [ title, setTitle ] = useState( '' );
     const [ tags, setTags ] = useState( '' );
-    const [ coverImage, setCoverImage ] = useState<ImagePicker.ImagePickerAsset | null>( null );
-    const [ isLoading, setIsLoading ] = useState( false );
+    const [ initHtml, setInitHtml ] = useState( '<p>Đang tải nội dung...</p>' ); // Initial placeholder
+    const [ newCoverImage, setNewCoverImage ] = useState<ImagePicker.ImagePickerAsset | null>( null );
+    const [ existingCoverImageUrl, setExistingCoverImageUrl ] = useState<string | null>( null );
+
+    const [ isFetching, setIsFetching ] = useState( true );
+    const [ isUpdating, setIsUpdating ] = useState( false );
     const [ isUploading, setIsUploading ] = useState( false );
+    const [ fetchError, setFetchError ] = useState<string | null>( null );
     const _editor = useRef<QuillEditor>( null ) as React.RefObject<QuillEditor>;
 
-    // handlePickImage and handleSubmit logic remains the same
+
+    // Tìm nạp dữ liệu bài viết khi component được mount
+    useEffect( () =>
+    {
+        if ( !id )
+        {
+            setFetchError( "Không tìm thấy ID bài viết." );
+            setIsFetching( false );
+            return;
+        };
+
+        const fetchBlog = async () =>
+        {
+            try
+            {
+                setIsFetching( true );
+                const data = await blogService.getBlogById( id );
+                setTitle( data.title );
+                setTags( data.tags.join( ', ' ) );
+                if ( data.images && data.images.length > 0 )
+                {
+                    setExistingCoverImageUrl( data.images[ 0 ].url );
+                }
+
+                // ✅ SỬA LỖI TẠI ĐÂY: Cập nhật state HTML trực tiếp
+                setInitHtml( data.content );
+
+                setFetchError( null );
+            } catch ( err )
+            {
+                console.error( "Failed to fetch blog details:", err );
+                setFetchError( "Không thể tải chi tiết bài viết. Vui lòng thử lại." );
+            } finally
+            {
+                setIsFetching( false );
+            }
+        };
+
+        fetchBlog();
+    }, [ id ] );
+
+    // Xử lý chọn ảnh (giống AddBlogScreen)
     const handlePickImage = async () =>
     {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -67,94 +113,83 @@ const AddBlogScreen = () =>
 
         if ( !result.canceled && result.assets && result.assets.length > 0 )
         {
-            setCoverImage( result.assets[ 0 ] );
+            setNewCoverImage( result.assets[ 0 ] );
         }
     };
 
+    // Xử lý submit form
     const handleSubmit = async () =>
     {
-        // const content = editor?.getHTML() || '';
-        console.log( 'Editor content:', await _editor.current.getHtml() );
+        const content = await _editor.current.getHtml();
 
-        if ( !title.trim() )
+        if ( !title.trim() || !content )
         {
-            Alert.alert( 'Lỗi', 'Vui lòng nhập tên bài viết.' );
+            Alert.alert( 'Lỗi', 'Vui lòng điền đầy đủ tiêu đề và nội dung bài viết.' );
             return;
         }
-        if ( !coverImage )
+        if ( !newCoverImage && !existingCoverImageUrl )
         {
             Alert.alert( 'Lỗi', 'Vui lòng chọn ảnh đại diện cho bài viết.' );
             return;
         }
-        if ( !await _editor.current.getHtml() )
-        {
-            Alert.alert( 'Lỗi', 'Vui lòng nhập nội dung bài viết.' );
-            return;
-        }
 
-        setIsLoading( true );
+        setIsUpdating( true );
         try
         {
-            // 1. Upload cover image
-            console.log( 'Uploading cover image...' );
-            const coverImageUrl = await fileService.uploadFromReactNative( coverImage );
-            console.log( 'Cover image uploaded:', coverImageUrl );
+            let coverImageUrl = existingCoverImageUrl;
 
-            // 2. Prepare blog data
+            if ( newCoverImage )
+            {
+                console.log( 'Uploading new cover image...' );
+                coverImageUrl = await fileService.uploadFromReactNative( newCoverImage );
+                console.log( 'New cover image uploaded:', coverImageUrl );
+            }
+
             const blogData: BlogRequest = {
                 title: title.trim(),
-                content: await _editor.current.getHtml() || '',
+                content: content,
                 tags: tags.split( ',' ).map( tag => tag.trim() ).filter( tag => tag.length > 0 ),
-                images: coverImageUrl ? [ { url: coverImageUrl, caption: '' } ] : [],
-            }
-            console.log( 'Blog data prepared:', blogData );
-            // 3. Call your blog service to create the post
-            await blogService.createBlog( blogData );
-            console.log( 'Blog post created successfully.' );
-            Alert.alert( 'Thành công', 'Bài viết đã được đăng thành công!' );
-            // 4. Navigate back to the blog list
+                images: coverImageUrl ? [ { url: coverImageUrl, caption: title.trim() } ] : [],
+            };
+            console.log( 'Blog data for update:', blogData );
+
+            await blogService.updateBlog( id!, blogData );
+            console.log( 'Blog post updated successfully.' );
+
+            Alert.alert( 'Thành công', 'Bài viết đã được cập nhật thành công!' );
+
             router.back();
+
         } catch ( error )
         {
-            console.error( 'Failed to create blog post:', error );
-            Alert.alert( 'Lỗi', 'Không thể đăng bài viết. Vui lòng thử lại sau.' );
+            console.error( 'Failed to update blog post:', error );
+            Alert.alert( 'Lỗi', 'Không thể cập nhật bài viết. Vui lòng thử lại sau.' );
         } finally
         {
-            setIsLoading( false );
+            setIsUpdating( false );
         }
-
     };
 
+    // Xử lý upload ảnh vào editor (giống AddBlogScreen)
     const handleImageUpload = async () =>
     {
-        // 1. Pick an image
         const result = await ImagePicker.launchImageLibraryAsync( {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 0.7,
         } );
 
-        if ( result.canceled || !result.assets || result.assets.length === 0 )
-        {
-            return; // User cancelled the picker
-        }
+        if ( result.canceled || !result.assets || result.assets.length === 0 ) return;
 
         const imageAsset = result.assets[ 0 ];
-        console.log( 'Selected image:', imageAsset.file! );
         setIsUploading( true );
 
         try
         {
-            // 2. Upload using your service
-            console.log( 'Uploading with FileService...' );
             const imageUrl = await fileService.uploadFromReactNative( imageAsset );
-            console.log( 'Upload successful:', imageUrl );
-
-            // 3. Insert the returned URL into the editor
             if ( imageUrl )
             {
                 const selection = await _editor.current?.getSelection();
-                const cursorIndex = selection?.index || 0;
-                _editor.current?.insertEmbed( cursorIndex, 'image', imageUrl );
+                _editor.current?.insertEmbed( selection?.index || 0, 'image', imageUrl );
             } else
             {
                 throw new Error( 'URL not found in server response.' );
@@ -168,23 +203,37 @@ const AddBlogScreen = () =>
             setIsUploading( false );
         }
     };
-
-    // const ToolbarButton = ( { name, action, checkActive }: { name: keyof typeof Ionicons.glyphMap, action: () => void, checkActive: () => boolean | undefined } ) => (
-    //     <TouchableOpacity onPress={ action } className="p-2">
-    //         <Ionicons name={ name } size={ 22 } color={ checkActive() ? '#3B82F6' : '#333' } />
-    //     </TouchableOpacity>
-    // );
     const handleCustomToolbarAction = ( name: string ) =>
     {
-        switch ( name )
+        if ( name === 'image' )
         {
-            case 'image':
-                handleImageUpload();
-                break;
-            default:
-                console.warn( `Unhandled custom toolbar action: ${ name }` );
+            handleImageUpload();
         }
     };
+
+    // UI cho trạng thái đang tải hoặc lỗi
+    if ( isFetching )
+    {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#3B82F6" />
+                <Text className="mt-4 text-gray-600">Đang tải dữ liệu bài viết...</Text>
+            </SafeAreaView>
+        );
+    }
+    if ( fetchError )
+    {
+        return (
+            <SafeAreaView className="flex-1 items-center justify-center bg-white p-4">
+                <Ionicons name="alert-circle-outline" size={ 48 } color="red" />
+                <Text className="mt-4 text-red-600 text-center">{ fetchError }</Text>
+                <TouchableOpacity onPress={ () => router.back() } className="mt-6 bg-blue-500 rounded-xl py-3 px-6">
+                    <Text className="text-white font-quicksand-bold">Quay lại</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <KeyboardAvoidingView
@@ -196,7 +245,7 @@ const AddBlogScreen = () =>
                     <TouchableOpacity onPress={ () => router.back() } className="p-1">
                         <Ionicons name="arrow-back" size={ 24 } color="#333" />
                     </TouchableOpacity>
-                    <Text className="text-xl font-quicksand-bold text-gray-800 ml-4">Viết bài viết mới</Text>
+                    <Text className="text-xl font-quicksand-bold text-gray-800 ml-4">Chỉnh sửa bài viết</Text>
                 </View>
 
                 <ScrollView contentContainerStyle={ { padding: 16 } } keyboardShouldPersistTaps="handled">
@@ -205,34 +254,24 @@ const AddBlogScreen = () =>
                         onPress={ handlePickImage }
                         className="mb-8 h-48 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 items-center justify-center"
                     >
-                        { coverImage ? (
-                            <Image source={ { uri: coverImage.uri } } className="w-full h-full rounded-2xl" resizeMode="cover" />
+                        { newCoverImage ? (
+                            <Image source={ { uri: newCoverImage.uri } } className="w-full h-full rounded-2xl" resizeMode="cover" />
+                        ) : existingCoverImageUrl ? (
+                            <Image source={ { uri: existingCoverImageUrl } } className="w-full h-full rounded-2xl" resizeMode="cover" />
                         ) : (
                             <View className="items-center">
                                 <Ionicons name="add-circle-outline" size={ 32 } color="#6B7280" />
-                                <Text className="mt-2 text-gray-500 font-quicksand-semibold">Thêm ảnh đại diện bài viết</Text>
+                                <Text className="mt-2 text-gray-500 font-quicksand-semibold">Chọn ảnh đại diện mới</Text>
                             </View>
                         ) }
                     </TouchableOpacity>
 
                     {/* Form Section */ }
                     <Text className="text-xl font-quicksand-bold text-gray-900 mb-4">Bài viết</Text>
+                    <FormInput label="Tên bài viết" value={ title } onChangeText={ setTitle } placeholder="Nhập tên bài viết" />
+                    <FormInput label="Danh mục" value={ tags } onChangeText={ setTags } placeholder="ví dụ: Chăm sóc da, Mẹo vặt" />
 
-                    <FormInput
-                        label="Tên bài viết"
-                        value={ title }
-                        onChangeText={ setTitle }
-                        placeholder="Nhập tên bài viết"
-                    />
-
-                    <FormInput
-                        label="Danh mục"
-                        value={ tags }
-                        onChangeText={ setTags }
-                        placeholder="ví dụ: Chăm sóc da, Mẹo vặt"
-                    />
                     {/* Quill Editor */ }
-
                     <View className="mb-6">
                         <Text className="text-base font-quicksand-semibold text-gray-800 mb-2">
                             Nội dung <Text className="text-red-500">*</Text>
@@ -248,34 +287,26 @@ const AddBlogScreen = () =>
                                 editor={ _editor }
                                 theme="light"
                                 options="full"
-                                // --- THIS IS THE CORRECT STRUCTURE FOR THE `custom` PROP ---
-                                custom={ {
-                                    // 1. The single handler function
-                                    handler: handleCustomToolbarAction,
-                                    // 2. List of actions that trigger the handler
-                                    actions: [ 'image' ],
-                                } }
+                                custom={ { handler: handleCustomToolbarAction, actions: [ 'image' ] } }
                             />
                             <QuillEditor
                                 ref={ _editor }
                                 style={ styles.editor }
-
-                            // initialHtml="<p>Bắt đầu viết ở đây...</p>"
+                                initialHtml={ initHtml } // Prop này sẽ nhận đúng giá trị sau khi fetch
                             />
                         </View>
                     </View>
 
-
                     {/* Submit Button */ }
                     <TouchableOpacity
                         onPress={ handleSubmit }
-                        disabled={ isLoading }
+                        disabled={ isUpdating }
                         className="bg-blue-500 rounded-xl p-4 items-center justify-center mt-4"
                     >
-                        { isLoading ? (
+                        { isUpdating ? (
                             <ActivityIndicator size="small" color="white" />
                         ) : (
-                            <Text className="text-white font-quicksand-bold text-lg">Đăng bài viết</Text>
+                            <Text className="text-white font-quicksand-bold text-lg">Cập nhật bài viết</Text>
                         ) }
                     </TouchableOpacity>
                 </ScrollView>
@@ -288,8 +319,8 @@ const styles = StyleSheet.create( {
     editorContainer: {
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        borderColor: '#E5E7EB', // border-gray-200
-        borderRadius: 12,       // rounded-xl
+        borderColor: '#E5E7EB',
+        borderRadius: 12,
         overflow: 'hidden',
     },
     editor: {
@@ -297,12 +328,7 @@ const styles = StyleSheet.create( {
         paddingHorizontal: 16,
         paddingVertical: 10,
         fontSize: 16,
-        color: '#111827', // text-gray-900
-    },
-    toolbarIcon: {
-        // Adjust custom icon position to align with default icons
-        marginLeft: 2,
-        marginRight: 10,
+        color: '#111827',
     },
     uploadingOverlay: {
         position: 'absolute',
@@ -313,8 +339,8 @@ const styles = StyleSheet.create( {
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 10, // Make sure it's on top of the editor but below the toolbar
+        zIndex: 10,
     },
 } );
 
-export default AddBlogScreen;
+export default EditBlogScreen;
