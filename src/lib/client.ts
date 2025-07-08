@@ -12,7 +12,7 @@ export class APIClient {
   private baseURL: string;
   private headers: Record<string, string>;
   private isRefreshing: boolean = false;
-  private refreshSubscribers: Array<(token: string) => void> = [];
+  private refreshSubscribers: ((token: string) => void)[] = [];
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -227,6 +227,35 @@ export class APIClient {
 
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       method: "PATCH",
+      headers: {
+        ...headers,
+        ...(options?.headers || {}),
+      },
+      body:
+        options?.formData || data instanceof FormData
+          ? (data as FormData)
+          : data
+          ? JSON.stringify(data)
+          : undefined,
+    });
+
+    return this.handleResponse<T>(response, options);
+  }
+
+  async put<T>(
+    endpoint: string,
+    data?: unknown,
+    options?: RequestOptions
+  ): Promise<APIResponse<T>> {
+    const headers = { ...this.headers };
+
+    // Handle FormData
+    if (options?.formData || data instanceof FormData) {
+      delete headers["Content-Type"];
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: "PUT",
       headers: {
         ...headers,
         ...(options?.headers || {}),

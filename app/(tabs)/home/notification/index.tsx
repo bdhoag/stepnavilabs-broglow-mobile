@@ -1,8 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface NotificationItem {
+interface NotificationItem
+{
     id: string;
     title: string;
     description: string;
@@ -46,53 +46,58 @@ const notifications: NotificationItem[] = [
     },
 ];
 
-const groupedNotifications = notifications.reduce((groups: Record<string, NotificationItem[]>, item) => {
-    if (!groups[item.dateGroup]) {
-        groups[item.dateGroup] = [];
+const groupedNotifications = notifications.reduce( ( groups: Record<string, NotificationItem[]>, item ) =>
+{
+    if ( !groups[ item.dateGroup ] )
+    {
+        groups[ item.dateGroup ] = [];
     }
-    groups[item.dateGroup].push(item);
+    groups[ item.dateGroup ].push( item );
     return groups;
-}, {});
+}, {} );
 
-const NotificationScreen = () => {
-    const navigation = useNavigation();
+const NotificationScreen = () =>
+{
+    // const navigation = useNavigation();
 
-    const getIcon = (type: string) => {
+    const getIcon = ( type: string ) =>
+    {
         return type === 'profile'
-            ? require('../../../../assets/images/Left.png')
-            : require('../../../../assets/images/Left do.png');
+            ? require( '../../../../assets/images/Left.png' )
+            : require( '../../../../assets/images/Left do.png' );
     };
 
-    const handleBackPress = () => {
+    const handleBackPress = () =>
+    {
         router.back(); // Navigate back to the previous screen
 
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <TouchableOpacity onPress={handleBackPress} style={styles.header}>
-                <Text style={styles.headerText}>← Thông Báo</Text>
+        <ScrollView style={ styles.container }>
+            <TouchableOpacity onPress={ handleBackPress } style={ styles.header }>
+                <Text style={ styles.headerText }>← Thông Báo</Text>
             </TouchableOpacity>
-            {Object.entries(groupedNotifications).map(([date, items]) => (
-                <View key={date}>
-                    <Text style={styles.dateGroup}>{date}</Text>
-                    {items.map(item => (
-                        <View key={item.id} style={styles.card}>
-                            <Image source={getIcon(item.type)} style={styles.icon} />
-                            <View style={styles.content}>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.description}>{item.description}</Text>
-                                <Text style={styles.time}>{item.time}</Text>
+            { Object.entries( groupedNotifications ).map( ( [ date, items ] ) => (
+                <View key={ date }>
+                    <Text style={ styles.dateGroup }>{ date }</Text>
+                    { items.map( item => (
+                        <View key={ item.id } style={ styles.card }>
+                            <Image source={ getIcon( item.type ) } style={ styles.icon } />
+                            <View style={ styles.content }>
+                                <Text style={ styles.title }>{ item.title }</Text>
+                                <Text style={ styles.description }>{ item.description }</Text>
+                                <Text style={ styles.time }>{ item.time }</Text>
                             </View>
                         </View>
-                    ))}
+                    ) ) }
                 </View>
-            ))}
+            ) ) }
         </ScrollView>
     );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
     container: {
         marginTop: 30,
         padding: 16,
@@ -148,6 +153,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#999',
     },
-});
+} );
 
 export default NotificationScreen;

@@ -1,10 +1,11 @@
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { vi } from 'date-fns/locale/vi';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 
 import { Blog, blogService } from '@/src/services/blog.service';
+import { Route, router } from 'expo-router';
 import BlogCardSkeleton from './blog-skeleton';
 
 
@@ -90,14 +91,26 @@ const BlogSection = () =>
                 <Text className="text-xl font-quicksand-bold text-gray-900">
                     Bài viết mới
                 </Text>
-                <Text className="text-lg font-quicksand text-[#1584F2]">
-                    Xem thêm
-                </Text>
+                <TouchableOpacity
+                    onPress={ () => router.push( '/home/blog' as Route ) }
+                >
+                    <Text className="text-lg font-quicksand text-[#1584F2]">
+                        Xem thêm
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <ScrollView className='mx-6' horizontal showsHorizontalScrollIndicator={ false }>
                 { blogs.map( ( blog ) => (
-                    <View
+                    <TouchableOpacity
+                        onPress={ () =>
+                        {
+                            console.log( "Navigating to blog:", blog._id );
+                            router.push( {
+                                pathname: '/(tabs)/home/blog/detail', // The canonical file path
+                                params: { id: blog._id },        // The dynamic parameters
+                            } );
+                        } } // Example navigation
                         key={ blog._id } // Dùng _id từ API làm key
                         className="mr-4 w-72 h-96 rounded-[40px] overflow-hidden bg-gray-200"
                     >
@@ -137,7 +150,7 @@ const BlogSection = () =>
                                 { createExcerpt( blog.content, 80 ) }
                             </Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ) ) }
             </ScrollView>
         </View>
