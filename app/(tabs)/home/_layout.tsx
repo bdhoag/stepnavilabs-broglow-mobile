@@ -34,7 +34,9 @@ export default function HomeLayout ()
         name="skincare-routine/index"
         options={ {
           title: "Gợi ý chu trình chăm sóc da",
-        } }
+          headerShown: false,
+          presentation: 'fullScreenModal', // Ẩn tab bar
+        }}
       />
       <Stack.Screen
         name="notification/index"
