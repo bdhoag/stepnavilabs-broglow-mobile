@@ -17,11 +17,11 @@ const Subscription = () =>
 
 
   return (
-    <SafeAreaView style={ styles.container }>
-      {/* Header */ }
-      <View style={ styles.headerContainer }>
-        <TouchableOpacity onPress={ handleBack } style={ styles.backButton }>
-          <Ionicons name="arrow-back" size={ 20 } color="#333" />
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={20} color="#333" />
         </TouchableOpacity>
         <Text style={ styles.headerTitle }>
           Xác định hồ sơ da
