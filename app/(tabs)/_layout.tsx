@@ -39,6 +39,7 @@ export default function TabsLayout() {
               <SafeAreaView className="">
                 <View className="flex-row items-center justify-between px-5 pt-6">
                   <View className="flex-row items-center gap-2.5">
+
                     <TouchableOpacity
                       onPress={() => {
                         router.push("/profile");
@@ -51,7 +52,6 @@ export default function TabsLayout() {
                         />
                       </View>
                     </TouchableOpacity>
-
                     <View className="flex-col items-start" style={{ flex: 1, maxWidth: '50%' }}>
                       <Text className="text-lg font-quicksand" numberOfLines={1} ellipsizeMode="tail">
                         Xin chào, <Text className="font-quicksand-bold">{username}</Text>
