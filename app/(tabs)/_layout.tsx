@@ -39,13 +39,19 @@ export default function TabsLayout() {
               <SafeAreaView className="">
                 <View className="flex-row items-center justify-between px-5 pt-6">
                   <View className="flex-row items-center gap-2.5">
+                    <TouchableOpacity
+                      onPress={() => {
+                        router.push("/profile");
+                      }}
+                    >
+                      <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
+                        <Image
+                          source={{ uri: "https://via.placeholder.com/150" }}
+                          className="w-full h-full"
+                        />
+                      </View>
+                    </TouchableOpacity>
 
-                    <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
-                      <Image
-                        source={{ uri: "https://via.placeholder.com/150" }}
-                        className="w-full h-full"
-                      />
-                    </View>
                     <View className="flex-col items-start" style={{ flex: 1, maxWidth: '50%' }}>
                       <Text className="text-lg font-quicksand" numberOfLines={1} ellipsizeMode="tail">
                         Xin chào, <Text className="font-quicksand-bold">{username}</Text>
