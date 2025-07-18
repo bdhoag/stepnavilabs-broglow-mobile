@@ -1,48 +1,59 @@
 import { Stack } from "expo-router";
 
-export default function HomeLayout() {
+export default function HomeLayout ()
+{
   return (
     <Stack
-      screenOptions={{
+      screenOptions={ {
         headerStyle: {
           backgroundColor: "#fff",
         },
         headerTintColor: "#000",
         headerShadowVisible: false,
         headerShown: false,
-      }}
+      } }
     >
-      <Stack.Screen name="index" options={{}} />
+      <Stack.Screen name="index" options={ {} } />
       <Stack.Screen
         name="skin-profile/index"
-        options={{
+        options={ {
           title: "Xác định hồ sơ da",
+          headerShown: false,
+          presentation: 'fullScreenModal', // Ẩn tab bar
+        } }
+      />
+      <Stack.Screen
+        name="blog"
+        options={ {
+          title: "Khám phá bài viết",
+          headerShown: false,
+          // presentation: 'fullScreenModal', // Ẩn tab bar
+        } }
+      />
+      <Stack.Screen
+        name="skincare-routine/index"
+        options={ {
+          title: "Gợi ý chu trình chăm sóc da",
           headerShown: false,
           presentation: 'fullScreenModal', // Ẩn tab bar
         }}
       />
       <Stack.Screen
-        name="skincare-routine/index"
-        options={{
-          title: "Gợi ý chu trình chăm sóc da",
-        }}
-      />
-      <Stack.Screen
         name="notification/index"
-        options={{
+        options={ {
 
           title: "Thông báo",
-        }}
+        } }
       />
       <Stack.Screen
         name="explore/index"
-        options={{
+        options={ {
           title: "Khám phá",
-        }}
+        } }
       />
       <Stack.Screen
         name="subscription/index"
-        options={{
+        options={ {
           title: "Gói đăng ký",
           headerShown: false,
           presentation: 'fullScreenModal', 
