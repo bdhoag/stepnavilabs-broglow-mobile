@@ -59,8 +59,10 @@ export default function TabsLayout ()
                   </View>
                   <View className="flex-row items-center gap-2.5">
                     <TouchableOpacity
-                      className="bg-[#1E233A] rounded-full px-2 py-2.5"
-                      onPress={ () => { } }
+                      className="bg-[#1E233A] rounded-full px-4 py-2.5"
+                      onPress={() => {
+                        router.push("/(tabs)/home/subscription");
+                      }}
                     >
                       <Text className="text-center text-white font-quicksand text-xs">
                         Nâng Cấp Gói

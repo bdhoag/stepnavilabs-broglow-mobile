@@ -7,7 +7,6 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,7 +14,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../src/contexts/auth-context";
@@ -201,14 +200,14 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             {/* Divider */}
-            <View style={styles.dividerContainer}>
+            {/* <View style={styles.dividerContainer}> */}
               {/* <View style={styles.dividerLine} /> */}
-              <Text style={styles.dividerText}>hoặc</Text>
+              {/* <Text style={styles.dividerText}>hoặc</Text> */}
               {/* <View style={styles.dividerLine} /> */}
-            </View>
+            {/* </View> */}
 
             {/* Google Login Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 styles.googleButton,
                 googleLoading && styles.googleButtonDisabled,
@@ -224,7 +223,7 @@ export default function LoginScreen() {
                   <Text style={styles.googleButtonText}>Đăng nhập với Google</Text>
                 </>
               )}
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </ScrollView>
 

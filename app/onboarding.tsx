@@ -4,13 +4,12 @@ import { Href, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
     Alert,
     Image,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -80,7 +79,7 @@ export default function OnboardingScreen() {
                 {/* Buttons Section */}
                 <View style={styles.buttonsSection}>
                     {/* Google Login Button */}
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={[styles.googleButton, googleLoading && styles.googleButtonDisabled]}
                         onPress={handleGoogleLogin}
                         disabled={googleLoading}
@@ -93,21 +92,21 @@ export default function OnboardingScreen() {
                                 <Text style={styles.googleButtonText}>Tiếp tục với Google</Text>
                             </>
                         )}
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
-                    {/* Divider */}
+                    {/* Divider
                     <View style={styles.dividerContainer}>
                         <View style={styles.dividerLine} />
                         <Text style={styles.dividerText}>hoặc</Text>
                         <View style={styles.dividerLine} />
-                    </View>
+                    </View> */}
 
                     {/* Password Login Button */}
                     <TouchableOpacity
                         style={styles.passwordButton}
                         onPress={handlePasswordLogin}
                     >
-                        <Text style={styles.passwordButtonText}>Đăng nhập bằng mật khẩu</Text>
+                        <Text style={styles.passwordButtonText}>Đăng nhập ngay</Text>
                     </TouchableOpacity>
                 </View>
             </View>
