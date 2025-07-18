@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -320,11 +319,11 @@ export default function RegisterScreen() {
             </TouchableOpacity>
 
             {/* Divider */}
-            <View style={styles.dividerContainer}>
+            {/* <View style={styles.dividerContainer}>
               <Text style={styles.dividerText}>hoặc</Text>
-            </View>
+            </View> */}
 
-            {/* Google Login Button */}
+            {/* Google Login Button
             <TouchableOpacity
               style={[
                 styles.googleButton,
@@ -341,7 +340,7 @@ export default function RegisterScreen() {
                   <Text style={styles.googleButtonText}>Đăng nhập với Google</Text>
                 </>
               )}
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </ScrollView>
 

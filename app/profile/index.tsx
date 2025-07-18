@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
+  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -119,6 +120,7 @@ const ProfileScreen: React.FC = () => {
   );
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
@@ -185,6 +187,7 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.bottomSpacing} />
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 };
 
