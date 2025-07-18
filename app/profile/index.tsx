@@ -1,3 +1,4 @@
+import { useAuth } from "@/src/contexts/auth-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -27,6 +28,7 @@ const ProfileScreen: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
   const [isNotify, setIsNotify] = useState(true);
   const router = useRouter();
+  const { logout } = useAuth();
 
   const mainMenuItems: MenuItem[] = [
     {
@@ -80,6 +82,10 @@ const ProfileScreen: React.FC = () => {
 
   const handleBackPress = () => {
     router.back();
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => (
@@ -166,8 +172,13 @@ const ProfileScreen: React.FC = () => {
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8} onPress={handleLogout}>
           <Text style={styles.logoutText}>Đăng xuất</Text>
+        </TouchableOpacity>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={styles.removeButton} activeOpacity={0.8} onPress={handleLogout}>
+          <Text style={styles.removeText}>Xoá tài khoản</Text>
         </TouchableOpacity>
 
         {/* Bottom spacing */}
@@ -290,10 +301,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
   },
+  removeButton: {
+    borderRadius: 50,
+    paddingVertical: 16,
+    alignItems: "center",
+    marginTop: 8,
+  },
   logoutText: {
     fontSize: 16,
     fontWeight: "600",
     color: "#ff6666",
+  },
+  removeText: {
+    textDecorationLine: "underline",
   },
   bottomSpacing: {
     height: 32,

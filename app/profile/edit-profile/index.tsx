@@ -1,3 +1,4 @@
+import { useAuth } from "@/src/contexts/auth-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -14,6 +15,8 @@ import {
 } from "react-native";
 
 const EditProfileScreen: React.FC = () => {
+  const { logout } = useAuth();
+
   const handleBackPress = () => {
     router.back();
   };

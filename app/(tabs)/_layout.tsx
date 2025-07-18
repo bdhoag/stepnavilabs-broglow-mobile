@@ -66,7 +66,7 @@ export default function TabsLayout ()
                     <TouchableOpacity
                       className="bg-[#1E233A] rounded-full px-2 py-2.5"
                       onPress={ () => { 
-                        router.push( "/home/subscription" as Route )
+                        router.push( "/(tabs)/home/subscription" as Route )
                       } }
                     >
                       <Text className="text-xs text-center text-white font-quicksand">
