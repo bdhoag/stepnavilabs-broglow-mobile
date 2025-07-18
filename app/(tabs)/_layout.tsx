@@ -5,7 +5,7 @@ import { HomeIcon, HomeOutlineIcon } from "@/src/components/svg/home-icon";
 import ScannerIcon from "@/src/components/svg/scanner-icon";
 import { ShopIcon, ShopOutlineIcon } from "@/src/components/svg/shop-icon";
 import { Feather } from "@expo/vector-icons";
-import { router, Tabs, usePathname } from "expo-router";
+import { Route, router, Tabs, usePathname } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AuthGuard from "../../src/components/auth-guard";
@@ -39,15 +39,20 @@ export default function TabsLayout ()
             ( pathname.includes( "/chat" ) || pathname.includes( "/notification" ) || pathname.includes( "/scan" ) || pathname.includes( "/blog" ) )
           ) && (
               <SafeAreaView className="">
-                <View className="flex-row items-center justify-between mx-5 pt-6">
+                <View className="flex-row items-center justify-between pt-6 mx-5">
                   <View className="flex-row items-center gap-2.5">
-
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push("/profile");
+                    }}
+                  >
                     <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
                       <Image
-                        source={ { uri: "https://via.placeholder.com/150" } }
+                        source={{ uri: "https://via.placeholder.com/150" }}
                         className="w-full h-full"
                       />
                     </View>
+                  </TouchableOpacity>
                     <View className="flex-col items-start" style={ { flex: 1, maxWidth: '50%' } }>
                       <Text className="text-lg font-quicksand" numberOfLines={ 1 } ellipsizeMode="tail">
                         Xin chào, <Text className="font-quicksand-bold">{ username }</Text>
@@ -60,9 +65,11 @@ export default function TabsLayout ()
                   <View className="flex-row items-center gap-2.5">
                     <TouchableOpacity
                       className="bg-[#1E233A] rounded-full px-2 py-2.5"
-                      onPress={ () => { } }
+                      onPress={ () => { 
+                        router.push( "/home/subscription" as Route )
+                      } }
                     >
-                      <Text className="text-center text-white font-quicksand text-xs">
+                      <Text className="text-xs text-center text-white font-quicksand">
                         Nâng Cấp Gói
                       </Text>
                     </TouchableOpacity>
