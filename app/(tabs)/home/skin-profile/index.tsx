@@ -186,10 +186,10 @@ const QuizScreen = () => {
     router.back();
   };
 
-  const handleModalOK = () => {
-    setShowSuccessModal(false);
-    router.replace("/(tabs)/chat");
-  };
+const handleModalOK = () => {
+  setShowSuccessModal(false);
+  router.replace("/(tabs)/home");
+};
 
   const selectedOptions = answers[question.id] || [];
 
@@ -199,11 +199,10 @@ const QuizScreen = () => {
         {quizQuestions.map((_, index) => (
           <React.Fragment key={index}>
             <View
-              className={`h-1 flex-1 rounded-full ${
-                index < current && !skipped.has(quizQuestions[index].id)
+              className={`h-1 flex-1 rounded-full ${index < current && !skipped.has(quizQuestions[index].id)
                   ? "bg-[#4A90E2]"
                   : "bg-gray-200"
-              }`}
+                }`}
             />
             {index < quizQuestions.length - 1 && <View className="w-2" />}
           </React.Fragment>
@@ -217,14 +216,12 @@ const QuizScreen = () => {
 
     const content = (
       <View
-        className={`flex-row items-center justify-between py-3 px-4 rounded-2xl ${
-          isSelected ? "" : "bg-white border border-gray-200"
-        }`}
+        className={`flex-row items-center justify-between py-3 px-4 rounded-2xl ${isSelected ? "" : "bg-white border border-gray-200"
+          }`}
       >
         <Text
-          className={`flex-1 text-base leading-5 ${
-            isSelected ? "text-white" : "text-gray-800"
-          }`}
+          className={`flex-1 text-base leading-5 ${isSelected ? "text-white" : "text-gray-800"
+            }`}
         >
           {item.text}
         </Text>
@@ -268,7 +265,7 @@ const QuizScreen = () => {
       visible={showSuccessModal}
       transparent={true}
       animationType="fade"
-      onRequestClose={() => {}}
+      onRequestClose={() => { }}
     >
       <View
         style={{
@@ -462,7 +459,7 @@ const QuizScreen = () => {
       <StatusBar barStyle="dark-content" />
       {/* Header */}
       <View className="flex-row items-center px-4 pt-5">
-        <TouchableOpacity onPress={handleBack} className="mr-3">
+        <TouchableOpacity onPress={handleBack} className="pl-3 mr-3">
           <Ionicons name="arrow-back" size={20} color="#333" />
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-gray-900">
@@ -501,11 +498,10 @@ const QuizScreen = () => {
           <TouchableOpacity
             onPress={handlePrev}
             disabled={current === 0}
-            className={`px-5 py-3 rounded-full border ${
-              current === 0
+            className={`px-5 py-3 rounded-full border ${current === 0
                 ? "opacity-40 border-blue-100 bg-blue-100"
                 : "border-blue-100 bg-blue-100"
-            }`}
+              }`}
           >
             <Text className="font-medium text-blue-500">Câu trước</Text>
           </TouchableOpacity>
@@ -523,9 +519,8 @@ const QuizScreen = () => {
             <TouchableOpacity
               onPress={handleNext}
               disabled={selectedOptions.length === 0}
-              className={`px-6 py-3 rounded-full ${
-                selectedOptions.length === 0 ? "bg-gray-300" : "bg-[#1e90ff]"
-              }`}
+              className={`px-6 py-3 rounded-full ${selectedOptions.length === 0 ? "bg-gray-300" : "bg-[#1e90ff]"
+                }`}
             >
               <Text className="font-medium text-white">
                 {current === quizQuestions.length - 1
