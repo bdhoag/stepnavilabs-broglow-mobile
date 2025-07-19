@@ -14,47 +14,49 @@ import { useAuth } from "../../src/contexts/auth-context";
 // Import your custom icons
 
 
-export default function TabsLayout() {
+export default function TabsLayout ()
+{
   const { user } = useAuth();
   const username = user?.firstName || "User";
   const pathname = usePathname();
   // const isChatScreen = pathname && pathname.includes( "/chat" );
 
   // Check if we're on scan screen
-  const isOnScanScreen = pathname && pathname.includes("/scan");
+  const isOnScanScreen = pathname && pathname.includes( "/scan" );
 
   return (
     <AuthGuard>
       <SafeAreaProvider>
         <View
-          style={{
+          style={ {
             flex: 1,
             backgroundColor: "#FFFFFF",
-          }}
+          } }
         >
-          {!(
+          { !(
             pathname &&
-            (pathname.includes("/chat") || pathname.includes("/notification") || pathname.includes("/scan"))
+            ( pathname.includes( "/chat" ) || pathname.includes( "/notification" ) || pathname.includes( "/scan" ) || pathname.includes( "/blog" ) )
           ) && (
               <SafeAreaView className="">
                 <View className="flex-row items-center justify-between px-5 pt-6">
                   <View className="flex-row items-center gap-2.5">
 
                     <TouchableOpacity
-                      onPress={() => {
-                        router.push("/profile");
-                      }}
+                      onPress={ () =>
+                      {
+                        router.push( "/profile" );
+                      } }
                     >
                       <View className="w-12 h-12 overflow-hidden bg-gray-300 rounded-2xl">
                         <Image
-                          source={{ uri: "https://via.placeholder.com/150" }}
+                          source={ { uri: `https://ui-avatars.com/api/?name=${ user?.email.split( '@' )[ 0 ] }&background=random` } }
                           className="w-full h-full"
                         />
                       </View>
                     </TouchableOpacity>
-                    <View className="flex-col items-start" style={{ flex: 1, maxWidth: '50%' }}>
-                      <Text className="text-lg font-quicksand" numberOfLines={1} ellipsizeMode="tail">
-                        Xin chào, <Text className="font-quicksand-bold">{username}</Text>
+                    <View className="flex-col items-start" style={ { flex: 1, maxWidth: '50%' } }>
+                      <Text className="text-lg font-quicksand" numberOfLines={ 1 } ellipsizeMode="tail">
+                        Xin chào, <Text className="font-quicksand-bold">{ username }</Text>
                       </Text>
                       <Text className="text-sm font-quicksand-light">
                         Da bạn thế nào rồi?
@@ -64,9 +66,10 @@ export default function TabsLayout() {
                   <View className="flex-row items-center gap-2.5">
                     <TouchableOpacity
                       className="bg-[#1E233A] rounded-full px-4 py-2.5"
-                      onPress={() => {
-                        router.push("/(tabs)/home/subscription");
-                      }}
+                      onPress={ () =>
+                      {
+                        router.push( "/(tabs)/home/subscription" );
+                      } }
                     >
                       <Text className="text-center text-white font-quicksand">
                         Nâng Cấp Gói
@@ -74,23 +77,24 @@ export default function TabsLayout() {
                     </TouchableOpacity>
                     <TouchableOpacity
 
-                      onPress={() => {
-                        router.push("/(tabs)/home/notification"); // Navigate to notification screen
-                      }}
+                      onPress={ () =>
+                      {
+                        router.push( "/(tabs)/home/notification" ); // Navigate to notification screen
+                      } }
 
                     >
 
-                      <Feather name="bell" size={20} color="#333" />
+                      <Feather name="bell" size={ 20 } color="#333" />
 
                     </TouchableOpacity>
 
                   </View>
                 </View>
               </SafeAreaView>
-            )}
+            ) }
 
           <Tabs
-            screenOptions={({ route }) => ({
+            screenOptions={ ( { route } ) => ( {
               headerShown: false,
               tabBarShowLabel: false,
               // Hide tab bar when on scan screen
@@ -124,15 +128,17 @@ export default function TabsLayout() {
               },
               tabBarPressColor: "#FFFFFF",
               pressColor: "#FFFFFF",
-              tabBarIcon: ({ color, size, focused }) => {
+              tabBarIcon: ( { color, size, focused } ) =>
+              {
                 // Define the icon color based on focus state - using more subtle colors like in the reference
                 // const iconColor = focused ? "#1584F2" : "#8E8E93";
 
                 // Handle the special scan button with custom styling - positioned slightly higher
-                if (route.name === "scan") {
+                if ( route.name === "scan" )
+                {
                   return (
                     <View
-                      style={{
+                      style={ {
                         width: 56,
                         height: 56,
                         borderRadius: 28,
@@ -148,16 +154,17 @@ export default function TabsLayout() {
                         shadowOpacity: 0.3,
                         shadowRadius: 8,
                         elevation: 8,
-                      }}
+                      } }
                     >
-                      <ScannerIcon width={28} height={28} fill="#ffffff" />
+                      <ScannerIcon width={ 28 } height={ 28 } fill="#ffffff" />
                     </View>
                   );
                 }
 
                 // Define which custom icon to use for each route
                 let IconComponent;
-                switch (route.name) {
+                switch ( route.name )
+                {
                   case "home":
                     IconComponent = focused ? HomeIcon : HomeOutlineIcon;
                     break;
@@ -174,16 +181,16 @@ export default function TabsLayout() {
                     // Fallback to a Feather icon if route not recognized
                     return (
                       <View
-                        style={{
+                        style={ {
                           width: 46,
                           height: 46,
                           borderRadius: 23,
                           backgroundColor: focused ? '#E3F2FD' : 'transparent',
                           justifyContent: 'center',
                           alignItems: 'center',
-                        }}
+                        } }
                       >
-                        <Feather name="help-circle" size={24} />
+                        <Feather name="help-circle" size={ 24 } />
                       </View>
                     );
                 }
@@ -191,54 +198,54 @@ export default function TabsLayout() {
                 // Render the custom icon with proper styling that matches the reference design
                 return (
                   <View
-                    style={{
+                    style={ {
                       width: 46,
                       height: 46,
                       borderRadius: 23,
                       backgroundColor: focused ? '#E3F2FD' : 'transparent', // Light blue background when active
                       justifyContent: 'center',
                       alignItems: 'center',
-                    }}
+                    } }
                   >
                     <IconComponent
-                      width={24}
-                      height={24}
+                      width={ 24 }
+                      height={ 24 }
                     // color={ iconColor }
                     />
                   </View>
                 );
               },
-            })}
+            } ) }
           >
             <Tabs.Screen
               name="home"
-              options={{
+              options={ {
                 title: "Home",
-              }}
+              } }
             />
             <Tabs.Screen
               name="chat"
-              options={{
+              options={ {
                 title: "Chat",
-              }}
+              } }
             />
             <Tabs.Screen
               name="scan"
-              options={{
+              options={ {
                 title: "Scan",
-              }}
+              } }
             />
             <Tabs.Screen
               name="progress"
-              options={{
+              options={ {
                 title: "Progress",
-              }}
+              } }
             />
             <Tabs.Screen
               name="product"
-              options={{
+              options={ {
                 title: "Product",
-              }}
+              } }
             />
           </Tabs>
         </View>
