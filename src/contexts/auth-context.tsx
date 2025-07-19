@@ -1,13 +1,13 @@
+import { User } from "@/src/data/types";
+import { TokenStorage } from "@/src/lib/token-storage";
+import { AuthService } from "@/src/services/auth.service";
 import React, {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
-import { AuthService } from "@/src/services/auth.service";
-import { User } from "@/src/data/types";
-import { TokenStorage } from "@/src/lib/token-storage";
 
 interface AuthContextType {
   user: User | null;
@@ -82,11 +82,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (email: string, password: string) => {
-    // Note: turnstileToken cần được implement từ UI
-    await AuthService.login(email, password, ""); // Empty turnstile for now
-    const profile = await AuthService.getUserProfile();
-    await TokenStorage.setUser(profile);
-    setUser(profile);
+    try {
+
+      const tokens = await AuthService.login(email, password, ""); 
+
+      console.log("AuthContext: Tokens received:", {
+        hasToken: !!tokens.token,
+        hasRefreshToken: !!tokens.refreshToken,
+      });
+
+      const profile = await AuthService.getUserProfile();
+      await TokenStorage.setUser(profile);
+      setUser(profile);
+
+      console.log("AuthContext: Login successful, user set:", profile);
+    } catch (error) {
+      console.error("AuthContext: Login failed:", error);
+      throw error;
+    }
   };
 
   const register = async (

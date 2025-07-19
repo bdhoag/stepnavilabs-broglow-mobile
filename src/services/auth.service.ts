@@ -34,9 +34,10 @@ export class AuthService {
     email: string,
     password: string,
     turnstileToken: string
-  ): Promise<void> {
+  ): Promise<{ token: string; refreshToken: string }> {
     const ip = await this.getClientIP();
-    await apiClient.login(email, password, turnstileToken, ip);
+    const tokens = await apiClient.login(email, password, turnstileToken, ip);
+    return tokens;
   }
 
   static async redirectGoogleLogin(code: string): Promise<void> {

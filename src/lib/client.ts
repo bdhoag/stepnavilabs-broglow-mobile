@@ -339,8 +339,15 @@ export class APIClient {
     }
 
     const tokens: TokenPair = await response.json();
-    TokenStorage.setTokens(tokens);
+    console.log("APIClient: Storing tokens:", { 
+      hasToken: !!tokens.token, 
+      hasRefreshToken: !!tokens.refreshToken 
+    });
+    
+    await TokenStorage.setTokens(tokens);
     this.setAuthToken(tokens.token);
+    
+    console.log("APIClient: Auth token set in headers");
     return tokens;
   }
 
