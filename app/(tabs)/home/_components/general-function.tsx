@@ -39,7 +39,7 @@ const GeneralFunction = () =>
             icon: DiscoverIcon,
             buttonText: "Khám phá",
             gradientColors: [ "#FFDA7B", "#FFB800" ],
-            route: "/home/explore" as Route,
+            route: "/home/blog" as Route,
         },
         {
             title: "Khám phá gói Đăng Ký Của Bạn",
