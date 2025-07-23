@@ -4,12 +4,12 @@ import { View } from 'react-native';
 const ProductSkeletonItem = () => (
     <View className="w-[48%] mb-6">
         {/* Image Placeholder */ }
-        <View className="w-full aspect-square bg-gray-200 rounded-2xl" />
+        <View className="w-full bg-gray-200 aspect-square rounded-2xl" />
         <View className="mt-2.5 space-y-2">
-            <View className="h-6 w-3/4 bg-gray-200 rounded" />
-            <View className="h-4 w-1/3 bg-gray-200 rounded" />
-            <View className="h-5 w-full bg-gray-200 rounded" />
-            <View className="h-5 w-5/6 bg-gray-200 rounded" />
+            <View className="w-3/4 h-6 bg-gray-200 rounded" />
+            <View className="w-1/3 h-4 bg-gray-200 rounded" />
+            <View className="w-full h-5 bg-gray-200 rounded" />
+            <View className="w-5/6 h-5 bg-gray-200 rounded" />
         </View>
     </View>
 );
