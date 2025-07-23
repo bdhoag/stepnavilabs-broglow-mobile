@@ -4,15 +4,14 @@ import GeneralFunction from "./_components/general-function";
 import ProductSection from "./_components/product-section";
 
 
-export default function TabsIndex ()
-{
+export default function TabsIndex() {
   return (
     <ScrollView className="flex-1 bg-white">
-      {/* General Function Section*/ }
+      {/* General Function Section*/}
       <GeneralFunction />
-      {/* Blog Section */ }
+      {/* Blog Section */}
       <BlogSection />
-      {/* Product Section */ }
+      {/* Product Section */}
       <ProductSection />
     </ScrollView>
   );
