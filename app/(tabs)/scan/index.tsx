@@ -25,10 +25,10 @@ const ScanScreen = () =>
     return (
       <View style={ styles.container }>
         <Text style={ styles.message }>
-          We need your permission to show the camera
+          We use the camera to help you scan items easily. Tap Continue to enable access.
         </Text>
         <TouchableOpacity onPress={ requestPermission } style={ styles.button }>
-          <Text style={ styles.text }>Grant Permission</Text>
+          <Text style={ styles.text }>Continue</Text>
         </TouchableOpacity>
       </View>
     );
