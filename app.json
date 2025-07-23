@@ -18,7 +18,7 @@
         "NSPhotoLibraryAddUsageDescription": "This app requires permission to save images to your photo library."
       },
       "bundleIdentifier": "com.broglow.app",
-      "buildNumber": "2"
+      "buildNumber": "4"
     },
     "android": {
       "package": "com.broglow.app",
@@ -56,6 +56,6 @@
         "projectId": "3e07407a-0c07-43d8-ae71-c69f4b2150e9"
       }
     },
-    "owner": "hoang2k3"
+    "owner": "broglow"
   }
 }

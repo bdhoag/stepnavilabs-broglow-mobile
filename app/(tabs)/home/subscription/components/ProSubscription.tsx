@@ -1,41 +1,43 @@
 import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 
-export interface ProSubscriptionProps {
+export interface ProSubscriptionProps
+{
     featureAvailable?: string[];
     featureUnavailable?: string[];
 }
 
-const ProSubscription: React.FC<ProSubscriptionProps> = ({ featureAvailable, featureUnavailable }) => {
-    const handleUpgrade = () => {
-        router.push('/(tabs)/home/subscription/confirm');
+const ProSubscription: React.FC<ProSubscriptionProps> = ( { featureAvailable, featureUnavailable } ) =>
+{
+    const handleUpgrade = () =>
+    {
+        router.push( '/(tabs)/home/subscription/confirm' );
     }
     return (
-        <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.titleHeader}>PRO</Text>
+        <View style={ styles.container }>
+            <View style={ styles.headerContainer }>
+                <Text style={ styles.titleHeader }>PRO</Text>
             </View>
 
-            <View style={styles.contentContainer}>
-                {featureAvailable && featureAvailable.map((feature, index) => (
-                    <View key={index} style={styles.featureRow}>
-                        <Feather name="check" size={20} color="#3DC47E" />
-                        <Text style={styles.featureText}>{feature}</Text>
+            <View style={ styles.contentContainer }>
+                { featureAvailable && featureAvailable.map( ( feature, index ) => (
+                    <View key={ index } style={ styles.featureRow }>
+                        <Feather name="check" size={ 20 } color="#3DC47E" />
+                        <Text style={ styles.featureText }>{ feature }</Text>
                     </View>
-                ))}
-                {featureUnavailable && featureUnavailable.map((feature, index) => (
-                    <View key={index} style={styles.featureRow}>
-                        <Feather name="x" size={20} color="#F75555" />
-                        <Text style={styles.featureText}>{feature}</Text>
+                ) ) }
+                { featureUnavailable && featureUnavailable.map( ( feature, index ) => (
+                    <View key={ index } style={ styles.featureRow }>
+                        <Feather name="x" size={ 20 } color="#F75555" />
+                        <Text style={ styles.featureText }>{ feature }</Text>
                     </View>
-                ))}
+                ) ) }
             </View>
 
-            <View style={styles.buttonContainer}>
+            {/* <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={handleUpgrade}>
                     <LinearGradient
                         colors={['#FFB800', '#FFDA7B']}
@@ -46,14 +48,14 @@ const ProSubscription: React.FC<ProSubscriptionProps> = ({ featureAvailable, fea
                         <Text style={styles.buttonText}>Nâng cấp</Text>
                     </LinearGradient>
                 </TouchableOpacity>
-            </View>
+            </View> */}
         </View>
     );
 };
 
 export default ProSubscription;
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
     container: {
         flex: 1,
         padding: 20,
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
         marginBottom: 8,
+        paddingRight: 20,
     },
     featureText: {
         fontSize: 15,
@@ -113,4 +116,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'Quicksand_700Bold',
     },
-});
+} );
