@@ -70,9 +70,9 @@ type ChatAction =
   | { type: "UPDATE_MESSAGE"; payload: { id: string; content: string } }
   | { type: "REMOVE_MESSAGE"; payload: string }
   | {
-      type: "UPDATE_OR_ADD_ASSISTANT_MESSAGE";
-      payload: { id: string; content: string };
-    }
+    type: "UPDATE_OR_ADD_ASSISTANT_MESSAGE";
+    payload: { id: string; content: string };
+  }
   | { type: "SET_INPUT"; payload: string }
   | { type: "SET_SENDING"; payload: boolean }
   | { type: "SET_SHOW_ATTACHMENT_MENU"; payload: boolean }
@@ -593,190 +593,192 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-    >
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss}
-        accessible={false}
+    <SafeAreaView className="flex-1 bg-white">
+      {/* Header - giữ nguyên */}
+      <View className="relative flex-row items-center justify-between px-4 py-3 bg-white">
+        <View className="relative left-2">
+          <Pressable onPress={() => router.back()}>
+            <Feather name="arrow-left" size={22} color="#374151" />
+          </Pressable>
+        </View>
+
+        <View className="relative flex-row -translate-x-1/2 bg-gray-100 rounded-full left-20">
+          <Pressable
+            className={`px-8 py-2 rounded-full ${selectedTab === "ai" ? "bg-[#3B82F6]" : ""
+              }`}
+            onPress={() =>
+              dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
+            }
+          >
+            <Text
+              className={`text-base font-medium ${selectedTab === "ai" ? "text-white" : "text-[#374151]"
+                }`}
+            >
+              BroGlow AI
+            </Text>
+          </Pressable>
+
+          <Pressable
+            className={`px-8 py-2 rounded-full ${selectedTab === "expert" ? "bg-[#3B82F6]" : ""
+              }`}
+            onPress={() => router.replace("/chat/expert")}
+          >
+            <Text
+              className={`text-base font-medium ${selectedTab === "expert" ? "text-white" : "text-[#374151]"
+                }`}
+            >
+              Chuyên gia
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Main Content Area */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         style={{ flex: 1 }}
       >
-        <SafeAreaView className="flex-1 bg-white">
-          <View className="relative flex-row items-center justify-between px-4 py-3 bg-white">
-            <View className="relative left-2">
-              <Pressable onPress={() => router.back()}>
-                <Feather name="arrow-left" size={22} color="#374151" />
-              </Pressable>
-            </View>
-
-            <View className="relative flex-row -translate-x-1/2 bg-gray-100 rounded-full left-20">
-              <Pressable
-                className={`px-8 py-2 rounded-full ${
-                  selectedTab === "ai" ? "bg-[#3B82F6]" : ""
-                }`}
-                onPress={() =>
-                  dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
-                }
-              >
-                <Text
-                  className={`text-base font-medium ${
-                    selectedTab === "ai" ? "text-white" : "text-[#374151]"
-                  }`}
-                >
-                  BroGlow AI
-                </Text>
-              </Pressable>
-
-              <Pressable
-                className={`px-8 py-2 rounded-full ${
-                  selectedTab === "expert" ? "bg-[#3B82F6]" : ""
-                }`}
-                onPress={() => router.replace("/chat/expert")}
-                // onPress={() =>
-                //   dispatch({ type: "SET_SELECTED_TAB", payload: "expert" })
-                // }
-              >
-                <Text
-                  className={`text-base font-medium ${
-                    selectedTab === "expert" ? "text-white" : "text-[#374151]"
-                  }`}
-                >
-                  Chuyên gia
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {selectedTab === "ai" && selectedThread ? (
-            <FlatList
-              data={messages}
-              keyExtractor={(msg, idx) => msg.id || idx.toString()}
-              renderItem={renderMessage}
-              style={{ flex: 1 }}
-              contentContainerStyle={{
-                padding: 16,
-                flexGrow: messages.length === 0 ? 1 : 0,
-              }}
-              keyboardShouldPersistTaps="handled"
-              scrollEventThrottle={16}
-              inverted
-              showsVerticalScrollIndicator={false}
-              removeClippedSubviews={false}
-              maintainVisibleContentPosition={{
-                minIndexForVisible: 0,
-                autoscrollToTopThreshold: 10,
-              }}
-              onScroll={handleScroll}
+        {selectedTab === "ai" && selectedThread ? (
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(msg, idx) => msg.id || idx.toString()}
+            renderItem={renderMessage}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              padding: 16,
+              flexGrow: messages.length === 0 ? 1 : 0,
+            }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            scrollEventThrottle={16}
+            inverted
+            showsVerticalScrollIndicator={false}
+            removeClippedSubviews={false}
+            scrollEnabled={true} // Explicit enable scroll
+            bounces={true} // Enable bounce on iOS
+            // Xóa maintainVisibleContentPosition vì có thể gây conflict trên iOS
+            onScroll={handleScroll}
+            // Thêm các props này để cải thiện performance trên iOS
+            getItemLayout={undefined} // Không dùng getItemLayout với inverted list
+            initialNumToRender={10}
+            maxToRenderPerBatch={5}
+            windowSize={10}
+          />
+        ) : (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ 
+              flexGrow: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 24
+            }}
+            keyboardShouldPersistTaps="handled"
+            scrollEnabled={true}
+            bounces={true}
+          >
+            {/* Logo */}
+            <Image
+              source={require("../../../../assets/images/logo-text.png")}
+              className="mb-14 h-36"
+              resizeMode="contain"
             />
-          ) : (
-            <View className="items-center justify-center flex-1 px-6">
-              {/* Logo */}
-              <Image
-                source={require("../../../../assets/images/logo-text.png")}
-                className="mb-14 h-36"
-                resizeMode="contain"
-              />
 
-              {/* Heading */}
-              <Text className="mt-4 text-lg font-semibold text-gray-700">
-                Tôi có thể giúp bạn
-              </Text>
+            {/* Heading */}
+            <Text className="mt-4 text-lg font-semibold text-gray-700">
+              Tôi có thể giúp bạn
+            </Text>
 
-              {/* Suggestions */}
-              <View className="w-full mt-4 space-y-3">
-                {[1, 2, 3].map((_, idx) => (
-                  <View
-                    key={idx}
-                    className="px-4 py-3 bg-gray-100 rounded-2xl"
-                    style={{ width: "100%", marginBottom: 10, opacity: 0.5 }}
-                  >
-                    <Text className="text-sm leading-relaxed text-gray-600">
-                      Lorem ipsum dolor sit amet consectetur. Neque volutpat ut
-                      enim orci tellus mattis leo arcu. Viverra morbi vivamus
-                      adipiscing interdum volutpat curabitur.
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Footer */}
-          {attachedImages.length > 0 && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{
-                maxHeight: 80,
-                paddingVertical: 6,
-                paddingHorizontal: 8,
-                backgroundColor: "#ffffff",
-              }}
-            >
-              {attachedImages.map((img, idx) => (
-                <View key={idx} style={{ marginRight: 8 }}>
-                  <Image
-                    source={{ uri: img.uri }}
-                    style={{ width: 60, height: 60, borderRadius: 8 }}
-                  />
-                  <Pressable
-                    onPress={() =>
-                      dispatch({ type: "REMOVE_ATTACHED_IMAGE", payload: idx })
-                    }
-                    style={{
-                      position: "absolute",
-                      top: -6,
-                      right: -6,
-                      backgroundColor: "#FF4D4F",
-                      borderRadius: 10,
-                      width: 20,
-                      height: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 12,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ×
-                    </Text>
-                  </Pressable>
+            {/* Suggestions */}
+            <View className="w-full mt-4 space-y-3">
+              {[1, 2, 3].map((_, idx) => (
+                <View
+                  key={idx}
+                  className="px-4 py-3 bg-gray-100 rounded-2xl"
+                  style={{ width: "100%", marginBottom: 10, opacity: 0.5 }}
+                >
+                  <Text className="text-sm leading-relaxed text-gray-600">
+                    Lorem ipsum dolor sit amet consectetur. Neque volutpat ut
+                    enim orci tellus mattis leo arcu. Viverra morbi vivamus
+                    adipiscing interdum volutpat curabitur.
+                  </Text>
                 </View>
               ))}
-            </ScrollView>
-          )}
+            </View>
+          </ScrollView>
+        )}
 
-          {/* Chat input row */}
+        {/* Attached Images - nằm trong KeyboardAvoidingView */}
+        {attachedImages.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              maxHeight: 80,
+              paddingVertical: 6,
+              paddingHorizontal: 8,
+              backgroundColor: "#ffffff",
+            }}
+            scrollEnabled={true}
+            bounces={true}
+          >
+            {attachedImages.map((img, idx) => (
+              <View key={idx} style={{ marginRight: 8 }}>
+                <Image
+                  source={{ uri: img.uri }}
+                  style={{ width: 60, height: 60, borderRadius: 8 }}
+                />
+                <Pressable
+                  onPress={() =>
+                    dispatch({ type: "REMOVE_ATTACHED_IMAGE", payload: idx })
+                  }
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    right: -6,
+                    backgroundColor: "#FF4D4F",
+                    borderRadius: 10,
+                    width: 20,
+                    height: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ×
+                  </Text>
+                </Pressable>
+              </View>
+            ))}
+          </ScrollView>
+        )}
+
+        {/* Chat input row */}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="px-4 py-2 bg-white border-t border-gray-200">
             <View className="flex-row items-center px-3 py-2 bg-gray-100 rounded-full">
               {/* Icon ảnh */}
               <Pressable
-                onPress={() =>
-                  dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: true })
-                }
-                className="mr-3"
+                onPress={() => handleAttachmentSelect("image")}
+                className="mx-2.5"
               >
                 <Feather name="image" size={18} color="#A0A0A0" />
               </Pressable>
-
-              {/* Icon mic */}
-              <Pressable className="mr-2">
-                <Feather name="mic" size={18} color="#A0A0A0" />
-              </Pressable>
-
               {/* Đường kẻ dọc ngăn cách */}
               <View
                 style={{
                   width: 1,
                   height: 20,
-                  backgroundColor: "#D1D5DB", // màu xám nhạt
-                  marginHorizontal: 6,
+                  backgroundColor: "#D1D5DB",
+                  marginRight: 12
                 }}
               />
 
@@ -791,6 +793,10 @@ export default function ChatScreen() {
                 }
                 editable={!sending}
                 multiline
+                style={{
+                  paddingVertical: Platform.OS === "ios" ? 10 : 6,
+                  lineHeight: 18,
+                }}
               />
 
               {/* Nút gửi */}
@@ -809,8 +815,8 @@ export default function ChatScreen() {
               </Pressable>
             </View>
           </View>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

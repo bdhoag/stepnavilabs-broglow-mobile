@@ -814,17 +814,10 @@ export default function ChatScreen() {
             <View className="flex-row items-center px-3 py-2 bg-gray-100 rounded-full">
               {/* Icon ảnh */}
               <Pressable
-                onPress={() =>
-                  dispatch({ type: "SET_SHOW_ATTACHMENT_MENU", payload: true })
-                }
-                className="mr-3"
+                onPress={() => handleAttachmentSelect("image")}
+                className="mx-2.5"
               >
                 <Feather name="image" size={18} color="#A0A0A0" />
-              </Pressable>
-
-              {/* Icon mic */}
-              <Pressable className="mr-2">
-                <Feather name="mic" size={18} color="#A0A0A0" />
               </Pressable>
 
               {/* Đường kẻ dọc ngăn cách */}
@@ -832,8 +825,8 @@ export default function ChatScreen() {
                 style={{
                   width: 1,
                   height: 20,
-                  backgroundColor: "#D1D5DB", // màu xám nhạt
-                  marginHorizontal: 6,
+                  backgroundColor: "#D1D5DB",
+                  marginRight: 12
                 }}
               />
 
@@ -848,6 +841,10 @@ export default function ChatScreen() {
                 }
                 editable={!sending}
                 multiline
+                style={{
+                  paddingVertical: Platform.OS === "ios" ? 10 : 6,
+                  lineHeight: 18,
+                }}
               />
 
               {/* Nút gửi */}
