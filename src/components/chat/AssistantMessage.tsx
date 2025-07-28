@@ -39,7 +39,11 @@ const styles = StyleSheet.create({
   },
   bubble: {
     padding: 16,
-    width: "100%",
+    width: "80%",
+    backgroundColor: "#F3F4F6",
+    borderTopEndRadius: 10,
+    borderBottomRightRadius: 10,
+    borderBottomStartRadius: 10
   },
   imageGrid: {
     flexDirection: "row",
