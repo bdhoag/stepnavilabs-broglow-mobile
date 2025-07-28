@@ -132,9 +132,11 @@ const RoutineQuizScreen = () =>
   if ( !currentQuestion )
   {
     return (
-      <SafeAreaView className="items-center justify-center flex-1 bg-white">
-        <Text className="text-gray-500">Không có câu hỏi nào để hiển thị.</Text>
-      </SafeAreaView>
+      <AuthGuard>
+        <SafeAreaView className="items-center justify-center flex-1 bg-white">
+          <Text className="text-gray-500">Không có câu hỏi nào để hiển thị.</Text>
+        </SafeAreaView>
+      </AuthGuard>
     );
   }
 

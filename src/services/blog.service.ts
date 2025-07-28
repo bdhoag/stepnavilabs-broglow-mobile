@@ -8,7 +8,7 @@ import { TokenStorage } from "../lib/token-storage";
 // Interface cho đối tượng Tác giả
 export interface Author {
   _id: string;
-  email: string;
+  email?: string;
 }
 
 // Interface cho đối tượng Hình ảnh trong bài blog
@@ -26,7 +26,7 @@ export interface ImageRequest {
 // Interface cho đối tượng Bình luận
 export interface Comment {
   _id: string;
-  author: Author;
+  author?: Author;
   content: string;
   likes: number;
   likedBy: Author[];

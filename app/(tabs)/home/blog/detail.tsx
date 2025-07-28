@@ -34,7 +34,7 @@ const CommentItem = ( {
 }: {
     comment: Comment;
     blogId: string;
-    user: { _id: string; email: string } | null; // Assuming user type
+    user: { _id: string; email?: string } | null; // Assuming user type
     onLikeToggle: ( commentId: string ) => void;
     isLiking: boolean;
 } ) =>
@@ -44,13 +44,13 @@ const CommentItem = ( {
     return (
         <View className="flex-row items-start mb-6">
             <Image
-                source={ { uri: `https://ui-avatars.com/api/?name=${ comment.author.email.split( '@' )[ 0 ] }&background=random` } }
+                source={ { uri: `https://ui-avatars.com/api/?name=${ comment.author?.email?.split( '@' )[ 0 ] || 'hoang.nguyen' }&background=random` } }
                 className="w-10 h-10 rounded-full mr-3 bg-gray-100"
             />
             <View className="flex-1 bg-gray-50 rounded-2xl p-3">
                 <View className="flex-row justify-between items-start mb-1">
                     <View className="flex-1">
-                        <Text className="font-quicksand-bold text-sm text-gray-800">{ comment.author.email.split( '@' )[ 0 ] }</Text>
+                        <Text className="font-quicksand-bold text-sm text-gray-800">{ comment.author?.email?.split( '@' )[ 0 ] }</Text>
                         <Text className="text-xs text-gray-500 mb-2 font-quicksand">
                             { formatDistanceToNow( new Date( comment.createdAt ), { addSuffix: true, locale: vi } ) }
                         </Text>
@@ -122,7 +122,7 @@ const CommentSection = ( {
             { user && (
                 <View className="flex-row items-center mb-6">
                     <Image
-                        source={ { uri: `https://ui-avatars.com/api/?name=${ user.email.split( '@' )[ 0 ] }&background=random` } }
+                        source={ { uri: `https://ui-avatars.com/api/?name=${ user?.email.split( '@' )[ 0 ] || 'hoang.nguyen' }&background=random` } }
                         className="w-10 h-10 rounded-full mr-3"
                     />
                     <View className="flex-1 flex-row items-center bg-white rounded-full border border-gray-300 px-4">
@@ -503,10 +503,10 @@ const BlogDetailScreen = () =>
 
                             <View className="flex-row items-center">
                                 <Image
-                                    source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author.email.split( '@' )[ 0 ] }&background=random` } }
+                                    source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author.email?.split( '@' )[ 0 ] }&background=random` } }
                                     className="w-7 h-7 rounded-full mr-2"
                                 />
-                                <Text className="text-sm font-quicksand-medium text-gray-800">{ blog.author.email.split( '@' )[ 0 ] }</Text>
+                                <Text className="text-sm font-quicksand-medium text-gray-800">{ blog.author.email?.split( '@' )[ 0 ] }</Text>
                             </View>
                         </View>
 

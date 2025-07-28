@@ -60,7 +60,7 @@ export default function TabsLayout ()
                     </Text>
                   </View>
                 </View>
-                <View className="flex-row items-center gap-2.5">
+                {/* <View className="flex-row items-center gap-2.5">
                   <TouchableOpacity
                     className="bg-[#1E233A] rounded-full px-4 py-2.5"
                     onPress={ () =>
@@ -72,15 +72,15 @@ export default function TabsLayout ()
                       Nâng Cấp Gói
                     </Text>
                   </TouchableOpacity>
-                  {/* <TouchableOpacity
+                  <TouchableOpacity
                     onPress={ () =>
                     {
                       router.push( "/(tabs)/home/notification" ); // Navigate to notification screen
                     } }
                   >
                     <Feather name="bell" size={ 20 } color="#333" />
-                  </TouchableOpacity> */}
-                </View>
+                  </TouchableOpacity>
+                </View> */}
               </View>
             </SafeAreaView>
           ) }

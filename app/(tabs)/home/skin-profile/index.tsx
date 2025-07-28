@@ -88,33 +88,35 @@ const QuizScreen = () =>
   if ( error )
   {
     return (
-      <SafeAreaView className="items-center justify-center flex-1 px-6">
-        <Text className="mb-4 text-center text-red-600">{ error }</Text>
-        <TouchableOpacity
-          onPress={ () =>
-          {
-            setError( null );
-            setLoading( true );
-            setQuestions( [] );
-            setCurrent( 0 );
-            setAnswers( {} );
-            // Reload questions
-            fetchSkinProfileQuestions()
-              .then( ( res ) =>
-              {
-                res.sort( ( a, b ) => a.order - b.order );
-                setQuestions( res );
-              } )
-              .catch( () =>
-                setError( "Không thể tải câu hỏi. Vui lòng thử lại sau." )
-              )
-              .finally( () => setLoading( false ) );
-          } }
-          className="px-8 py-3 bg-blue-500 rounded-full"
-        >
-          <Text className="font-semibold text-white">Thử lại</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <AuthGuard>
+        <SafeAreaView className="items-center justify-center flex-1 px-6">
+          <Text className="mb-4 text-center text-red-600">{ error }</Text>
+          <TouchableOpacity
+            onPress={ () =>
+            {
+              setError( null );
+              setLoading( true );
+              setQuestions( [] );
+              setCurrent( 0 );
+              setAnswers( {} );
+              // Reload questions
+              fetchSkinProfileQuestions()
+                .then( ( res ) =>
+                {
+                  res.sort( ( a, b ) => a.order - b.order );
+                  setQuestions( res );
+                } )
+                .catch( () =>
+                  setError( "Không thể tải câu hỏi. Vui lòng thử lại sau." )
+                )
+                .finally( () => setLoading( false ) );
+            } }
+            className="px-8 py-3 bg-blue-500 rounded-full"
+          >
+            <Text className="font-semibold text-white">Thử lại</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </AuthGuard>
     );
   }
 
