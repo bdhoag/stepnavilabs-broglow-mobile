@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "BroGlow",
-    "slug": "BroGlow",
+    "slug": "broglow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -11,8 +11,14 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIViewControllerBasedStatusBarAppearance": true
-      }
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "This app uses the camera to scan your skin.",
+        "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to save images.",
+        "NSPhotoLibraryAddUsageDescription": "This app requires permission to save images to your photo library."
+      },
+      "bundleIdentifier": "com.broglow.app",
+      "buildNumber": "6"
     },
     "android": {
       "package": "com.broglow.app",
@@ -47,8 +53,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "6e38429b-6d13-42d1-bd57-96f8a8220966"
+        "projectId": "3e07407a-0c07-43d8-ae71-c69f4b2150e9"
       }
-    }
+    },
+    "owner": "broglow"
   }
 }

@@ -4,45 +4,49 @@ import React, { useState } from 'react'
 import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get( "window" );
 
-const SubMethod = () => {
+const SubMethod = () =>
+{
     const router = useRouter();
-    const [selectedMethod, setSelectedMethod] = useState('momo');
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const momoImg = require('../../../../assets/images/momo.png')
+    const [ selectedMethod, setSelectedMethod ] = useState( 'momo' );
+    const [ showSuccessModal, setShowSuccessModal ] = useState( false );
+    const momoImg = require( '../../../../assets/images/momo.png' )
 
-    const handleBack = () => {
+    const handleBack = () =>
+    {
         router.back();
     };
 
-    const handlePayment = () => {
-        console.log('Processing payment with:', selectedMethod);
-        setShowSuccessModal(true);
+    const handlePayment = () =>
+    {
+        console.log( 'Processing payment with:', selectedMethod );
+        setShowSuccessModal( true );
     };
 
-    const handleModalOK = () => {
-        setShowSuccessModal(false);
-        router.replace("/(tabs)/home");
+    const handleModalOK = () =>
+    {
+        setShowSuccessModal( false );
+        router.replace( "/(tabs)/home" );
     };
 
     const SuccessModal = () => (
         <Modal
-            visible={showSuccessModal}
-            transparent={true}
+            visible={ showSuccessModal }
+            transparent={ true }
             animationType="fade"
-            onRequestClose={() => {}}
+            onRequestClose={ () => { } }
         >
             <View
-                style={{
+                style={ {
                     flex: 1,
                     backgroundColor: "rgba(0, 0, 0, 0.5)",
                     justifyContent: "center",
                     alignItems: "center",
-                }}
+                } }
             >
                 <View
-                    style={{
+                    style={ {
                         backgroundColor: "white",
                         borderRadius: 50,
                         paddingHorizontal: 32,
@@ -57,93 +61,93 @@ const SubMethod = () => {
                         shadowOpacity: 0.25,
                         shadowRadius: 3.84,
                         elevation: 5,
-                    }}
+                    } }
                 >
-                    {/* Decorative dots */}
-                    <View style={{ position: "absolute", top: 40, left: 80 }}>
+                    {/* Decorative dots */ }
+                    <View style={ { position: "absolute", top: 40, left: 80 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 20,
                                 height: 20,
                                 borderRadius: 20,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", top: 30, right: 80 }}>
+                    <View style={ { position: "absolute", top: 30, right: 80 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 10,
                                 height: 10,
                                 borderRadius: 10,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", top: 20, left: 150 }}>
+                    <View style={ { position: "absolute", top: 20, left: 150 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", top: 90, right: 100 }}>
+                    <View style={ { position: "absolute", top: 90, right: 100 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 7,
                                 height: 7,
                                 borderRadius: 3,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", bottom: 80, left: 60 }}>
+                    <View style={ { position: "absolute", bottom: 80, left: 60 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 5,
                                 height: 5,
                                 borderRadius: 2.5,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", bottom: 130, right: 50 }}>
+                    <View style={ { position: "absolute", bottom: 130, right: 50 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 7,
                                 height: 7,
                                 borderRadius: 3.5,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", bottom: 150, left: 120 }}>
+                    <View style={ { position: "absolute", bottom: 150, left: 120 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
-                    <View style={{ position: "absolute", top: 150, right: 140 }}>
+                    <View style={ { position: "absolute", top: 150, right: 140 } }>
                         <View
-                            style={{
+                            style={ {
                                 width: 5,
                                 height: 5,
                                 borderRadius: 2.5,
                                 backgroundColor: "#4A90E2",
-                            }}
+                            } }
                         />
                     </View>
 
-                    {/* Checkmark Circle */}
+                    {/* Checkmark Circle */ }
                     <View
-                        style={{
+                        style={ {
                             width: 100,
                             height: 100,
                             borderRadius: 50,
@@ -152,67 +156,67 @@ const SubMethod = () => {
                             alignItems: "center",
                             marginBottom: 40,
                             marginTop: 20
-                        }}
+                        } }
                     >
                         <View
-                            style={{
+                            style={ {
                                 width: 50,
                                 height: 50,
                                 borderRadius: 25,
                                 backgroundColor: "white",
                                 justifyContent: "center",
                                 alignItems: "center",
-                            }}
+                            } }
                         >
-                            <Ionicons name="checkmark" size={30} color="#4A90E2" />
+                            <Ionicons name="checkmark" size={ 30 } color="#4A90E2" />
                         </View>
                     </View>
 
-                    {/* Text */}
+                    {/* Text */ }
                     <Text
-                        style={{
+                        style={ {
                             fontSize: 18,
                             fontWeight: "bold",
                             color: "#1584F2",
                             textAlign: "center",
                             marginBottom: 6,
                             fontFamily: "Quicksand_700Bold",
-                        }}
+                        } }
                     >
                         Đã Thanh Toán
                     </Text>
 
                     <Text
-                        style={{
+                        style={ {
                             fontSize: 12,
                             color: "#171B2E",
                             textAlign: "center",
                             marginBottom: 7,
                             fontFamily: "Quicksand_400Regular",
-                        }}
+                        } }
                     >
                         Bạn đã nâng cấp tài khoản BroGlow Pro thành công!
                     </Text>
 
-                    {/* OK Button */}
+                    {/* OK Button */ }
                     <TouchableOpacity
-                        onPress={handleModalOK}
-                        style={{
+                        onPress={ handleModalOK }
+                        style={ {
                             backgroundColor: "#4A90E2",
                             paddingHorizontal: 48,
                             paddingVertical: 14,
                             borderRadius: 24,
                             width: "100%",
                             marginTop: 24,
-                        }}
+                        } }
                     >
                         <Text
-                            style={{
+                            style={ {
                                 color: "white",
                                 fontSize: 16,
                                 fontWeight: "600",
                                 textAlign: "center",
-                            }}
+                            } }
                         >
                             OK
                         </Text>
@@ -223,65 +227,65 @@ const SubMethod = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={20} color="#333" />
+        <SafeAreaView style={ styles.container }>
+            {/* Header */ }
+            <View style={ styles.headerContainer }>
+                <TouchableOpacity onPress={ handleBack } style={ styles.backButton }>
+                    <Ionicons name="arrow-back" size={ 20 } color="#333" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>
+                <Text style={ styles.headerTitle }>
                     Phương thức thanh toán
                 </Text>
             </View>
 
-            {/* Content */}
-            <ScrollView style={styles.mainContentContainer}>
-                <Text style={styles.sectionTitle}>
+            {/* Content */ }
+            <ScrollView style={ styles.mainContentContainer }>
+                <Text style={ styles.sectionTitle }>
                     Chọn phương thức thanh toán của bạn
                 </Text>
 
-                {/* MoMo Payment Option */}
-                <TouchableOpacity 
-                    style={[
+                {/* MoMo Payment Option */ }
+                <TouchableOpacity
+                    style={ [
                         styles.paymentOption,
                         selectedMethod === 'momo' && styles.selectedPaymentOption
-                    ]}
-                    onPress={() => setSelectedMethod('momo')}
+                    ] }
+                    onPress={ () => setSelectedMethod( 'momo' ) }
                 >
-                    <View style={styles.paymentContent}>
-                        <View style={styles.momoLogoContainer}>
-                            <Image 
-                                source={momoImg} 
-                                style={styles.momoLogo}
+                    <View style={ styles.paymentContent }>
+                        <View style={ styles.momoLogoContainer }>
+                            <Image
+                                source={ momoImg }
+                                style={ styles.momoLogo }
                                 resizeMode="contain"
                             />
                         </View>
-                        <View style={styles.paymentInfo}>
-                            <Text style={styles.paymentTitle}>Ví Điện Tử MoMo</Text>
-                            <Text style={styles.paymentSubtitle}>xxxx xxx 789</Text>
+                        <View style={ styles.paymentInfo }>
+                            <Text style={ styles.paymentTitle }>Ví Điện Tử MoMo</Text>
+                            <Text style={ styles.paymentSubtitle }>xxxx xxx 789</Text>
                         </View>
-                        <View style={styles.checkContainer}>
+                        <View style={ styles.checkContainer }>
                             <Ionicons
-                                name={selectedMethod === 'momo' ? 'checkmark-circle' : 'radio-button-off'}
-                                size={24}
-                                color={selectedMethod === 'momo' ? '#1584F2' : '#ccc'}
+                                name={ selectedMethod === 'momo' ? 'checkmark-circle' : 'radio-button-off' }
+                                size={ 24 }
+                                color={ selectedMethod === 'momo' ? '#1584F2' : '#ccc' }
                             />
                         </View>
                     </View>
                 </TouchableOpacity>
             </ScrollView>
 
-            {/* Payment Button */}
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity 
-                    style={styles.paymentButton}
-                    onPress={handlePayment}
+            {/* Payment Button */ }
+            <View style={ styles.buttonContainer }>
+                <TouchableOpacity
+                    style={ styles.paymentButton }
+                    onPress={ handlePayment }
                 >
-                    <Text style={styles.paymentButtonText}>Thanh toán</Text>
+                    <Text style={ styles.paymentButtonText }>Thanh toán</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Success Modal */}
+            {/* Success Modal */ }
             <SuccessModal />
         </SafeAreaView>
     )
@@ -289,7 +293,7 @@ const SubMethod = () => {
 
 export default SubMethod
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
@@ -377,4 +381,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Quicksand_700Bold',
     },
-})
+} )

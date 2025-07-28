@@ -1,3 +1,4 @@
+import AuthGuard from "@/src/components/auth-guard";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
@@ -5,40 +6,46 @@ import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const ScanScreen = () => {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState<CameraType>("front");
-  const cameraRef = useRef<any>(null);
-  const galleryAdd = require("../../../assets/images/gallery-add.png")
+const ScanScreen = () =>
+{
+  const [ permission, requestPermission ] = useCameraPermissions();
+  const [ facing, setFacing ] = useState<CameraType>( "front" );
+  const cameraRef = useRef<any>( null );
+  const galleryAdd = require( "../../../assets/images/gallery-add.png" )
 
-  if (!permission) {
+  if ( !permission )
+  {
     // Camera permissions are still loading
     return <View />;
   }
 
-  if (!permission.granted) {
+  if ( !permission.granted )
+  {
     // Camera permissions are not granted yet
     return (
-      <View style={styles.container}>
-        <Text style={styles.message}>
-          We need your permission to show the camera
+      <View style={ styles.container }>
+        <Text style={ styles.message }>
+          We use the camera to help you scan items easily. Tap Continue to enable access.
         </Text>
-        <TouchableOpacity onPress={requestPermission} style={styles.button}>
-          <Text style={styles.text}>Grant Permission</Text>
+        <TouchableOpacity onPress={ requestPermission } style={ styles.button }>
+          <Text style={ styles.text }>Continue</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing((current) => (current === "back" ? "front" : "back"));
+  function toggleCameraFacing ()
+  {
+    setFacing( ( current ) => ( current === "back" ? "front" : "back" ) );
   }
 
-  const pickImageFromGallery = async () => {
+  const pickImageFromGallery = async () =>
+  {
     // Request permission to access media library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (status !== "granted") {
+    if ( status !== "granted" )
+    {
       Alert.alert(
         "Permission needed",
         "Sorry, we need camera roll permissions to access your photos."
@@ -47,93 +54,101 @@ const ScanScreen = () => {
     }
 
     // Launch image picker
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+    const result = await ImagePicker.launchImageLibraryAsync( {
+      mediaTypes: [ "images" ],
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [ 4, 3 ],
       quality: 1,
-    });
+    } );
 
-    if (!result.canceled) {
+    if ( !result.canceled )
+    {
       // Handle the selected image
-      console.log("Selected image:", result.assets[0]);
+      console.log( "Selected image:", result.assets[ 0 ] );
       // You can add your image processing logic here
-      Alert.alert("Image Selected", "Image has been selected successfully!");
+      Alert.alert( "Image Selected", "Image has been selected successfully!" );
     }
   };
 
-  const captureAndNavigate = async () => {
-    try {
-      if (cameraRef.current) {
+  const captureAndNavigate = async () =>
+  {
+    try
+    {
+      if ( cameraRef.current )
+      {
         // Using the new CameraView API – takePictureAsync is the current stable method
         const photo = await cameraRef.current.takePictureAsync();
-        if (photo?.uri) {
-          router.push({
+        if ( photo?.uri )
+        {
+          router.push( {
             pathname: "/(tabs)/chat",
             params: { imageUri: photo.uri },
-          } as any);
+          } as any );
         }
       }
-    } catch (error) {
-      console.error("Capture error: ", error);
-      Alert.alert("Lỗi", "Không thể chụp ảnh. Vui lòng thử lại!");
+    } catch ( error )
+    {
+      console.error( "Capture error: ", error );
+      Alert.alert( "Lỗi", "Không thể chụp ảnh. Vui lòng thử lại!" );
     }
   };
 
   return (
-    <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-        <View style={styles.overlay}>
-          {/* Back Button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="close" size={24} color="white" />
-          </TouchableOpacity>
+    <AuthGuard>
+      <View style={ styles.container }>
+        <CameraView style={ styles.camera } facing={ facing } ref={ cameraRef }>
+          <View style={ styles.overlay }>
+            {/* Back Button */ }
+            <TouchableOpacity
+              style={ styles.backButton }
+              onPress={ () => router.back() }
+            >
+              <Ionicons name="close" size={ 24 } color="white" />
+            </TouchableOpacity>
 
-          {/* Camera Frame */}
-          <View style={styles.frame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+            {/* Camera Frame */ }
+            <View style={ styles.frame }>
+              <View style={ [ styles.corner, styles.topLeft ] } />
+              <View style={ [ styles.corner, styles.topRight ] } />
+              <View style={ [ styles.corner, styles.bottomLeft ] } />
+              <View style={ [ styles.corner, styles.bottomRight ] } />
+            </View>
+
+            {/* Bottom Controls */ }
+            <View style={ styles.bottomControls }>
+              <TouchableOpacity
+                style={ styles.galleryButton }
+                onPress={ pickImageFromGallery }
+              >
+                <Image source={ galleryAdd } style={ styles.galleryButtonImage } />
+                <Text style={ styles.buttonText }>Chọn ảnh</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={ styles.captureButton }
+                onPress={ captureAndNavigate }
+              >
+                <View style={ styles.captureButtonInner } />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={ styles.flipButton }
+                onPress={ toggleCameraFacing }
+              >
+                <MaterialIcons name="cameraswitch" size={ 36 } color="white" />
+                <Text style={ styles.buttonText }>Lật</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          {/* Bottom Controls */}
-          <View style={styles.bottomControls}>
-            <TouchableOpacity
-              style={styles.galleryButton}
-              onPress={pickImageFromGallery}
-            >
-              <Image source={galleryAdd} style={styles.galleryButtonImage} />
-              <Text style={styles.buttonText}>Chọn ảnh</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.captureButton}
-              onPress={captureAndNavigate}
-            >
-              <View style={styles.captureButtonInner} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.flipButton}
-              onPress={toggleCameraFacing}
-            >
-              <MaterialIcons name="cameraswitch" size={36} color="white" />
-              <Text style={styles.buttonText}>Lật</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </CameraView>
-    </View>
+        </CameraView>
+      </View>
+    </AuthGuard>
   );
 };
 
 export default ScanScreen;
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
   container: {
     flex: 1,
     backgroundColor: "#000",
@@ -278,4 +293,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   }
-});
+} );

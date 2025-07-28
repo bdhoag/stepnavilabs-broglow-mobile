@@ -1,8 +1,10 @@
+import AuthGuard from "@/src/components/auth-guard";
 import { useAuth } from "@/src/contexts/auth-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
+import
+{
   Image,
   SafeAreaView,
   ScrollView,
@@ -14,20 +16,22 @@ import {
   View,
 } from "react-native";
 
-interface MenuItem {
+interface MenuItem
+{
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   hasArrow?: boolean;
   hasSwitch?: boolean;
   switchValue?: boolean;
-  onSwitchChange?: (value: boolean) => void;
+  onSwitchChange?: ( value: boolean ) => void;
   rightText?: string;
   onPress?: () => void;
 }
 
-const ProfileScreen: React.FC = () => {
-  const [isDark, setIsDark] = useState(false);
-  const [isNotify, setIsNotify] = useState(true);
+const ProfileScreen: React.FC = () =>
+{
+  const [ isDark, setIsDark ] = useState( false );
+  const [ isNotify, setIsNotify ] = useState( true );
   const router = useRouter();
   const { logout } = useAuth();
 
@@ -36,19 +40,19 @@ const ProfileScreen: React.FC = () => {
       icon: "person-outline",
       title: "Thông tin tài khoản",
       hasArrow: true,
-      onPress: () => router.push("/profile/edit-profile"),
+      onPress: () => router.push( "/profile/edit-profile" ),
     },
     {
       icon: "lock-closed-outline",
       title: "Đổi mật khẩu",
       hasArrow: true,
-      onPress: () => router.push("/profile/change-password"),
+      onPress: () => router.push( "/profile/change-password" ),
     },
     {
       icon: "shield-checkmark-outline",
       title: "Xác thực 2 yếu tố",
       hasArrow: true,
-      onPress: () => router.push("/profile/factor-verify"),
+      onPress: () => router.push( "/profile/factor-verify" ),
     },
     {
       icon: "card-outline",
@@ -81,117 +85,122 @@ const ProfileScreen: React.FC = () => {
     },
   ];
 
-  const handleBackPress = () => {
+  const handleBackPress = () =>
+  {
     router.back();
   };
 
-  const handleLogout = () => {
+  const handleLogout = () =>
+  {
+    router.navigate( "/(tabs)/home" );
     logout();
   };
 
-  const renderMenuItem = (item: MenuItem, index: number) => (
+  const renderMenuItem = ( item: MenuItem, index: number ) => (
     <TouchableOpacity
-      key={index}
-      style={styles.menuItem}
-      activeOpacity={0.7}
-      onPress={item.onPress}
+      key={ index }
+      style={ styles.menuItem }
+      activeOpacity={ 0.7 }
+      onPress={ item.onPress }
     >
-      <View style={styles.menuItemLeft}>
-        <Ionicons name={item.icon} size={20} color="#666" />
-        <Text style={styles.menuItemText}>{item.title}</Text>
+      <View style={ styles.menuItemLeft }>
+        <Ionicons name={ item.icon } size={ 20 } color="#666" />
+        <Text style={ styles.menuItemText }>{ item.title }</Text>
       </View>
-      <View style={styles.menuItemRight}>
-        {item.rightText && (
-          <Text style={styles.rightText}>{item.rightText}</Text>
-        )}
-        {item.hasSwitch && item.onSwitchChange && (
+      <View style={ styles.menuItemRight }>
+        { item.rightText && (
+          <Text style={ styles.rightText }>{ item.rightText }</Text>
+        ) }
+        { item.hasSwitch && item.onSwitchChange && (
           <Switch
-            value={item.switchValue}
-            onValueChange={item.onSwitchChange}
-            trackColor={{ false: "#E5E5E5", true: "#007AFF" }}
+            value={ item.switchValue }
+            onValueChange={ item.onSwitchChange }
+            trackColor={ { false: "#E5E5E5", true: "#007AFF" } }
             thumbColor="#FFFFFF"
           />
-        )}
-        {item.hasArrow && (
-          <Ionicons name="chevron-forward" size={16} color="#C7C7CC" />
-        )}
+        ) }
+        { item.hasArrow && (
+          <Ionicons name="chevron-forward" size={ 16 } color="#C7C7CC" />
+        ) }
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <AuthGuard>
+      <SafeAreaView style={ styles.container }>
+        <View style={ styles.container }>
+          <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBackPress}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={20} color="#000000" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Tài khoản</Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <View style={styles.avatarContainer}>
-            <Image
-              source={{
-                uri: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop&crop=face",
-              }}
-              style={styles.avatar}
-            />
+          {/* Header */ }
+          <View style={ styles.header }>
+            <TouchableOpacity
+              style={ styles.backButton }
+              onPress={ handleBackPress }
+              activeOpacity={ 0.7 }
+            >
+              <Ionicons name="chevron-back" size={ 20 } color="#000000" />
+            </TouchableOpacity>
+            <Text style={ styles.headerTitle }>Tài khoản</Text>
+            <View style={ styles.headerSpacer } />
           </View>
-          <Text style={styles.profileName}>Bui Duc Hoang</Text>
-          <Text style={styles.profileUsername}>@bd_hoag</Text>
-        </View>
 
-        {/* Main Menu Items */}
-        <View style={styles.menuSection}>
-          {mainMenuItems.map((item, index) => (
-            <View key={index}>
-              {/* Add divider before "Phương thức thanh toán" (index 3) */}
-              {index === 3 && <View style={styles.divider} />}
-              {renderMenuItem(item, index)}
-              {/* Add divider after "Phương thức thanh toán" (index 3) */}
-              {index === 3 && <View style={styles.dividerBottom} />}
+          <ScrollView
+            style={ styles.scrollView }
+            showsVerticalScrollIndicator={ false }
+          >
+            {/* Profile Section */ }
+            <View style={ styles.profileSection }>
+              <View style={ styles.avatarContainer }>
+                <Image
+                  source={ {
+                    uri: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop&crop=face",
+                  } }
+                  style={ styles.avatar }
+                />
+              </View>
+              <Text style={ styles.profileName }>Bui Duc Hoang</Text>
+              <Text style={ styles.profileUsername }>@bd_hoag</Text>
             </View>
-          ))}
+
+            {/* Main Menu Items */ }
+            <View style={ styles.menuSection }>
+              { mainMenuItems.map( ( item, index ) => (
+                <View key={ index }>
+                  {/* Add divider before "Phương thức thanh toán" (index 3) */ }
+                  { index === 3 && <View style={ styles.divider } /> }
+                  { renderMenuItem( item, index ) }
+                  {/* Add divider after "Phương thức thanh toán" (index 3) */ }
+                  { index === 3 && <View style={ styles.dividerBottom } /> }
+                </View>
+              ) ) }
+            </View>
+
+            {/* Settings Items */ }
+            <View style={ styles.menuSection }>
+              { settingsItems.map( ( item, index ) => renderMenuItem( item, index ) ) }
+            </View>
+
+            {/* Logout Button */ }
+            <TouchableOpacity style={ styles.logoutButton } activeOpacity={ 0.8 } onPress={ handleLogout }>
+              <Text style={ styles.logoutText }>Đăng xuất</Text>
+            </TouchableOpacity>
+
+            {/* Logout Button */ }
+            <TouchableOpacity style={ styles.removeButton } activeOpacity={ 0.8 } onPress={ handleLogout }>
+              <Text style={ styles.removeText }>Xoá tài khoản</Text>
+            </TouchableOpacity>
+
+            {/* Bottom spacing */ }
+            <View style={ styles.bottomSpacing } />
+          </ScrollView>
         </View>
-
-        {/* Settings Items */}
-        <View style={styles.menuSection}>
-          {settingsItems.map((item, index) => renderMenuItem(item, index))}
-        </View>
-
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Đăng xuất</Text>
-        </TouchableOpacity>
-
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.removeButton} activeOpacity={0.8} onPress={handleLogout}>
-          <Text style={styles.removeText}>Xoá tài khoản</Text>
-        </TouchableOpacity>
-
-        {/* Bottom spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </AuthGuard>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
@@ -321,6 +330,6 @@ const styles = StyleSheet.create({
   bottomSpacing: {
     height: 32,
   },
-});
+} );
 
 export default ProfileScreen;

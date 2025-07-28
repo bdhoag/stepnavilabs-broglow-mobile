@@ -4,7 +4,8 @@ import * as AuthSession from "expo-auth-session";
 import { Href, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
-import {
+import
+{
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
@@ -23,89 +24,103 @@ WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = process.env.EXPO_PUBLIC_API || "http://localhost:3000";
 
-const redirectUri = AuthSession.makeRedirectUri({
+const redirectUri = AuthSession.makeRedirectUri( {
   scheme: "broglow-app",
   path: "/login",
-});
+} );
 
-export default function LoginScreen() {
-  const logoGoogle = require("../assets/images/icons8-google-48.png");
+export default function LoginScreen ()
+{
+  const logoGoogle = require( "../assets/images/icons8-google-48.png" );
   const router = useRouter();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [ email, setEmail ] = useState( "" );
+  const [ password, setPassword ] = useState( "" );
+  const [ showPassword, setShowPassword ] = useState( false );
+  const [ loading, setLoading ] = useState( false );
+  const [ googleLoading, setGoogleLoading ] = useState( false );
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ email và mật khẩu");
+  const handleLogin = async () =>
+  {
+    if ( !email || !password )
+    {
+      Alert.alert( "Lỗi", "Vui lòng nhập đầy đủ email và mật khẩu" );
       return;
     }
 
-    setLoading(true);
-    try {
-      await login(email, password);
-      router.replace("/(tabs)/home");
-    } catch (error) {
+    setLoading( true );
+    try
+    {
+      await login( email, password );
+      router.navigate( "/(tabs)/home" );
+    } catch ( error )
+    {
       Alert.alert(
         "Lỗi đăng nhập",
         error instanceof Error ? error.message : "Đã xảy ra lỗi"
       );
-      console.log(error);
-    } finally {
-      setLoading(false);
+      console.log( error );
+    } finally
+    {
+      setLoading( false );
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setGoogleLoading(true);
-    try {
-      const authUrl = `${API_URL}/auth/google`;
+  const handleGoogleLogin = async () =>
+  {
+    setGoogleLoading( true );
+    try
+    {
+      const authUrl = `${ API_URL }/auth/google`;
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
         redirectUri
       );
 
-      if (result.type === "success" && result.url) {
-        const url = new URL(result.url);
-        const code = url.searchParams.get("code");
+      if ( result.type === "success" && result.url )
+      {
+        const url = new URL( result.url );
+        const code = url.searchParams.get( "code" );
 
-        if (code) {
-          await AuthService.redirectGoogleLogin(code);
-          Alert.alert("Thành công", "Đăng nhập Google thành công!", [
-            { text: "OK", onPress: () => router.replace("/(tabs)/home") },
-          ]);
+        if ( code )
+        {
+          await AuthService.redirectGoogleLogin( code );
+          Alert.alert( "Thành công", "Đăng nhập Google thành công!", [
+            { text: "OK", onPress: () => router.replace( "/(tabs)/home" ) },
+          ] );
         }
       }
-    } catch (error) {
+    } catch ( error )
+    {
       Alert.alert(
         "Lỗi Google Sign In",
         error instanceof Error ? error.message : "Đã xảy ra lỗi"
       );
-    } finally {
-      setGoogleLoading(false);
+    } finally
+    {
+      setGoogleLoading( false );
     }
   };
 
-  const handleForgotPassword = () => {
-    router.push("/forgot-password" as Href);
+  const handleForgotPassword = () =>
+  {
+    router.push( "/forgot-password" as Href );
   };
 
-  const handleSignUp = () => {
-    router.push("/register" as Href);
+  const handleSignUp = () =>
+  {
+    router.replace( "/register" as Href );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={ styles.container }>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        behavior={ Platform.OS === "ios" ? "padding" : "height" }
+        style={ styles.container }
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+          contentContainerStyle={ styles.scrollContent }
+          showsVerticalScrollIndicator={ false }
         >
           {/* Logo
           <View style={styles.logoContainer}>
@@ -117,96 +132,96 @@ export default function LoginScreen() {
           </View> */}
 
 
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerIconContainer}>
+          {/* Header */ }
+          <View style={ styles.header }>
+            <View style={ styles.headerIconContainer }>
               <TouchableOpacity
-                onPress={() => router.back()}
-                style={styles.backButton}
+                onPress={ () => router.back() }
+                style={ styles.backButton }
               >
-                <Ionicons name="arrow-back" size={24} color="#171B2E" />
+                <Ionicons name="arrow-back" size={ 24 } color="#171B2E" />
               </TouchableOpacity>
             </View>
-            <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerText}>Đăng nhập</Text>
+            <View style={ styles.headerTitleContainer }>
+              <Text style={ styles.headerText }>Đăng nhập</Text>
             </View>
           </View>
 
-          {/* Form */}
-          <View style={styles.formContainer}>
-            {/* Email Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Email</Text>
+          {/* Form */ }
+          <View style={ styles.formContainer }>
+            {/* Email Input */ }
+            <View style={ styles.inputContainer }>
+              <Text style={ styles.inputLabel }>Email</Text>
               <TextInput
-                style={styles.input}
+                style={ styles.input }
                 placeholder="Email đã đăng ký"
-                value={email}
-                onChangeText={setEmail}
+                value={ email }
+                onChangeText={ setEmail }
                 keyboardType="email-address"
                 autoCapitalize="none"
-                autoCorrect={false}
-                placeholderTextColor={'#9496A5'}
+                autoCorrect={ false }
+                placeholderTextColor={ '#9496A5' }
               />
             </View>
 
-            {/* Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Mật khẩu</Text>
-              <View style={styles.passwordContainer}>
+            {/* Password Input */ }
+            <View style={ styles.inputContainer }>
+              <Text style={ styles.inputLabel }>Mật khẩu</Text>
+              <View style={ styles.passwordContainer }>
                 <TextInput
-                  style={styles.passwordInput}
+                  style={ styles.passwordInput }
                   placeholder="Mật khẩu của bạn"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
+                  value={ password }
+                  onChangeText={ setPassword }
+                  secureTextEntry={ !showPassword }
                   autoCapitalize="none"
-                  autoCorrect={false}
+                  autoCorrect={ false }
                 />
                 <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
+                  onPress={ () => setShowPassword( !showPassword ) }
+                  style={ styles.eyeIcon }
                 >
                   <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={24}
+                    name={ showPassword ? "eye-off-outline" : "eye-outline" }
+                    size={ 24 }
                     color="#9496A5"
                   />
                 </TouchableOpacity>
               </View>
             </View>
 
-            {/* Forgot Password */}
+            {/* Forgot Password */ }
             <TouchableOpacity
-              onPress={handleForgotPassword}
-              style={styles.forgotPasswordContainer}
+              onPress={ handleForgotPassword }
+              style={ styles.forgotPasswordContainer }
             >
-              <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+              <Text style={ styles.forgotPasswordText }>Quên mật khẩu?</Text>
             </TouchableOpacity>
 
-            {/* Login Button */}
+            {/* Login Button */ }
             <TouchableOpacity
-              style={[
+              style={ [
                 styles.loginButton,
                 loading && styles.loginButtonDisabled,
-              ]}
-              onPress={handleLogin}
-              disabled={loading}
+              ] }
+              onPress={ handleLogin }
+              disabled={ loading }
             >
-              {loading ? (
+              { loading ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.loginButtonText}>Đăng Nhập</Text>
-              )}
+                <Text style={ styles.loginButtonText }>Đăng Nhập</Text>
+              ) }
             </TouchableOpacity>
 
-            {/* Divider */}
-            {/* <View style={styles.dividerContainer}> */}
-              {/* <View style={styles.dividerLine} /> */}
-              {/* <Text style={styles.dividerText}>hoặc</Text> */}
-              {/* <View style={styles.dividerLine} /> */}
-            {/* </View> */}
+            {/* Divider */ }
+            {/* <View style={styles.dividerContainer}> */ }
+            {/* <View style={styles.dividerLine} /> */ }
+            {/* <Text style={styles.dividerText}>hoặc</Text> */ }
+            {/* <View style={styles.dividerLine} /> */ }
+            {/* </View> */ }
 
-            {/* Google Login Button */}
+            {/* Google Login Button */ }
             {/* <TouchableOpacity
               style={[
                 styles.googleButton,
@@ -227,11 +242,11 @@ export default function LoginScreen() {
           </View>
         </ScrollView>
 
-        {/* Sign Up Link - Moved to bottom */}
-        <View style={styles.signUpContainer}>
-          <Text style={styles.signUpText}>Chưa có tài khoản? </Text>
-          <TouchableOpacity onPress={handleSignUp}>
-            <Text style={styles.signUpLink}>Đăng ký ngay!</Text>
+        {/* Sign Up Link - Moved to bottom */ }
+        <View style={ styles.signUpContainer }>
+          <Text style={ styles.signUpText }>Chưa có tài khoản? </Text>
+          <TouchableOpacity onPress={ handleSignUp }>
+            <Text style={ styles.signUpLink }>Đăng ký ngay!</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -239,7 +254,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
@@ -404,5 +419,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-});
+} );
 

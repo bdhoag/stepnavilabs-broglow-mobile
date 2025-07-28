@@ -2,11 +2,11 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 // import { LinearGradient } from 'expo-linear-gradient';
-import CrownIcon from "@/src/components/svg/crown-icon";
 import DefineIcon from "@/src/components/svg/define-icon";
 import DiscoverIcon from "@/src/components/svg/discover-icon";
 import RecommendIcon from "@/src/components/svg/recommend-icon";
 import { LinearGradient } from 'expo-linear-gradient';
+// import CrownIcon from "@/src/components/svg/crown-icon";
 
 type Route =
     | "/home/skin-profile"
@@ -39,16 +39,16 @@ const GeneralFunction = () =>
             icon: DiscoverIcon,
             buttonText: "Khám phá",
             gradientColors: [ "#FFDA7B", "#FFB800" ],
-            route: "/home/explore" as Route,
+            route: "/home/blog" as Route,
         },
-        {
-            title: "Khám phá gói Đăng Ký Của Bạn",
-            description: "Khám phá gói Đăng Ký Của Bạn",
-            icon: CrownIcon,
-            buttonText: "Xem",
-            gradientColors: [ "#FF5E7CE5", "#FF1843E5" ],
-            route: "/home/subscription" as Route,
-        },
+        // {
+        //     title: "Khám phá gói Đăng Ký Của Bạn",
+        //     description: "Khám phá gói Đăng Ký Của Bạn",
+        //     icon: CrownIcon,
+        //     buttonText: "Xem",
+        //     gradientColors: [ "#FF5E7CE5", "#FF1843E5" ],
+        //     route: "/home/subscription" as Route,
+        // },
     ];
 
     const optionPairs = [];

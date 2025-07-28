@@ -7,40 +7,43 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfirmFeature from './components/ConfirmFeature';
 import PlanPricing from './components/PlanPricing';
 
-const SubConfirm = () => {
+const SubConfirm = () =>
+{
     const router = useRouter();
-    const [selectedPlan, setSelectedPlan] = useState('Hàng tháng');
+    const [ selectedPlan, setSelectedPlan ] = useState( 'Hàng tháng' );
 
-    const handleBack = () => {
+    const handleBack = () =>
+    {
         router.back();
     };
 
-    const handleUpgrade = () => {
-        router.push('/(tabs)/home/subscription/method');
-        console.log(`Selected Plan: ${selectedPlan}`);
-        
+    const handleUpgrade = () =>
+    {
+        router.push( '/(tabs)/home/subscription/method' );
+        console.log( `Selected Plan: ${ selectedPlan }` );
+
     };
 
     return (
-        <SafeAreaView style={styles.subConfirmContainer}>
-            <View style={styles.subConfirmHeader}>
-                <TouchableOpacity onPress={handleBack} style={styles.subConfirmBack}>
-                    <Ionicons name="arrow-back" size={20} color="#333" />
+        <SafeAreaView style={ styles.subConfirmContainer }>
+            <View style={ styles.subConfirmHeader }>
+                <TouchableOpacity onPress={ handleBack } style={ styles.subConfirmBack }>
+                    <Ionicons name="arrow-back" size={ 20 } color="#333" />
                 </TouchableOpacity>
-                <View style={styles.subConfirmSubHeader}>
-                    <Text style={styles.subConfirmTitle}>BroGlow</Text>
-                    <View style={styles.subConfirmSubText}>
-                        <Text style={styles.subConfirmSubText}>PRO</Text>
+                <View style={ styles.subConfirmSubHeader }>
+                    <Text style={ styles.subConfirmTitle }>BroGlow</Text>
+                    <View style={ styles.subConfirmSubText }>
+                        <Text style={ styles.subConfirmSubText }>PRO</Text>
                     </View>
                 </View>
             </View>
 
-            <ScrollView style={styles.subConfirmContent}>
+            <ScrollView style={ styles.subConfirmContent }>
 
-                <PlanPricing onSelect={setSelectedPlan} />
+                <PlanPricing onSelect={ setSelectedPlan } />
 
                 <ConfirmFeature
-                    confirmFeature={[
+                    confirmFeature={ [
                         'Scan da mặt',
                         'Phân tích da bằng AI',
                         'Lưu lại quá trình mỗi lần scan da',
@@ -49,17 +52,17 @@ const SubConfirm = () => {
                         'Gợi ý sử dụng sản phẩm bằng AI (không giới hạn)',
                         'Gợi ý chu trình chăm sóc da (không giới hạn)',
                         'Tư vấn với chuyên gia',
-                    ]}
+                    ] }
                 />
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={handleUpgrade}>
+                <View style={ styles.buttonContainer }>
+                    <TouchableOpacity onPress={ handleUpgrade }>
                         <LinearGradient
-                            colors={['#FFB800', '#FFDA7B']}
-                            style={styles.gradientButton}
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 1 }}
+                            colors={ [ '#FFB800', '#FFDA7B' ] }
+                            style={ styles.gradientButton }
+                            start={ { x: 1, y: 0 } }
+                            end={ { x: 0, y: 1 } }
                         >
-                            <Text style={styles.buttonText}>Nâng cấp</Text>
+                            <Text style={ styles.buttonText }>Nâng cấp</Text>
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
@@ -70,7 +73,7 @@ const SubConfirm = () => {
 
 export default SubConfirm;
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
     subConfirmContainer: { flex: 1 },
     subConfirmHeader: {
         flexDirection: 'row',
@@ -133,4 +136,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'Quicksand_700Bold',
     },
-});
+} );
