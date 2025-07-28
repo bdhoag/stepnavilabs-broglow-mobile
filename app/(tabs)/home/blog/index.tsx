@@ -311,10 +311,10 @@ const BlogScreen = () =>
 
                                     <View className="flex-row items-center">
                                         <Image
-                                            source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author.email.split( '@' )[ 0 ] }&background=random` } }
+                                            source={ { uri: `https://ui-avatars.com/api/?name=${ blog.author?.email?.split( '@' )[ 0 ] }&background=random` } }
                                             className="w-7 h-7 rounded-full mr-2 bg-gray-100"
                                         />
-                                        <Text className="text-sm font-medium text-gray-700">{ blog.author.email.split( '@' )[ 0 ] }</Text>
+                                        <Text className="text-sm font-medium text-gray-700">{ blog.author?.email?.split( '@' )[ 0 ] }</Text>
                                     </View>
                                 </View>
                             </TouchableOpacity>
