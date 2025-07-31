@@ -687,11 +687,11 @@ export default function ChatScreen() {
             />
 
             {/* Heading */}
-            <Text className="mt-4 text-lg font-semibold text-gray-700">
+            {/* <Text className="mt-4 text-lg font-semibold text-gray-700">
               Tôi có thể giúp bạn
-            </Text>
+            </Text> */}
 
-            {/* Suggestions */}
+            {/* Suggestions
             <View className="w-full mt-4 space-y-3">
               {[1, 2, 3].map((_, idx) => (
                 <View
@@ -706,7 +706,7 @@ export default function ChatScreen() {
                   </Text>
                 </View>
               ))}
-            </View>
+            </View> */}
           </ScrollView>
         )}
 

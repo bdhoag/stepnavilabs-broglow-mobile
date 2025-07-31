@@ -211,7 +211,7 @@ export default function ChatScreen() {
   } = state;
 
   // Get params from navigation (e.g., when coming from Scan screen)
-  const params = useLocalSearchParams<{ imageUri?: string }>();
+  const params = useLocalSearchParams<{ imageUri?: string; threadId?: string }>();
 
   useFocusEffect(
     useCallback(() => {
@@ -226,22 +226,23 @@ export default function ChatScreen() {
       };
     }, [navigation])
   );
-
+  
   useEffect(() => {
-    const uriParam = params?.imageUri;
-    if (uriParam && typeof uriParam === "string") {
-      // Decode in case the URI is percent-encoded
-      const decodedUri = decodeURIComponent(uriParam);
-
-      // Attach the captured image (do NOT auto-send)
-      dispatch({ type: "SET_ATTACHED_IMAGES", payload: [{ uri: decodedUri }] });
-
-      // Set up new conversation state if no thread is selected
-      if (!selectedThread) {
-        dispatch({ type: "SET_IS_NEW_CONVERSATION", payload: true });
+    const threadId = params?.threadId;
+    if (threadId && typeof threadId === "string") {
+      // Find thread in loaded threads or create a placeholder
+      const thread = threads.find(t => t._id === threadId);
+      if (thread) {
+        dispatch({ type: "SET_SELECTED_THREAD", payload: thread });
+        fetchMessagesForThread(threadId);
+      } else {
+        // If thread not found in list, still try to fetch messages
+        // This handles direct navigation to a thread
+        dispatch({ type: "SET_SELECTED_THREAD", payload: { _id: threadId, createdAt: new Date().toISOString() } });
+        fetchMessagesForThread(threadId);
       }
     }
-  }, [params?.imageUri]);
+  }, [params?.threadId, threads]);
 
   useEffect(() => {
     const loadThreads = async () => {
@@ -650,26 +651,33 @@ export default function ChatScreen() {
           </View>
 
           {selectedTab === "ai" && selectedThread ? (
-            <FlatList
-              data={messages}
-              keyExtractor={(msg, idx) => msg.id || idx.toString()}
-              renderItem={renderMessage}
-              style={{ flex: 1 }}
-              contentContainerStyle={{
-                padding: 16,
-                flexGrow: messages.length === 0 ? 1 : 0,
-              }}
-              keyboardShouldPersistTaps="handled"
-              scrollEventThrottle={16}
-              inverted
-              showsVerticalScrollIndicator={false}
-              removeClippedSubviews={false}
-              maintainVisibleContentPosition={{
-                minIndexForVisible: 0,
-                autoscrollToTopThreshold: 10,
-              }}
-              onScroll={handleScroll}
-            />
+            loading ? (
+              <View className="items-center justify-center flex-1">
+                <ActivityIndicator size="large" color="#02AAEB" />
+                <Text className="mt-2 text-gray-500">Đang tải tin nhắn...</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={messages}
+                keyExtractor={(msg, idx) => msg.id || idx.toString()}
+                renderItem={renderMessage}
+                style={{ flex: 1 }}
+                contentContainerStyle={{
+                  padding: 16,
+                  flexGrow: messages.length === 0 ? 1 : 0,
+                }}
+                keyboardShouldPersistTaps="handled"
+                scrollEventThrottle={16}
+                inverted
+                showsVerticalScrollIndicator={false}
+                removeClippedSubviews={false}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 0,
+                  autoscrollToTopThreshold: 10,
+                }}
+                onScroll={handleScroll}
+              />
+            )
           ) : (
             <ScrollView
               className="flex-1 px-4 pt-4"
