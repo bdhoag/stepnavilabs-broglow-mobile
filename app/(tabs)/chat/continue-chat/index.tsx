@@ -658,6 +658,7 @@ export default function ChatScreen() {
               </View>
             ) : (
               <FlatList
+                ref={flatListRef}
                 data={messages}
                 keyExtractor={(msg, idx) => msg.id || idx.toString()}
                 renderItem={renderMessage}
@@ -667,15 +668,19 @@ export default function ChatScreen() {
                   flexGrow: messages.length === 0 ? 1 : 0,
                 }}
                 keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="interactive"
                 scrollEventThrottle={16}
                 inverted
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={false}
-                maintainVisibleContentPosition={{
-                  minIndexForVisible: 0,
-                  autoscrollToTopThreshold: 10,
-                }}
+                scrollEnabled={true}
+                bounces={true}
                 onScroll={handleScroll}
+                initialNumToRender={10}
+                maxToRenderPerBatch={5}
+                windowSize={10}
+                nestedScrollEnabled={true}
+                directionalLockEnabled={false}
               />
             )
           ) : (
