@@ -3,7 +3,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
-import {
+import
+{
   Image,
   SafeAreaView,
   ScrollView,
@@ -14,82 +15,85 @@ import {
   View,
 } from "react-native";
 
-const EditProfileScreen: React.FC = () => {
-  const { logout } = useAuth();
+const EditProfileScreen: React.FC = () =>
+{
+  const { user } = useAuth();
+  const username = user?.firstName || "User";
 
-  const handleBackPress = () => {
+  const handleBackPress = () =>
+  {
     router.back();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={ styles.container }>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={23} color="black" />
+      {/* Header */ }
+      <View style={ styles.header }>
+        <TouchableOpacity style={ styles.backButton } onPress={ handleBackPress }>
+          <Ionicons name="arrow-back" size={ 23 } color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông tin tài khoản</Text>
+        <Text style={ styles.headerTitle }>Thông tin tài khoản</Text>
       </View>
 
-      {/* Nội dung có thể cuộn */}
-      <View style={styles.contentWrapper}>
+      {/* Nội dung có thể cuộn */ }
+      <View style={ styles.contentWrapper }>
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={{ paddingBottom: 100 }} // chừa khoảng trống bên dưới
-          showsVerticalScrollIndicator={false}
+          style={ styles.scrollView }
+          contentContainerStyle={ { paddingBottom: 100 } } // chừa khoảng trống bên dưới
+          showsVerticalScrollIndicator={ false }
         >
-          {/* Nội dung */}
-          <View style={styles.content}>
-            {/* Profile Section */}
-            <View style={styles.profileSection}>
-              <View style={styles.profileImageContainer}>
+          {/* Nội dung */ }
+          <View style={ styles.content }>
+            {/* Profile Section */ }
+            <View style={ styles.profileSection }>
+              <View style={ styles.profileImageContainer }>
                 <Image
-                  source={{
+                  source={ {
                     uri: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop&crop=face",
-                  }}
-                  style={styles.profileImage}
+                  } }
+                  style={ styles.profileImage }
                 />
-                <TouchableOpacity style={styles.editButton}>
-                  <Ionicons name="pencil" size={16} color="white" />
+                <TouchableOpacity style={ styles.editButton }>
+                  <Ionicons name="pencil" size={ 16 } color="white" />
                 </TouchableOpacity>
               </View>
-              <View style={styles.dividerLine} />
+              <View style={ styles.dividerLine } />
             </View>
 
-            {/* Form Fields */}
-            <View style={styles.formContainer}>
-              {/* Username */}
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Username</Text>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputText}>bd_hoag</Text>
+            {/* Form Fields */ }
+            <View style={ styles.formContainer }>
+              {/* Username */ }
+              <View style={ styles.fieldContainer }>
+                <Text style={ styles.label }>Username</Text>
+                <View style={ styles.inputContainer }>
+                  <Text style={ styles.inputText }>{ username }</Text>
                 </View>
               </View>
 
-              {/* Name */}
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Họ tên</Text>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputText}>Bui Duc Hoang</Text>
+              {/* Name */ }
+              <View style={ styles.fieldContainer }>
+                <Text style={ styles.label }>Họ tên</Text>
+                <View style={ styles.inputContainer }>
+                  <Text style={ styles.inputText }>{ user ? `${ user!.firstName } ${ user!.lastName }` : "User" }</Text>
                 </View>
               </View>
 
-              {/* Phone */}
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Số điện thoại</Text>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputText}>012 345 6789</Text>
+              {/* Phone */ }
+              <View style={ styles.fieldContainer }>
+                <Text style={ styles.label }>Số điện thoại</Text>
+                <View style={ styles.inputContainer }>
+                  <Text style={ styles.inputText }>012 345 6789</Text>
                 </View>
               </View>
 
-              {/* Date of Birth */}
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Ngày sinh</Text>
-                <View style={styles.inputContainerWithIcon}>
-                  <Text style={styles.inputText}>27/03/2003</Text>
-                  <Ionicons name="calendar-outline" size={20} color="#3B82F6" />
+              {/* Date of Birth */ }
+              <View style={ styles.fieldContainer }>
+                <Text style={ styles.label }>Ngày sinh</Text>
+                <View style={ styles.inputContainerWithIcon }>
+                  <Text style={ styles.inputText }>27/03/2003</Text>
+                  <Ionicons name="calendar-outline" size={ 20 } color="#3B82F6" />
                 </View>
               </View>
             </View>
@@ -97,15 +101,15 @@ const EditProfileScreen: React.FC = () => {
         </ScrollView>
       </View>
 
-      {/* Nút lưu cố định bên dưới */}
-      <View style={styles.fixedSaveButton}>
+      {/* Nút lưu cố định bên dưới */ }
+      <View style={ styles.fixedSaveButton }>
         <LinearGradient
-          colors={["#00bfff", "#1e90ff", "#1e90ff"]}
-          locations={[0, 0.5, 1]}
-          style={styles.saveButton}
+          colors={ [ "#00bfff", "#1e90ff", "#1e90ff" ] }
+          locations={ [ 0, 0.5, 1 ] }
+          style={ styles.saveButton }
         >
-          <TouchableOpacity style={styles.saveButtonInner}>
-            <Text style={styles.saveButtonText}>Lưu</Text>
+          <TouchableOpacity style={ styles.saveButtonInner }>
+            <Text style={ styles.saveButtonText }>Lưu</Text>
           </TouchableOpacity>
         </LinearGradient>
       </View>
@@ -113,7 +117,7 @@ const EditProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
   container: {
     flex: 1,
     backgroundColor: "white",
@@ -233,6 +237,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     backgroundColor: "#ffffff",
   },
-});
+} );
 
 export default EditProfileScreen;

@@ -30,6 +30,8 @@ interface MenuItem
 
 const ProfileScreen: React.FC = () =>
 {
+  const { user } = useAuth();
+  const username = user?.firstName || "User";
   const [ isDark, setIsDark ] = useState( false );
   const [ isNotify, setIsNotify ] = useState( true );
   const router = useRouter();
@@ -54,12 +56,12 @@ const ProfileScreen: React.FC = () =>
       hasArrow: true,
       onPress: () => router.push( "/profile/factor-verify" ),
     },
-    {
-      icon: "card-outline",
-      title: "Phương thức thanh toán",
-      hasArrow: true,
-      // onPress: () => router.push("/profile/payment"),
-    },
+    // {
+    //   icon: "card-outline",
+    //   title: "Phương thức thanh toán",
+    //   hasArrow: true,
+    //   // onPress: () => router.push("/profile/payment"),
+    // },
   ];
 
   const settingsItems: MenuItem[] = [
@@ -160,8 +162,8 @@ const ProfileScreen: React.FC = () =>
                   style={ styles.avatar }
                 />
               </View>
-              <Text style={ styles.profileName }>Bui Duc Hoang</Text>
-              <Text style={ styles.profileUsername }>@bd_hoag</Text>
+              <Text style={ styles.profileName }>{ user ? `${ user!.firstName } ${ user!.lastName }` : "User" }</Text>
+              <Text style={ styles.profileUsername }>@{ username }</Text>
             </View>
 
             {/* Main Menu Items */ }
@@ -169,10 +171,10 @@ const ProfileScreen: React.FC = () =>
               { mainMenuItems.map( ( item, index ) => (
                 <View key={ index }>
                   {/* Add divider before "Phương thức thanh toán" (index 3) */ }
-                  { index === 3 && <View style={ styles.divider } /> }
+                  {/* { index === 3 && <View style={ styles.divider } /> } */ }
                   { renderMenuItem( item, index ) }
                   {/* Add divider after "Phương thức thanh toán" (index 3) */ }
-                  { index === 3 && <View style={ styles.dividerBottom } /> }
+                  {/* { index === 3 && <View style={ styles.dividerBottom } /> } */ }
                 </View>
               ) ) }
             </View>
