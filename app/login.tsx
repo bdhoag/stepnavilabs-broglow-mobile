@@ -52,7 +52,8 @@ export default function LoginScreen ()
     try
     {
       await login( email, password );
-      router.navigate( "/(tabs)/home" );
+      router.dismissAll();
+      router.replace( "/(tabs)/home" );
     } catch ( error )
     {
       Alert.alert(

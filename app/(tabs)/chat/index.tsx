@@ -1,9 +1,11 @@
 import AuthGuard from "@/src/components/auth-guard";
 import { AIService } from "@/src/services/AI.service";
 import { Feather } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
+import
+{
   Alert,
   Dimensions,
   FlatList,
@@ -16,53 +18,69 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get( "window" );
 
 // Định nghĩa kiểu cho thread
-interface Thread {
+interface Thread
+{
   _id: string;
   name: string;
   createdAt: string;
 }
 
-const ChatHistoryScreen = () => {
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"ai" | "expert">("ai");
-  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+const ChatHistoryScreen = () =>
+{
+  const isFocused = useIsFocused();
+  const [ threads, setThreads ] = useState<Thread[]>( [] );
+  const [ loading, setLoading ] = useState<boolean>( true );
+  const [ error, setError ] = useState<string | null>( null );
+  const [ activeTab, setActiveTab ] = useState<"ai" | "expert">( "ai" );
+  const [ selectedThread, setSelectedThread ] = useState<string | null>( null );
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchThreads = async () => {
-      try {
-        setLoading(true);
+  useEffect( () =>
+  {
+    const fetchThreads = async () =>
+    {
+      console.log( "Fetching threads..." );
+      try
+      {
+        setLoading( true );
         const response = await AIService.listThreadsByUser();
-        setThreads(response.data);
-      } catch (err: any) {
-        setError("Không thể tải danh sách đoạn chat.");
-        console.error(err);
-      } finally {
-        setLoading(false);
+        setError( null );
+        setThreads( response.data );
+      } catch ( err: any )
+      {
+        setError( "Không thể tải danh sách đoạn chat." );
+        console.error( err );
+      } finally
+      {
+        setLoading( false );
       }
     };
+    if ( isFocused )
+    {
+      fetchThreads();
+    }
 
-    fetchThreads();
-  }, []);
+  }, [ isFocused ] );
 
-  const handleNewChat = () => {
-    router.push("/chat/new-chat");
+  const handleNewChat = () =>
+  {
+    router.push( "/chat/new-chat" );
   };
 
-  const handleThreadSelect = (thread: Thread) => {
-    setSelectedThread(thread._id);
-    router.push({
+  const handleThreadSelect = ( thread: Thread ) =>
+  {
+    setSelectedThread( thread._id );
+    router.push( {
       pathname: "/chat/continue-chat",
       params: { threadId: thread._id },
-    });
+    } );
   };
 
-  const handleDeleteThread = (threadId: string) => {
+  const handleDeleteThread = ( threadId: string ) =>
+  {
     Alert.alert(
       "Xác nhận xóa",
       "Bạn có chắc muốn xóa đoạn chat này?",
@@ -73,13 +91,16 @@ const ChatHistoryScreen = () => {
         },
         {
           text: "Xóa",
-          onPress: async () => {
-            try {
-              await AIService.deleteThread(threadId);
-              setThreads((prev) => prev.filter((t) => t._id !== threadId));
-            } catch (error) {
-              console.error("Lỗi khi xóa đoạn chat:", error);
-              setError("Không thể xóa đoạn chat. Vui lòng thử lại.");
+          onPress: async () =>
+          {
+            try
+            {
+              await AIService.deleteThread( threadId );
+              setThreads( ( prev ) => prev.filter( ( t ) => t._id !== threadId ) );
+            } catch ( error )
+            {
+              console.error( "Lỗi khi xóa đoạn chat:", error );
+              setError( "Không thể xóa đoạn chat. Vui lòng thử lại." );
             }
           },
           style: "destructive",
@@ -89,19 +110,23 @@ const ChatHistoryScreen = () => {
     );
   };
 
-  const handleTabPress = (tab: "ai" | "expert") => {
-    if (tab === "expert") {
-      router.push("/chat/expert");
-    } else {
-      setActiveTab(tab);
+  const handleTabPress = ( tab: "ai" | "expert" ) =>
+  {
+    if ( tab === "expert" )
+    {
+      router.push( "/chat/expert" );
+    } else
+    {
+      setActiveTab( tab );
     }
   };
 
-  const renderThread = ({ item }: { item: Thread }) => {
+  const renderThread = ( { item }: { item: Thread } ) =>
+  {
     const renderRightActions = () => (
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <View style={ { justifyContent: "center", alignItems: "center" } }>
         <Pressable
-          style={{
+          style={ {
             backgroundColor: "#EF4444",
             justifyContent: "center",
             alignItems: "center",
@@ -110,30 +135,30 @@ const ChatHistoryScreen = () => {
             borderTopRightRadius: 12,
             borderBottomRightRadius: 12,
             marginBottom: 10,
-          }}
-          onPress={() => handleDeleteThread(item._id)}
+          } }
+          onPress={ () => handleDeleteThread( item._id ) }
         >
-          <Feather name="trash-2" size={20} color="#fff" />
+          <Feather name="trash-2" size={ 20 } color="#fff" />
         </Pressable>
       </View>
     );
 
     return (
-      <Swipeable renderRightActions={renderRightActions}>
+      <Swipeable renderRightActions={ renderRightActions }>
         <Pressable
-          style={[
+          style={ [
             styles.threadContainer,
             selectedThread === item._id && styles.selectedThread,
-          ]}
-          onPress={() => handleThreadSelect(item)}
+          ] }
+          onPress={ () => handleThreadSelect( item ) }
         >
-          <View style={styles.threadContent}>
-            <Text style={styles.threadTitle}>{item.name}</Text>
-            <Text style={styles.threadDate}>{item.createdAt}</Text>
+          <View style={ styles.threadContent }>
+            <Text style={ styles.threadTitle }>{ item.name }</Text>
+            <Text style={ styles.threadDate }>{ item.createdAt }</Text>
           </View>
 
-          <View style={styles.threadActions}>
-            <Feather name="chevron-right" size={20} color="#000" />
+          <View style={ styles.threadActions }>
+            <Feather name="chevron-right" size={ 20 } color="#000" />
           </View>
         </Pressable>
       </Swipeable>
@@ -142,64 +167,64 @@ const ChatHistoryScreen = () => {
 
   return (
     <AuthGuard>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={ styles.container }>
         <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-        {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
+        {/* Tab Navigation */ }
+        <View style={ styles.tabContainer }>
           <Pressable
-            style={[styles.tab, activeTab === "ai" && styles.activeTab]}
-            onPress={() => handleTabPress("ai")}
+            style={ [ styles.tab, activeTab === "ai" && styles.activeTab ] }
+            onPress={ () => handleTabPress( "ai" ) }
           >
             <Text
-              style={[styles.tabText, activeTab === "ai" && styles.activeTabText]}
+              style={ [ styles.tabText, activeTab === "ai" && styles.activeTabText ] }
             >
               BroGlow AI
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.tab, activeTab === "expert" && styles.activeTab]}
-            onPress={() => handleTabPress("expert")}
+            style={ [ styles.tab, activeTab === "expert" && styles.activeTab ] }
+            onPress={ () => handleTabPress( "expert" ) }
           >
             <Text
-              style={[
+              style={ [
                 styles.tabText,
                 activeTab === "expert" && styles.activeTabText,
-              ]}
+              ] }
             >
               Chuyên Gia
             </Text>
           </Pressable>
         </View>
 
-        {/* New Chat Button */}
-        <View style={styles.newChatContainer}>
-          <Pressable style={styles.newChatButton} onPress={handleNewChat}>
-            <Feather name="plus" size={18} color="#1584f9" />
-            <Text style={styles.newChatText}>Đoạn chat mới</Text>
+        {/* New Chat Button */ }
+        <View style={ styles.newChatContainer }>
+          <Pressable style={ styles.newChatButton } onPress={ handleNewChat }>
+            <Feather name="plus" size={ 18 } color="#1584f9" />
+            <Text style={ styles.newChatText }>Đoạn chat mới</Text>
           </Pressable>
         </View>
 
-        {/* Chat History List */}
-        {loading ? (
-          <Text style={{ textAlign: "center", marginTop: 20 }}>Đang tải...</Text>
+        {/* Chat History List */ }
+        { loading ? (
+          <Text style={ { textAlign: "center", marginTop: 20 } }>Đang tải...</Text>
         ) : error ? (
-          <Text style={{ textAlign: "center", marginTop: 20, color: "red" }}>{error}</Text>
+          <Text style={ { textAlign: "center", marginTop: 20, color: "red" } }>{ error }</Text>
         ) : (
           <FlatList
-            data={threads}
-            renderItem={renderThread}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.listContainer}
-            showsVerticalScrollIndicator={false}
+            data={ threads }
+            renderItem={ renderThread }
+            keyExtractor={ ( item ) => item._id }
+            contentContainerStyle={ styles.listContainer }
+            showsVerticalScrollIndicator={ false }
           />
-        )}
+        ) }
       </SafeAreaView>
     </AuthGuard>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create( {
   container: {
     paddingVertical: 10,
     paddingHorizontal: 5,
@@ -331,6 +356,6 @@ const styles = StyleSheet.create({
   navItem: {
     padding: 8,
   },
-});
+} );
 
 export default ChatHistoryScreen;

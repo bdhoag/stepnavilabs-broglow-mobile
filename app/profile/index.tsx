@@ -92,7 +92,8 @@ const ProfileScreen: React.FC = () =>
 
   const handleLogout = () =>
   {
-    router.navigate( "/(tabs)/home" );
+    router.dismissAll();
+    router.replace( "/(tabs)/home" );
     logout();
   };
 
