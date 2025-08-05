@@ -105,7 +105,7 @@ export default function ProgressScreen ()
               </View>
             </View>
           </View>
-          <Text className="font-semibold text-gray-700 mb-2">Gợi ý sản phẩm</Text>
+          {/* <Text className="font-semibold text-gray-700 mb-2">Gợi ý sản phẩm</Text>
           <View className="space-y-2">
             { [ 1, 2, 3, 4, 5 ].map( ( i ) => (
               <View
@@ -130,7 +130,7 @@ export default function ProgressScreen ()
               </View>
             ) ) }
           </View>
-          <Text className="text-xs text-gray-400 text-right mt-2">1/5</Text>
+          <Text className="text-xs text-gray-400 text-right mt-2">1/5</Text> */}
         </View>
 
         {/* Biểu đồ thống kê */ }

@@ -594,235 +594,238 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-    >
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss}
-        accessible={false}
-        style={{ flex: 1 }}
-      >
-        <SafeAreaView className="flex-1 bg-white">
-          <View className="relative flex-row items-center justify-between px-4 py-3 bg-white">
-            <View className="relative left-2">
-              <Pressable onPress={() => router.back()}>
-                <Feather name="arrow-left" size={22} color="#374151" />
-              </Pressable>
-            </View>
+    <SafeAreaView className="flex-1 bg-white">
+      
+      <View className="relative flex-row items-center justify-between px-4 py-3 bg-white">
+        <View className="relative left-2">
+          <Pressable onPress={() => router.back()}>
+            <Feather name="arrow-left" size={22} color="#374151" />
+          </Pressable>
+        </View>
 
-            <View className="relative flex-row -translate-x-1/2 bg-gray-100 rounded-full left-20">
-              <Pressable
-                className={`px-8 py-2 rounded-full ${
-                  selectedTab === "ai" ? "bg-[#3B82F6]" : ""
-                }`}
-                onPress={() =>
-                  dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
-                }
-              >
-                <Text
-                  className={`text-base font-medium ${
-                    selectedTab === "ai" ? "text-white" : "text-[#374151]"
-                  }`}
-                >
-                  BroGlow AI
-                </Text>
-              </Pressable>
+        <View className="relative flex-row -translate-x-1/2 bg-gray-100 rounded-full left-20">
+          <Pressable
+            className={`px-8 py-2 rounded-full ${
+              selectedTab === "ai" ? "bg-[#3B82F6]" : ""
+            }`}
+            onPress={() =>
+              dispatch({ type: "SET_SELECTED_TAB", payload: "ai" })
+            }
+          >
+            <Text
+              className={`text-base font-medium ${
+                selectedTab === "ai" ? "text-white" : "text-[#374151]"
+              }`}
+            >
+              BroGlow AI
+            </Text>
+          </Pressable>
 
-              <Pressable
-                className={`px-8 py-2 rounded-full ${
-                  selectedTab === "expert" ? "bg-[#3B82F6]" : ""
-                }`}
-                onPress={() => router.replace("/chat/expert")}
-                // onPress={() =>
-                //   dispatch({ type: "SET_SELECTED_TAB", payload: "expert" })
-                // }
-              >
-                <Text
-                  className={`text-base font-medium ${
-                    selectedTab === "expert" ? "text-white" : "text-[#374151]"
-                  }`}
-                >
-                  Chuyên gia
-                </Text>
-              </Pressable>
+          <Pressable
+            className={`px-8 py-2 rounded-full ${
+              selectedTab === "expert" ? "bg-[#3B82F6]" : ""
+            }`}
+            onPress={() => router.replace("/chat/expert")}
+          >
+            <Text
+              className={`text-base font-medium ${
+                selectedTab === "expert" ? "text-white" : "text-[#374151]"
+              }`}
+            >
+              Chuyên gia
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
+      
+      {selectedTab === "ai" && selectedThread ? (
+        loading ? (
+          <View className="items-center justify-center flex-1">
+            <ActivityIndicator size="large" color="#02AAEB" />
+            <Text className="mt-2 text-gray-500">Đang tải tin nhắn...</Text>
+          </View>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(msg, idx) => msg.id || idx.toString()}
+            renderItem={renderMessage}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              padding: 16,
+              flexGrow: messages.length === 0 ? 1 : 0,
+            }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            scrollEventThrottle={16}
+            inverted
+            showsVerticalScrollIndicator={false}
+            removeClippedSubviews={false}
+            scrollEnabled={true}
+            bounces={true}
+            onScroll={handleScroll}
+            initialNumToRender={10}
+            maxToRenderPerBatch={5}
+            windowSize={10}
+          />
+        )
+      ) : (
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 24
+          }}
+          keyboardShouldPersistTaps="handled"
+          scrollEnabled={true}
+          bounces={true}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Avatar */}
+          <View className="items-end mb-5">
+            <Image
+              source={{
+                uri: "https://img.freepik.com/free-photo/portrait-concentrated-young-bearded-man_171337-17199.jpg",
+              }}
+              style={{
+                width: 130,
+                height: 180,
+                borderRadius: 16,
+                resizeMode: "cover",
+              }}
+            />
+          </View>
+          {/* Chat bubble UI */}
+          <View className="w-4/5 p-4 bg-gray-100 rounded-br-xl rounded-tr-xl rounded-bl-xl">
+            <Text
+              className="text-gray-800 text-[13px]"
+              style={{ lineHeight: 22 }}
+            >
+              Dựa vào thông tin về da và hình ảnh của bạn đã cung cấp. Dưới
+              đây là kết quả phân tích da và các sản phẩm nên dùng{"\n"}
+              Loại da: Da dầu{"\n"}
+              Vấn đề da liễu và đề xuất sản phẩm:{"\n"}
+              🔴 Mụn (Mức độ trung bình) – Đề xuất: Forte Demar{"\n"}
+              🟡 Nếp nhăn nhẹ – Đề xuất: Retinol Serum{"\n"}
+              🟤 Đốm nâu (Mức độ trung bình) – Đề xuất: Vitamin C
+              Brightening Serum{"\n\n"}
+              Hướng dẫn chăm sóc da:{"\n"}
+              📌 Kiểm soát dầu & ngăn ngừa mụn: Sử dụng sữa rửa mặt chứa
+              salicylic acid và áp dụng Forte Demar vào vùng mụn.{"\n"}
+              📌 Giảm nếp nhăn: Dùng Retinol Serum vào buổi tối để kích
+              thích tái tạo da, giúp da căng mịn hơn.{"\n"}
+              📌 Làm mờ đốm nâu: Thoa Vitamin C Brightening Serum vào buổi
+              sáng để cải thiện sắc tố da và bảo vệ da trước tác nhân môi
+              trường.{"\n\n"}
+              💡 Nếu cần tư vấn thêm, hãy liên hệ chuyên gia da liễu để có
+              phác đồ chăm sóc da tối ưu.
+            </Text>
+          </View>
+          {/* Product recommendation bubble */}
+          <View
+            style={{ width: "80%" }}
+            className="p-4 mt-4 space-y-4 bg-white border border-gray-200 rounded-xl"
+          >
+            {[1, 2, 3].map((_, idx) => (
+              <View key={idx}>
+                <View className="flex-row items-start pb-4">
+                  <Image
+                    source={{
+                      uri: "https://cdn.nhathuocsuckhoe.com/unsafe/0x0/left/top/smart/filters:quality(75)/https://nhathuocsuckhoe.com/upload/news/content/2022/12/gel-boi-ho-tro-giam-mun-va-tham-seo-derma-forte1-jpg-1669879050-01122022141730.jpg",
+                    }}
+                    style={{ width: 40, height: 40, marginRight: 12 }}
+                    resizeMode="contain"
+                  />
+                  <View className="flex-1">
+                    <Text className="text-sm font-semibold text-gray-800">
+                      Forte Demar
+                    </Text>
+                    <Text className="text-sm text-gray-500">
+                      Lorem ipsum dolor sit amet consectetur. Sagittis
+                      turpis tris
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Dòng kẻ căn giữa 80%, không hiển thị ở phần tử cuối */}
+                {idx < 2 && (
+                  <View className="items-center mb-3">
+                    <View className="h-px bg-gray-200 w-80" />
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+          {/* Thank you bubble */}
+          <View className="items-end mt-4">
+            <View className="px-4 py-2 bg-blue-500 rounded-tl-xl rounded-tr-xl rounded-bl-xl">
+              <Text className="text-white text-[13px]">Cảm ơn bạn</Text>
             </View>
           </View>
+        </ScrollView>
+      )}
 
-          {selectedTab === "ai" && selectedThread ? (
-            loading ? (
-              <View className="items-center justify-center flex-1">
-                <ActivityIndicator size="large" color="#02AAEB" />
-                <Text className="mt-2 text-gray-500">Đang tải tin nhắn...</Text>
-              </View>
-            ) : (
-              <FlatList
-                ref={flatListRef}
-                data={messages}
-                keyExtractor={(msg, idx) => msg.id || idx.toString()}
-                renderItem={renderMessage}
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                  padding: 16,
-                  flexGrow: messages.length === 0 ? 1 : 0,
-                }}
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="interactive"
-                scrollEventThrottle={16}
-                inverted
-                showsVerticalScrollIndicator={false}
-                removeClippedSubviews={false}
-                scrollEnabled={true}
-                bounces={true}
-                onScroll={handleScroll}
-                initialNumToRender={10}
-                maxToRenderPerBatch={5}
-                windowSize={10}
-                nestedScrollEnabled={true}
-                directionalLockEnabled={false}
-              />
-            )
-          ) : (
-            <ScrollView
-              className="flex-1 px-4 pt-4"
-              contentContainerStyle={{ paddingBottom: 24 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Avatar */}
-              <View className="items-end mb-5">
+      {/* Footer with KeyboardAvoidingView */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
+        {/* Attached Images */}
+        {attachedImages.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              maxHeight: 80,
+              paddingVertical: 6,
+              paddingHorizontal: 8,
+              backgroundColor: "#ffffff",
+            }}
+            scrollEnabled={true}
+            bounces={true}
+          >
+            {attachedImages.map((img, idx) => (
+              <View key={idx} style={{ marginRight: 8 }}>
                 <Image
-                  source={{
-                    uri: "https://img.freepik.com/free-photo/portrait-concentrated-young-bearded-man_171337-17199.jpg",
-                  }}
-                  style={{
-                    width: 130,
-                    height: 180,
-                    borderRadius: 16,
-                    resizeMode: "cover",
-                  }}
+                  source={{ uri: img.uri }}
+                  style={{ width: 60, height: 60, borderRadius: 8 }}
                 />
-              </View>
-              {/* Chat bubble UI */}
-              <View className="w-4/5 p-4 bg-gray-100 rounded-br-xl rounded-tr-xl rounded-bl-xl">
-                <Text
-                  className="text-gray-800 text-[13px]"
-                  style={{ lineHeight: 22 }}
+                <Pressable
+                  onPress={() =>
+                    dispatch({ type: "REMOVE_ATTACHED_IMAGE", payload: idx })
+                  }
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    right: -6,
+                    backgroundColor: "#FF4D4F",
+                    borderRadius: 10,
+                    width: 20,
+                    height: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  Dựa vào thông tin về da và hình ảnh của bạn đã cung cấp. Dưới
-                  đây là kết quả phân tích da và các sản phẩm nên dùng{"\n"}
-                  Loại da: Da dầu{"\n"}
-                  Vấn đề da liễu và đề xuất sản phẩm:{"\n"}
-                  🔴 Mụn (Mức độ trung bình) – Đề xuất: Forte Demar{"\n"}
-                  🟡 Nếp nhăn nhẹ – Đề xuất: Retinol Serum{"\n"}
-                  🟤 Đốm nâu (Mức độ trung bình) – Đề xuất: Vitamin C
-                  Brightening Serum{"\n\n"}
-                  Hướng dẫn chăm sóc da:{"\n"}
-                  📌 Kiểm soát dầu & ngăn ngừa mụn: Sử dụng sữa rửa mặt chứa
-                  salicylic acid và áp dụng Forte Demar vào vùng mụn.{"\n"}
-                  📌 Giảm nếp nhăn: Dùng Retinol Serum vào buổi tối để kích
-                  thích tái tạo da, giúp da căng mịn hơn.{"\n"}
-                  📌 Làm mờ đốm nâu: Thoa Vitamin C Brightening Serum vào buổi
-                  sáng để cải thiện sắc tố da và bảo vệ da trước tác nhân môi
-                  trường.{"\n\n"}
-                  💡 Nếu cần tư vấn thêm, hãy liên hệ chuyên gia da liễu để có
-                  phác đồ chăm sóc da tối ưu.
-                </Text>
-              </View>
-              {/* Product recommendation bubble */}
-              <View
-                style={{ width: "80%" }}
-                className="p-4 mt-4 space-y-4 bg-white border border-gray-200 rounded-xl"
-              >
-                {[1, 2, 3].map((_, idx) => (
-                  <View key={idx}>
-                    <View className="flex-row items-start pb-4">
-                      <Image
-                        source={{
-                          uri: "https://cdn.nhathuocsuckhoe.com/unsafe/0x0/left/top/smart/filters:quality(75)/https://nhathuocsuckhoe.com/upload/news/content/2022/12/gel-boi-ho-tro-giam-mun-va-tham-seo-derma-forte1-jpg-1669879050-01122022141730.jpg",
-                        }}
-                        style={{ width: 40, height: 40, marginRight: 12 }}
-                        resizeMode="contain"
-                      />
-                      <View className="flex-1">
-                        <Text className="text-sm font-semibold text-gray-800">
-                          Forte Demar
-                        </Text>
-                        <Text className="text-sm text-gray-500">
-                          Lorem ipsum dolor sit amet consectetur. Sagittis
-                          turpis tris
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* Dòng kẻ căn giữa 80%, không hiển thị ở phần tử cuối */}
-                    {idx < 2 && (
-                      <View className="items-center mb-3">
-                        <View className="h-px bg-gray-200 w-80" />
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </View>
-              {/* Thank you bubble */}
-              <View className="items-end mt-4">
-                <View className="px-4 py-2 bg-blue-500 rounded-tl-xl rounded-tr-xl rounded-bl-xl">
-                  <Text className="text-white text-[13px]">Cảm ơn bạn</Text>
-                </View>
-              </View>
-            </ScrollView>
-          )}
-
-          {/* Footer */}
-          {attachedImages.length > 0 && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{
-                maxHeight: 80,
-                paddingVertical: 6,
-                paddingHorizontal: 8,
-                backgroundColor: "#ffffff",
-              }}
-            >
-              {attachedImages.map((img, idx) => (
-                <View key={idx} style={{ marginRight: 8 }}>
-                  <Image
-                    source={{ uri: img.uri }}
-                    style={{ width: 60, height: 60, borderRadius: 8 }}
-                  />
-                  <Pressable
-                    onPress={() =>
-                      dispatch({ type: "REMOVE_ATTACHED_IMAGE", payload: idx })
-                    }
+                  <Text
                     style={{
-                      position: "absolute",
-                      top: -6,
-                      right: -6,
-                      backgroundColor: "#FF4D4F",
-                      borderRadius: 10,
-                      width: 20,
-                      height: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: "bold",
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 12,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ×
-                    </Text>
-                  </Pressable>
-                </View>
-              ))}
-            </ScrollView>
-          )}
+                    ×
+                  </Text>
+                </Pressable>
+              </View>
+            ))}
+          </ScrollView>
+        )}
 
-          {/* Chat input row */}
+        {/* Chat input row */}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="px-4 py-2 bg-white border-t border-gray-200">
             <View className="flex-row items-center px-3 py-2 bg-gray-100 rounded-full">
               {/* Icon ảnh */}
@@ -876,8 +879,8 @@ export default function ChatScreen() {
               </Pressable>
             </View>
           </View>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

@@ -13,12 +13,12 @@
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "This app uses the camera to scan your skin.",
-        "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to save images.",
-        "NSPhotoLibraryAddUsageDescription": "This app requires permission to save images to your photo library."
+        "NSCameraUsageDescription": "We use your camera to take facial skin photos so the chatbot can analyze your skin condition and suggest appropriate skincare solutions.",
+        "NSPhotoLibraryUsageDescription": "We access your photo library so you can upload skin images for analysis by the chatbot, and also to select images when creating blog posts.",
+        "NSPhotoLibraryAddUsageDescription": "We need this permission to save the skin analysis photos and recommendations back to your photo library for your future reference."
       },
       "bundleIdentifier": "com.broglow.app",
-      "buildNumber": "6"
+      "buildNumber": "8"
     },
     "android": {
       "package": "com.broglow.app",

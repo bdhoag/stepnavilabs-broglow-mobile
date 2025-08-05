@@ -1,7 +1,7 @@
 // ProductSection.tsx (Updated)
 import { Product, productService } from '@/src/services/product.service';
-import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import ProductSkeleton from './product-skeleton';
 
@@ -27,7 +27,7 @@ const ProductSection = () =>
             setLoading( true );
             setError( null );
             // Simulate network delay to see the skeleton
-            await new Promise( resolve => setTimeout( resolve, 2000 ) );
+            // await new Promise( resolve => setTimeout( resolve, 2000 ) );
             const fetchedProducts = await productService.getAllProducts();
             setProducts( fetchedProducts );
         } catch ( err )
@@ -40,10 +40,25 @@ const ProductSection = () =>
         }
     }, [] );
 
-    useEffect( () =>
-    {
-        fetchProducts();
-    }, [ fetchProducts ] );
+    useFocusEffect(
+        // By wrapping the function in useCallback, we ensure it's not recreated on every render.
+        // This is a crucial performance optimization for useFocusEffect.
+        useCallback( () =>
+        {
+            // console.log( 'Screen is focused, fetching blogs...' );
+            // Use 'true' for the initial load check.
+            // If blogs are already loaded, this won't show the skeleton,
+            // but it will still refresh the data.
+            fetchProducts();
+
+            // You can also return a cleanup function if needed,
+            // which runs when the screen goes out of focus.
+            return () =>
+            {
+                console.log( 'Screen is unfocused.' );
+            };
+        }, [ fetchProducts ] )
+    );
 
     const renderProduct = ( { item }: { item: Product } ) => (
         <TouchableOpacity
