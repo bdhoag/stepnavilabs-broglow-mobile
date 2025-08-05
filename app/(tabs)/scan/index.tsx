@@ -65,8 +65,14 @@ const ScanScreen = () =>
     {
       // Handle the selected image
       console.log( "Selected image:", result.assets[ 0 ] );
-      // You can add your image processing logic here
-      Alert.alert( "Image Selected", "Image has been selected successfully!" );
+      const selectedImage = result.assets[ 0 ];
+      if ( selectedImage?.uri )
+      {
+        router.push( {
+          pathname: "/(tabs)/chat/new-chat",
+          params: { imageUri: selectedImage.uri },
+        } as any );
+      }
     }
   };
 
@@ -81,7 +87,7 @@ const ScanScreen = () =>
         if ( photo?.uri )
         {
           router.push( {
-            pathname: "/(tabs)/chat",
+            pathname: "/(tabs)/chat/new-chat",
             params: { imageUri: photo.uri },
           } as any );
         }
