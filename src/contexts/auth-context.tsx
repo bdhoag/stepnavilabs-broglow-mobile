@@ -1,6 +1,7 @@
 import { User } from "@/src/data/types";
 import { TokenStorage } from "@/src/lib/token-storage";
 import { AuthService } from "@/src/services/auth.service";
+import { jwtDecode } from "jwt-decode";
 import React, {
   createContext,
   ReactNode,
@@ -9,11 +10,12 @@ import React, {
   useState,
 } from "react";
 
-interface AuthContextType {
+interface AuthContextType
+{
   user: User | null;
   isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  isAuthenticated: () => Promise<boolean>;
+  login: ( email: string, password: string ) => Promise<void>;
   register: (
     firstName: string,
     lastName: string,
@@ -24,80 +26,96 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>( undefined );
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+export const useAuth = () =>
+{
+  const context = useContext( AuthContext );
+  if ( context === undefined )
+  {
+    throw new Error( "useAuth must be used within an AuthProvider" );
   }
   return context;
 };
 
-interface AuthProviderProps {
+interface AuthProviderProps
+{
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider: React.FC<AuthProviderProps> = ( { children } ) =>
+{
+  const [ user, setUser ] = useState<User | null>( null );
+  const [ isLoading, setIsLoading ] = useState( true );
 
-  useEffect(() => {
+  useEffect( () =>
+  {
     // Add timeout to prevent stuck loading
-    const timeout = setTimeout(() => {
-      console.log("AuthContext: Timeout reached, setting loading to false");
-      setIsLoading(false);
-      setUser(null);
-    }, 5000); // 5 second timeout
+    const timeout = setTimeout( () =>
+    {
+      console.log( "AuthContext: Timeout reached, setting loading to false" );
+      setIsLoading( false );
+      setUser( null );
+    }, 5000 ); // 5 second timeout
 
-    checkAuthState().finally(() => {
-      clearTimeout(timeout);
-    });
+    checkAuthState().finally( () =>
+    {
+      clearTimeout( timeout );
+    } );
 
-    return () => clearTimeout(timeout);
-  }, []);
+    return () => clearTimeout( timeout );
+  }, [] );
 
-  const checkAuthState = async () => {
-    console.log("AuthContext: Checking auth state...");
-    try {
+  const checkAuthState = async () =>
+  {
+    console.log( "AuthContext: Checking auth state..." );
+    try
+    {
       const tokens = await TokenStorage.getTokens();
       const isAuth = !!tokens;
-      console.log("AuthContext: isAuthenticated =", isAuth);
+      console.log( "AuthContext: isAuthenticated =", isAuth );
 
-      if (isAuth) {
+      if ( isAuth )
+      {
         const currentUser = await TokenStorage.getUser();
-        console.log("AuthContext: currentUser =", currentUser);
-        setUser(currentUser);
-      } else {
-        console.log("AuthContext: No auth token found");
-        setUser(null);
+        console.log( "AuthContext: currentUser =", currentUser );
+        setUser( currentUser );
+      } else
+      {
+        console.log( "AuthContext: No auth token found" );
+        setUser( null );
       }
-    } catch (error) {
-      console.error("AuthContext: Check auth state error:", error);
-      setUser(null);
-    } finally {
-      console.log("AuthContext: Setting loading to false");
-      setIsLoading(false);
+    } catch ( error )
+    {
+      console.error( "AuthContext: Check auth state error:", error );
+      setUser( null );
+    } finally
+    {
+      console.log( "AuthContext: Setting loading to false" );
+      setIsLoading( false );
     }
   };
 
-  const login = async (email: string, password: string) => {
-    try {
+  const login = async ( email: string, password: string ) =>
+  {
+    try
+    {
 
-      const tokens = await AuthService.login(email, password, ""); 
+      const tokens = await AuthService.login( email, password, "" );
 
-      console.log("AuthContext: Tokens received:", {
+      console.log( "AuthContext: Tokens received:", {
         hasToken: !!tokens.token,
         hasRefreshToken: !!tokens.refreshToken,
-      });
+      } );
 
       const profile = await AuthService.getUserProfile();
-      await TokenStorage.setUser(profile);
-      setUser(profile);
+      await TokenStorage.setUser( profile );
+      setUser( profile );
 
-      console.log("AuthContext: Login successful, user set:", profile);
-    } catch (error) {
-      console.error("AuthContext: Login failed:", error);
+      console.log( "AuthContext: Login successful, user set:", profile );
+    } catch ( error )
+    {
+      console.error( "AuthContext: Login failed:", error );
       throw error;
     }
   };
@@ -107,36 +125,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     lastName: string,
     email: string,
     password: string
-  ) => {
+  ) =>
+  {
     // Note: turnstileToken cần được implement từ UI
-    await AuthService.register(firstName, lastName, email, password, ""); // Empty turnstile for now
+    await AuthService.register( firstName, lastName, email, password, "" ); // Empty turnstile for now
   };
 
-  const logout = async () => {
+  const logout = async () =>
+  {
     AuthService.logout();
-    setUser(null);
+    setUser( null );
   };
 
-  const refreshUser = async () => {
-    try {
+  const refreshUser = async () =>
+  {
+    try
+    {
       const profile = await AuthService.getUserProfile();
-      await TokenStorage.setUser(profile);
-      setUser(profile);
-    } catch (error) {
-      console.error("Refresh user error:", error);
-      setUser(null);
+      await TokenStorage.setUser( profile );
+      setUser( profile );
+    } catch ( error )
+    {
+      console.error( "Refresh user error:", error );
+      setUser( null );
     }
   };
+
+  const isTokenExpired = ( token: string ): boolean =>
+  {
+    try
+    {
+      const decoded: { exp: number } = jwtDecode( token );
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch ( error )
+    {
+      console.error( "Error decoding token:", error );
+      return true; // Assume expired if invalid
+    }
+  };
+
+  const isAuthenticated = async () =>
+  {
+    if ( !user ) return false;
+    return await TokenStorage.getTokens().then( ( tokens ) =>
+    {
+      if ( !tokens?.token ) return false;
+      return !isTokenExpired( tokens.token );
+    } );
+  }
 
   const value: AuthContextType = {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated,
     login,
     register,
     logout,
     refreshUser,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={ value }>{ children }</AuthContext.Provider>;
 };

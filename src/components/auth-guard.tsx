@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../contexts/auth-context";
 import LoadingScreen from "./loading-screen";
@@ -14,6 +14,20 @@ export default function AuthGuard ( { children }: AuthGuardProps )
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
+  const [ checkAuthenticated, setCheckAuthenticated ] = React.useState<boolean>( false );
+
+  useEffect( () =>
+  {
+    const checkAuth = async () =>
+    {
+      const authenticated = await isAuthenticated();
+      setCheckAuthenticated( authenticated );
+    };
+
+    checkAuth();
+  }, [ isAuthenticated ] )
+
+
   // Xử lý khi đang tải trạng thái xác thực
   if ( isLoading )
   {
@@ -25,7 +39,7 @@ export default function AuthGuard ( { children }: AuthGuardProps )
     // Điều hướng đến trang đăng nhập của bạn
     // Thay đổi '/login' thành đường dẫn chính xác của bạn
     console.log( "Redirecting to onboarding..." );
-    router.navigate( "/onboarding" );
+    router.replace( "/onboarding" );
   };
 
   // Logic hiển thị chính
@@ -35,7 +49,7 @@ export default function AuthGuard ( { children }: AuthGuardProps )
       { children }
 
       {/* Nếu chưa xác thực, hiển thị lớp overlay */ }
-      { !isAuthenticated && (
+      { !checkAuthenticated && (
         <View style={ styles.overlay }>
           <View style={ styles.modalContent }>
             <Text style={ styles.modalText }>
