@@ -16,7 +16,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -73,7 +73,10 @@ export default function RegisterScreen() {
       return false;
     }
     if (!agreeToTerms) {
-      Alert.alert("Lỗi", "Vui lòng đồng ý với Điều khoản Sử dụng và Chính sách Quyền riêng tư");
+      Alert.alert(
+        "Lỗi",
+        "Vui lòng đồng ý với Điều khoản Sử dụng và Chính sách Quyền riêng tư"
+      );
       return false;
     }
     return true;
@@ -91,17 +94,17 @@ export default function RegisterScreen() {
         password,
         "" // Empty turnstile token for now
       );
+      console.log(response);
 
       Alert.alert(
         "Đăng ký thành công!",
         "Vui lòng kiểm tra email để xác thực tài khoản.",
         [{ text: "OK", onPress: () => router.replace("/login" as Href) }]
       );
-    } catch (error) {
-      Alert.alert(
-        "Lỗi đăng ký",
-        error instanceof Error ? error.message : "Đã xảy ra lỗi"
-      );
+    } catch (error: any) {
+      console.error("Registration error:", error);
+
+      Alert.alert("Lỗi đăng ký", error.message);
     } finally {
       setLoading(false);
     }
@@ -269,7 +272,9 @@ export default function RegisterScreen() {
                   style={styles.eyeIcon}
                 >
                   <Ionicons
-                    name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
+                    name={
+                      showConfirmPassword ? "eye-off-outline" : "eye-outline"
+                    }
                     size={24}
                     color="#9CA3AF"
                   />
@@ -283,13 +288,19 @@ export default function RegisterScreen() {
                 style={styles.checkboxContainer}
                 onPress={() => setAgreeToTerms(!agreeToTerms)}
               >
-                <View style={[styles.checkbox, agreeToTerms && styles.checkboxChecked]}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    agreeToTerms && styles.checkboxChecked,
+                  ]}
+                >
                   {agreeToTerms && (
                     <Ionicons name="checkmark" size={16} color="#FFFFFF" />
                   )}
                 </View>
                 <Text style={styles.termsText}>
-                  Bằng cách chọn &quot;Tạo tài khoản&quot;, bạn xác nhận rằng bạn đã đọc và đồng ý với{" "}
+                  Bằng cách chọn &quot;Tạo tài khoản&quot;, bạn xác nhận rằng
+                  bạn đã đọc và đồng ý với{" "}
                   <Text style={styles.termsLink} onPress={handleTermsPress}>
                     Điều khoản Sử dụng
                   </Text>{" "}
@@ -485,13 +496,13 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 42,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'relative',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "relative",
   },
   headerIconContainer: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     zIndex: 1,
   },

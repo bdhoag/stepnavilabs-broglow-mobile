@@ -40,6 +40,17 @@ export class AuthService {
     return tokens;
   }
 
+  static async sendOTP(email: string): Promise<void> {
+    await apiClient.sendOTP(email);
+  }
+  static async resetPassword(
+    email: string,
+    otp: string,
+    newPassword: string
+  ): Promise<void> {
+    await apiClient.resetPassword(email, otp, newPassword);
+  }
+
   static async redirectGoogleLogin(code: string): Promise<void> {
     await apiClient.getTokenByGoogleLogin(code);
   }

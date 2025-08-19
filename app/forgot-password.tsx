@@ -1,3 +1,4 @@
+import { AuthService } from "@/src/services/auth.service";
 import { Ionicons } from "@expo/vector-icons";
 import { Href, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -40,8 +41,9 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       // TODO: Implement sendOtp in AuthService
-      // await AuthService.sendOtp(email.trim().toLowerCase());
-      Alert.alert("Thông báo", "Chức năng này đang được phát triển");
+      const response = await AuthService.sendOTP(email.trim().toLowerCase());
+      console.log("first response:", response);
+      Alert.alert("Thông báo", "Đã gửi mã OTP đến email của bạn");
       setStep("otp");
     } catch (error) {
       Alert.alert(
@@ -62,6 +64,7 @@ export default function ForgotPasswordScreen() {
       Alert.alert("Lỗi", "Mã OTP phải có 6 ký tự");
       return;
     }
+
     setStep("password");
   };
 
@@ -82,8 +85,8 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       // TODO: Implement resetPassword in AuthService
-      // await AuthService.resetPassword(email, otp, newPassword);
-      Alert.alert("Thông báo", "Chức năng này đang được phát triển", [
+      await AuthService.resetPassword(email, otp, newPassword);
+      Alert.alert("Thông báo", "Mật khẩu đã thay đổi", [
         { text: "OK", onPress: () => router.replace("/login" as Href) },
       ]);
     } catch (error) {

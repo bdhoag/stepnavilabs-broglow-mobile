@@ -312,8 +312,21 @@ export class APIClient {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Register failed");
+      let errorMessage = "Register failed";
+
+      try {
+        const errorData = await response.json();
+
+        // Handle different error response formats
+        if (errorData) {
+          errorMessage = errorData.message.content;
+        }
+      } catch (parseError) {
+        console.error("Failed to parse error response:", parseError);
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      console.error("Registration error:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
@@ -339,20 +352,64 @@ export class APIClient {
     }
 
     const tokens: TokenPair = await response.json();
-    console.log("APIClient: Storing tokens:", { 
-      hasToken: tokens.token, 
-      hasRefreshToken: tokens.refreshToken 
+    console.log("APIClient: Storing tokens:", {
+      hasToken: tokens.token,
+      hasRefreshToken: tokens.refreshToken,
     });
-    
+
     await TokenStorage.setTokens(tokens);
     this.setAuthToken(tokens.token);
-    
+
     console.log("APIClient: Auth token set in headers");
     return tokens;
   }
 
   loginGoogle() {
     window.location.href = `${this.baseURL}/auth/google`;
+  }
+
+  async sendOTP(
+    email: string
+  ): Promise<{ success: boolean; message: string; email: string }> {
+    const response = await fetch(`${this.baseURL}/auth/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Send OTP failed");
+    }
+
+    const result = await response.json();
+    return result;
+  }
+
+  async resetPassword(
+    email: string,
+    otp: string,
+    newPassword: string
+  ): Promise<void> {
+    const response = await fetch(`${this.baseURL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        otp,
+        newPassword,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Send OTP failed");
+    }
+
+    const result = await response.json();
+    return result;
   }
 
   async getTokenByGoogleLogin(code: string): Promise<TokenPair> {
