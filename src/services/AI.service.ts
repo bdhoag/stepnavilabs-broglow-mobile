@@ -56,7 +56,7 @@ export class AIService {
       const token = tokens?.token;
       const response = await fetch(
         `${
-          process.env.EXPO_PUBLIC_API || ""
+          process.env.EXPO_PUBLIC_API || "https://stepnavilabs-broglow-production.up.railway.app/api"
         }/openai/thread/${threadId}/message`,
         {
           method: "POST",
@@ -147,7 +147,7 @@ export class AIService {
       const token = tokens?.token;
       const response = await fetch(
         `${
-          process.env.EXPO_PUBLIC_API || ""
+          process.env.EXPO_PUBLIC_API || "https://stepnavilabs-broglow-production.up.railway.app/api"
         }/openai/thread/${threadId}/run/${runId}`,
         {
           method: "POST",
@@ -195,7 +195,7 @@ export class AIService {
       const token = tokens?.token ?? "";
 
       const downloadUri = `${
-        process.env.EXPO_PUBLIC_API || ""
+        process.env.EXPO_PUBLIC_API || "https://stepnavilabs-broglow-production.up.railway.app/api"
       }/openai/file/${fileId}`;
       const localUri = `${
         FileSystem.cacheDirectory || FileSystem.documentDirectory
